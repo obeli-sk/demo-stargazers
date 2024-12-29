@@ -1,0 +1,21 @@
+[package]
+name = "webhook"
+description = "GitHub webhook endpoint that triggers the stargazers workflow"
+
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+derive_more.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+waki.workspace = true
+waki-macros.workspace = true
+wit-bindgen.workspace = true
