@@ -1,9 +1,6 @@
 [workspace]
 resolver = "2"
-members = [
-    "webhook",
-    # "webhook/builder"
-]
+members = ["webhook", "webhook/builder"]
 
 [workspace.package]
 version = "0.1.0"
@@ -15,7 +12,7 @@ rust-version = "1.83.0"
 
 [workspace.dependencies]
 derive_more = { version = "1.0", features = ["display"] }
-# obelisk-component-builder.path = "../obelisk/crates/component-builder"
+obelisk-component-builder = { git = "https://github.com/obeli-sk/obelisk", rev = "f7ca7534738c79c3900e9b9968e64fa190c27071" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 waki = { version = "0.5.1", features = ["json"] }
@@ -24,3 +21,9 @@ wit-bindgen = "0.36.0"
 
 [profile.release]
 opt-level = "s"
+
+[patch.crates-io]
+wast = { git = "https://github.com/bytecodealliance/wasm-tools.git", rev = "1e85a2a6b2fabbf0fd96767e3d3e3193182e07f0" }
+wit-parser = { git = "https://github.com/bytecodealliance/wasm-tools.git", rev = "1e85a2a6b2fabbf0fd96767e3d3e3193182e07f0" }
+wasmparser = { git = "https://github.com/bytecodealliance/wasm-tools.git", rev = "1e85a2a6b2fabbf0fd96767e3d3e3193182e07f0" }
+wit-component = { git = "https://github.com/bytecodealliance/wasm-tools.git", rev = "1e85a2a6b2fabbf0fd96767e3d3e3193182e07f0" }
