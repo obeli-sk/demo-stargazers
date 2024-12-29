@@ -1,0 +1,6 @@
+package stargazers:workflow;
+
+interface workflow {
+    star-added: func(sender: string, repo: string);
+    star-removed: func(sender: string, repo: string);
+}

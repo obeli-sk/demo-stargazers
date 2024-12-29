@@ -1,0 +1,5 @@
+package stargazers:webhook;
+
+world any {
+    import stargazers:workflow/workflow;
+}

@@ -1,0 +1,9 @@
+package stargazers:workflow-impl;
+
+world any {
+    export stargazers:workflow/workflow;
+
+    import stargazers:db/user;
+    import stargazers:db/prompt;
+    import stargazers:llm/llm;
+}

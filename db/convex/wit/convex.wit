@@ -1,0 +1,6 @@
+package stargazers:db-convex;
+
+world any {
+    export stargazers:db/user;
+    export stargazers:db/prompt;
+}
