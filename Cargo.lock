@@ -3769,6 +3769,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "workflow-builder"
+version = "0.1.0"
+dependencies = [
+ "obelisk-component-builder",
+]
+
+[[package]]
 name = "write16"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
