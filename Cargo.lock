@@ -3,6 +3,16 @@
 version = 4
 
 [[package]]
+name = "account-github"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "waki",
+ "wit-bindgen 0.36.0",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"

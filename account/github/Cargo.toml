@@ -1,6 +1,6 @@
 [package]
-name = "workflow"
-description = "Workflow that interacts with database and llm activities"
+name = "account-github"
+description = "Activity that fetches basic info like repositories, contributions etc. for a given account."
 
 authors.workspace = true
 edition.workspace = true
@@ -13,4 +13,7 @@ version.workspace = true
 crate-type = ["cdylib"]
 
 [dependencies]
+serde.workspace = true
+serde_json.workspace = true
+waki.workspace = true
 wit-bindgen.workspace = true

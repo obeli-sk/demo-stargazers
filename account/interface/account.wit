@@ -1,5 +1,5 @@
 package stargazers:account;
 
 interface account {
-    info: func(account: string) -> string;
+    info: func(login: string) -> result<string, string>;
 }

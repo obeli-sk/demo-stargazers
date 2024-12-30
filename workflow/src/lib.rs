@@ -19,11 +19,13 @@ impl Guest for Component {
         user::link(&sender, &repo);
         // Fetch the account info from github.
         let info = account::info(&sender);
-        let prompt = prompt::get();
-        let prompt = format!("{prompt}\n{info}");
-        // Generate the user's description.
-        let description = llm::respond(&prompt);
-        user::user_update(&sender, &description);
+        if let Ok(info) = info {
+            let prompt = prompt::get();
+            let prompt = format!("{prompt}\n{info}");
+            // Generate the user's description.
+            let description = llm::respond(&prompt);
+            user::user_update(&sender, &description);
+        }
     }
 
     fn star_removed(sender: String, repo: String) {

@@ -1,6 +1,12 @@
 [workspace]
 resolver = "2"
-members = ["webhook", "webhook/builder", "workflow", "workflow/builder"]
+members = [
+    "account/github",
+    "webhook",
+    "webhook/builder",
+    "workflow",
+    "workflow/builder",
+]
 
 [workspace.package]
 version = "0.1.0"
