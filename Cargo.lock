@@ -13,6 +13,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "account-github-builder"
+version = "0.1.0"
+dependencies = [
+ "obelisk-component-builder",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
