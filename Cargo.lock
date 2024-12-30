@@ -1634,7 +1634,7 @@ dependencies = [
 [[package]]
 name = "obeli-sk-concepts"
 version = "0.9.0"
-source = "git+https://github.com/obeli-sk/obelisk?rev=f7ca7534738c79c3900e9b9968e64fa190c27071#f7ca7534738c79c3900e9b9968e64fa190c27071"
+source = "git+https://github.com/obeli-sk/obelisk?rev=db119937f715663d9a331b1200436059ac187ad8#db119937f715663d9a331b1200436059ac187ad8"
 dependencies = [
  "arbitrary",
  "assert_matches",
@@ -1664,7 +1664,7 @@ dependencies = [
 [[package]]
 name = "obeli-sk-utils"
 version = "0.9.0"
-source = "git+https://github.com/obeli-sk/obelisk?rev=f7ca7534738c79c3900e9b9968e64fa190c27071#f7ca7534738c79c3900e9b9968e64fa190c27071"
+source = "git+https://github.com/obeli-sk/obelisk?rev=db119937f715663d9a331b1200436059ac187ad8#db119937f715663d9a331b1200436059ac187ad8"
 dependencies = [
  "anyhow",
  "cfg-if",
@@ -1692,7 +1692,7 @@ dependencies = [
 [[package]]
 name = "obeli-sk-val-json"
 version = "0.9.0"
-source = "git+https://github.com/obeli-sk/obelisk?rev=f7ca7534738c79c3900e9b9968e64fa190c27071#f7ca7534738c79c3900e9b9968e64fa190c27071"
+source = "git+https://github.com/obeli-sk/obelisk?rev=db119937f715663d9a331b1200436059ac187ad8#db119937f715663d9a331b1200436059ac187ad8"
 dependencies = [
  "anyhow",
  "indexmap 2.7.0",
@@ -1707,7 +1707,7 @@ dependencies = [
 [[package]]
 name = "obelisk-component-builder"
 version = "0.9.0"
-source = "git+https://github.com/obeli-sk/obelisk?rev=f7ca7534738c79c3900e9b9968e64fa190c27071#f7ca7534738c79c3900e9b9968e64fa190c27071"
+source = "git+https://github.com/obeli-sk/obelisk?rev=db119937f715663d9a331b1200436059ac187ad8#db119937f715663d9a331b1200436059ac187ad8"
 dependencies = [
  "cargo_metadata",
  "indexmap 2.7.0",
@@ -3759,6 +3759,13 @@ dependencies = [
  "log",
  "thiserror 1.0.69",
  "wast 35.0.2",
+]
+
+[[package]]
+name = "workflow"
+version = "0.1.0"
+dependencies = [
+ "wit-bindgen 0.36.0",
 ]
 
 [[package]]

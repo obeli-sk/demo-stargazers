@@ -1,0 +1,5 @@
+package stargazers:account;
+
+interface account {
+    info: func(account: string) -> string;
+}
