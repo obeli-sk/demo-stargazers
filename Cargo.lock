@@ -1651,7 +1651,7 @@ dependencies = [
 [[package]]
 name = "obeli-sk-concepts"
 version = "0.9.0"
-source = "git+https://github.com/obeli-sk/obelisk?rev=db119937f715663d9a331b1200436059ac187ad8#db119937f715663d9a331b1200436059ac187ad8"
+source = "git+https://github.com/obeli-sk/obelisk?rev=175b29586971d53a0c9f6bcfc43801f941572b87#175b29586971d53a0c9f6bcfc43801f941572b87"
 dependencies = [
  "arbitrary",
  "assert_matches",
@@ -1681,7 +1681,7 @@ dependencies = [
 [[package]]
 name = "obeli-sk-utils"
 version = "0.9.0"
-source = "git+https://github.com/obeli-sk/obelisk?rev=db119937f715663d9a331b1200436059ac187ad8#db119937f715663d9a331b1200436059ac187ad8"
+source = "git+https://github.com/obeli-sk/obelisk?rev=175b29586971d53a0c9f6bcfc43801f941572b87#175b29586971d53a0c9f6bcfc43801f941572b87"
 dependencies = [
  "anyhow",
  "cfg-if",
@@ -1709,7 +1709,7 @@ dependencies = [
 [[package]]
 name = "obeli-sk-val-json"
 version = "0.9.0"
-source = "git+https://github.com/obeli-sk/obelisk?rev=db119937f715663d9a331b1200436059ac187ad8#db119937f715663d9a331b1200436059ac187ad8"
+source = "git+https://github.com/obeli-sk/obelisk?rev=175b29586971d53a0c9f6bcfc43801f941572b87#175b29586971d53a0c9f6bcfc43801f941572b87"
 dependencies = [
  "anyhow",
  "indexmap 2.7.0",
@@ -1724,7 +1724,7 @@ dependencies = [
 [[package]]
 name = "obelisk-component-builder"
 version = "0.9.0"
-source = "git+https://github.com/obeli-sk/obelisk?rev=db119937f715663d9a331b1200436059ac187ad8#db119937f715663d9a331b1200436059ac187ad8"
+source = "git+https://github.com/obeli-sk/obelisk?rev=175b29586971d53a0c9f6bcfc43801f941572b87#175b29586971d53a0c9f6bcfc43801f941572b87"
 dependencies = [
  "cargo_metadata",
  "indexmap 2.7.0",
