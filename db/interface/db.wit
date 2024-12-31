@@ -2,14 +2,15 @@ package stargazers:db;
 
 interface user {
     /// Sender has stared a repo.
-    link: func(sender: string, repo: string);
+    /// Returns the user's description if already present.
+    link: func(sender: string, repo: string) -> result<option<string>, string>;
     /// Sender has unstarred a repo. Delete the sender if there are no other relations.
-    unlink: func(sender: string, repo: string);
+    unlink: func(sender: string, repo: string) -> result<_, string>;
     /// Update the description of a user.
     /// User must exist at this point, if not, the operation should fail.
-    user-update: func(username: string, description: string);
+    user-update: func(username: string, description: string) -> result<_, string>;
 }
 
 interface prompt {
-    get: func() -> string;
+    get: func() -> result<string, string>;
 }

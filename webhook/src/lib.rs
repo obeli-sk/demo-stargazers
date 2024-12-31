@@ -47,6 +47,7 @@ fn handle(req: Request) -> Result<Response, ErrorCode> {
     match event.action {
         Action::Created => star_added(&event.sender.login, &repo),
         Action::Deleted => star_removed(&event.sender.login, &repo),
-    };
+    }
+    .map_err(|_| ErrorCode::InternalError(None))?;
     Response::builder().build() // Send response: 200 OK
 }
