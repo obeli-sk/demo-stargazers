@@ -4,6 +4,7 @@ members = [
     "account/github",
     "account/github/builder",
     "llm/chatgpt",
+    "llm/chatgpt/builder",
     "webhook",
     "webhook/builder",
     "workflow",
