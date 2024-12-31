@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "account/github",
     "account/github/builder",
+    "llm/chatgpt",
     "webhook",
     "webhook/builder",
     "workflow",

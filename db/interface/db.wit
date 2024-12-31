@@ -11,6 +11,7 @@ interface user {
     user-update: func(username: string, description: string) -> result<_, string>;
 }
 
-interface prompt {
-    get: func() -> result<string, string>;
+interface llm {
+
+    get-settings-json: func() -> result<string, string>;
 }

@@ -1,5 +1,5 @@
 package stargazers:llm;
 
 interface llm {
-    respond: func(prompt: string) -> result<string, string>;
+    respond: func(user-prompt: string, settings-json: string) -> result<string, string>;
 }

@@ -4,7 +4,7 @@ world any {
     export stargazers:workflow/workflow;
 
     import stargazers:account/account;
-    import stargazers:db/prompt;
+    import stargazers:db/llm;
     import stargazers:db/user;
     import stargazers:llm/llm;
 }
