@@ -189,17 +189,8 @@ impl UserGuest for Component {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
+    use crate::turso::response::{extract_first_cell_from_nth_response, PipelineResponse};
     use serde_json::json;
-    use turso::response::{PipelineResponse, QueryResult, Response};
-
-    fn random_string() -> String {
-        use rand::SeedableRng;
-        let mut rng = rand::rngs::SmallRng::from_entropy();
-        (0..10)
-            .map(|_| (rand::Rng::gen_range(&mut rng, b'a'..=b'z') as char))
-            .collect()
-    }
 
     #[test]
     fn test_parse_settings_from_response() {
@@ -242,193 +233,213 @@ mod tests {
         assert_eq!(settings_json, "{\"a\":1}");
     }
 
-    #[test]
-    #[ignore]
-    fn get_settings_json_should_succeed() {
-        const PARAM_SETTINGS: &str = "settings";
-        const EXPECTED: &str = r#"{"a":1}"#;
-        delete_from("llm");
-        // Create the row
-        TursoClient::new()
-            .post_json(&PipelineRequest {
-                requests: vec![
-                    PipelineAction::Execute {
-                        stmt: Stmt {
-                            sql: format!(
-                                "INSERT INTO llm (id, settings) VALUES (0, :{PARAM_SETTINGS});"
-                            ),
-                            named_args: vec![NamedArg {
-                                name: PARAM_SETTINGS,
-                                value: TursoValue::Text {
-                                    value: EXPECTED.to_string(),
-                                },
-                            }],
-                        },
-                    },
-                    PipelineAction::Close,
-                ],
-            })
-            .unwrap();
-        let settings_json = Component::get_settings_json().unwrap();
-        assert_eq!(EXPECTED, settings_json);
-        // Make a SELECT just to make sure it is stored where we expect.
-        assert_eq!(
-            vec![EXPECTED],
-            select_single_non_null_column("llm", "settings")
-        );
-    }
-
-    fn delete_from(table: &str) {
-        println!("DELETE FROM {table}");
-        TursoClient::new()
-            .post_json(&PipelineRequest {
-                requests: vec![
-                    // Add user
-                    PipelineAction::Execute {
-                        stmt: Stmt {
-                            sql: format!("DELETE FROM {table};"),
-                            ..Stmt::default()
-                        },
-                    },
-                    PipelineAction::Close,
-                ],
-            })
-            .unwrap();
-    }
-
-    fn select_name(table: &str) -> Vec<String> {
-        select_single_non_null_column(table, "name")
-    }
-
-    fn select_single_non_null_column(table: &str, column: &str) -> Vec<String> {
-        select(table, &[column])
-            .into_iter()
-            .map(|row| {
-                // There must be one string per row
-                assert_eq!(1, row.len());
-                row.into_iter().next().unwrap().expect("must not be None")
-            })
-            .collect()
-    }
-
-    fn select(table: &str, params: &[&str]) -> Vec<Vec<Option<String>>> {
-        let sql = format!("SELECT {} FROM {table}", params.join(","));
-        println!("{sql}");
-        let resp = TursoClient::new()
-            .post_json(&PipelineRequest {
-                requests: vec![
-                    PipelineAction::Execute {
-                        stmt: Stmt {
-                            sql,
-                            ..Stmt::default()
-                        },
-                    },
-                    PipelineAction::Close,
-                ],
-            })
-            .unwrap();
-        assert_eq!(2, resp.len());
-        let first_result = resp.into_iter().next().unwrap();
-        let Some(Response::Execute {
-            result: Some(QueryResult { rows }),
-        }) = first_result
-        else {
-            panic!("Wrong response {first_result:?}");
+    mod integration {
+        use crate::{
+            exports::stargazers::db::{llm::Guest as _, user::Guest as _},
+            turso::{
+                request::{NamedArg, PipelineAction, PipelineRequest, Stmt, TursoValue},
+                response::{QueryResult, Response},
+                TursoClient,
+            },
+            Component,
         };
-        rows.into_iter()
-            .map(|row| row.0.into_iter().map(|cell| cell.value).collect::<Vec<_>>())
-            .collect()
-    }
 
-    #[test]
-    #[ignore]
-    fn user_update_should_create_the_user() {
-        delete_from("users");
-        let login = random_string();
-        let description = random_string();
-        println!("Creating user `{login}` with description `{description}`");
-        Component::user_update(login.clone(), description.clone()).unwrap();
-        // Check user
-        assert_eq!(vec![login.clone()], select_name("users"));
+        fn random_string() -> String {
+            use rand::SeedableRng;
+            let mut rng = rand::rngs::SmallRng::from_entropy();
+            (0..10)
+                .map(|_| (rand::Rng::gen_range(&mut rng, b'a'..=b'z') as char))
+                .collect()
+        }
 
-        println!("Deleting the user");
-        Component::unlink(login, "any".to_string()).unwrap();
+        #[test]
+        #[ignore]
+        fn get_settings_json_should_succeed() {
+            const PARAM_SETTINGS: &str = "settings";
+            const EXPECTED: &str = r#"{"a":1}"#;
+            delete_from("llm");
+            // Create the row
+            TursoClient::new()
+                .post_json(&PipelineRequest {
+                    requests: vec![
+                        PipelineAction::Execute {
+                            stmt: Stmt {
+                                sql: format!(
+                                    "INSERT INTO llm (id, settings) VALUES (0, :{PARAM_SETTINGS});"
+                                ),
+                                named_args: vec![NamedArg {
+                                    name: PARAM_SETTINGS,
+                                    value: TursoValue::Text {
+                                        value: EXPECTED.to_string(),
+                                    },
+                                }],
+                            },
+                        },
+                        PipelineAction::Close,
+                    ],
+                })
+                .unwrap();
+            let settings_json = Component::get_settings_json().unwrap();
+            assert_eq!(EXPECTED, settings_json);
+            // Make a SELECT just to make sure it is stored where we expect.
+            assert_eq!(
+                vec![EXPECTED],
+                select_single_non_null_column("llm", "settings")
+            );
+        }
 
-        assert_eq!(Vec::<String>::new(), select_name("users"));
-    }
+        fn delete_from(table: &str) {
+            println!("DELETE FROM {table}");
+            TursoClient::new()
+                .post_json(&PipelineRequest {
+                    requests: vec![
+                        // Add user
+                        PipelineAction::Execute {
+                            stmt: Stmt {
+                                sql: format!("DELETE FROM {table};"),
+                                ..Stmt::default()
+                            },
+                        },
+                        PipelineAction::Close,
+                    ],
+                })
+                .unwrap();
+        }
 
-    #[test]
-    #[ignore]
-    fn link_and_update_should_work_on_the_same_user() {
-        delete_from("users");
-        delete_from("repos");
-        delete_from("stars");
-        let login = random_string();
-        let repo = random_string();
-        println!("Creating user `{login}` and repo `{repo}`");
-        Component::link_get_description(login.clone(), repo.clone()).unwrap();
+        fn select_name(table: &str) -> Vec<String> {
+            select_single_non_null_column(table, "name")
+        }
 
-        let description = random_string();
-        println!("Updating user `{login}` with description `{description}`");
-        Component::user_update(login.clone(), description.clone()).unwrap();
-        // Check the user and description directly in the database.
-        assert_eq!(
-            vec![vec![Some(login), Some(description)]],
-            select("users", &["name", "description"])
-        );
-    }
+        fn select_single_non_null_column(table: &str, column: &str) -> Vec<String> {
+            select(table, &[column])
+                .into_iter()
+                .map(|row| {
+                    // There must be one string per row
+                    assert_eq!(1, row.len());
+                    row.into_iter().next().unwrap().expect("must not be None")
+                })
+                .collect()
+        }
 
-    #[test]
-    #[ignore]
-    fn link_after_update_should_return_the_description() {
-        delete_from("users");
-        delete_from("repos");
-        delete_from("stars");
+        fn select(table: &str, params: &[&str]) -> Vec<Vec<Option<String>>> {
+            let sql = format!("SELECT {} FROM {table}", params.join(","));
+            println!("{sql}");
+            let resp = TursoClient::new()
+                .post_json(&PipelineRequest {
+                    requests: vec![
+                        PipelineAction::Execute {
+                            stmt: Stmt {
+                                sql,
+                                ..Stmt::default()
+                            },
+                        },
+                        PipelineAction::Close,
+                    ],
+                })
+                .unwrap();
+            assert_eq!(2, resp.len());
+            let first_result = resp.into_iter().next().unwrap();
+            let Some(Response::Execute {
+                result: Some(QueryResult { rows }),
+            }) = first_result
+            else {
+                panic!("Wrong response {first_result:?}");
+            };
+            rows.into_iter()
+                .map(|row| row.0.into_iter().map(|cell| cell.value).collect::<Vec<_>>())
+                .collect()
+        }
 
-        let login = random_string();
-        let description = random_string();
-        println!("Creating user `{login}` with description `{description}`");
-        Component::user_update(login.clone(), description.clone()).unwrap();
+        #[test]
+        #[ignore]
+        fn user_update_should_create_the_user() {
+            delete_from("users");
+            let login = random_string();
+            let description = random_string();
+            println!("Creating user `{login}` with description `{description}`");
+            Component::user_update(login.clone(), description.clone()).unwrap();
+            // Check user
+            assert_eq!(vec![login.clone()], select_name("users"));
 
-        let repo = random_string();
-        println!("Starring repo `{repo}`");
-        let actual_description =
+            println!("Deleting the user");
+            Component::unlink(login, "any".to_string()).unwrap();
+
+            assert_eq!(Vec::<String>::new(), select_name("users"));
+        }
+
+        #[test]
+        #[ignore]
+        fn link_and_update_should_work_on_the_same_user() {
+            delete_from("users");
+            delete_from("repos");
+            delete_from("stars");
+            let login = random_string();
+            let repo = random_string();
+            println!("Creating user `{login}` and repo `{repo}`");
             Component::link_get_description(login.clone(), repo.clone()).unwrap();
 
-        assert_eq!(Some(&description), actual_description.as_ref());
+            let description = random_string();
+            println!("Updating user `{login}` with description `{description}`");
+            Component::user_update(login.clone(), description.clone()).unwrap();
+            // Check the user and description directly in the database.
+            assert_eq!(
+                vec![vec![Some(login), Some(description)]],
+                select("users", &["name", "description"])
+            );
+        }
 
-        // Check the user and description directly in the database.
-        assert_eq!(
-            vec![vec![Some(login), Some(description)]],
-            select("users", &["name", "description"])
-        );
-    }
+        #[test]
+        #[ignore]
+        fn link_after_update_should_return_the_description() {
+            delete_from("users");
+            delete_from("repos");
+            delete_from("stars");
 
-    #[test]
-    #[ignore]
-    fn user_link_unlink_should_retain_the_repo_only() {
-        delete_from("users");
-        delete_from("repos");
-        delete_from("stars");
-        let login = random_string();
-        let repo = random_string();
-        println!("Creating user `{login}` and repo `{repo}`");
-        Component::link_get_description(login.clone(), repo.clone()).unwrap();
-        // Check that data is inserted into `users`, `repos`, `stars`.
-        assert_eq!(vec![login.clone()], select_name("users"));
-        assert_eq!(vec![repo.clone()], select_name("repos"));
-        assert_eq!(
-            vec![vec![Some(login.clone()), Some(repo.clone())]],
-            select("stars", &["user_name", "repo_name"])
-        );
-        println!("Deleting the user");
-        Component::unlink(login, repo.clone()).unwrap();
-        // Check that only `repos` is not empty,
-        assert_eq!(Vec::<String>::new(), select_name("users"));
-        assert_eq!(vec![repo.clone()], select_name("repos"));
-        assert_eq!(
-            Vec::<Vec<Option<String>>>::new(),
-            select("stars", &["user_name", "repo_name"])
-        );
+            let login = random_string();
+            let description = random_string();
+            println!("Creating user `{login}` with description `{description}`");
+            Component::user_update(login.clone(), description.clone()).unwrap();
+
+            let repo = random_string();
+            println!("Starring repo `{repo}`");
+            let actual_description =
+                Component::link_get_description(login.clone(), repo.clone()).unwrap();
+
+            assert_eq!(Some(&description), actual_description.as_ref());
+
+            // Check the user and description directly in the database.
+            assert_eq!(
+                vec![vec![Some(login), Some(description)]],
+                select("users", &["name", "description"])
+            );
+        }
+
+        #[test]
+        #[ignore]
+        fn user_link_unlink_should_retain_the_repo_only() {
+            delete_from("users");
+            delete_from("repos");
+            delete_from("stars");
+            let login = random_string();
+            let repo = random_string();
+            println!("Creating user `{login}` and repo `{repo}`");
+            Component::link_get_description(login.clone(), repo.clone()).unwrap();
+            // Check that data is inserted into `users`, `repos`, `stars`.
+            assert_eq!(vec![login.clone()], select_name("users"));
+            assert_eq!(vec![repo.clone()], select_name("repos"));
+            assert_eq!(
+                vec![vec![Some(login.clone()), Some(repo.clone())]],
+                select("stars", &["user_name", "repo_name"])
+            );
+            println!("Deleting the user");
+            Component::unlink(login, repo.clone()).unwrap();
+            // Check that only `repos` is not empty,
+            assert_eq!(Vec::<String>::new(), select_name("users"));
+            assert_eq!(vec![repo.clone()], select_name("repos"));
+            assert_eq!(
+                Vec::<Vec<Option<String>>>::new(),
+                select("stars", &["user_name", "repo_name"])
+            );
+        }
     }
 }
