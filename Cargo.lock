@@ -656,6 +656,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "db-turso"
+version = "0.1.0"
+dependencies = [
+ "rand",
+ "serde",
+ "serde_json",
+ "waki",
+ "wit-bindgen 0.36.0",
+]
+
+[[package]]
+name = "db-turso-builder"
+version = "0.1.0"
+dependencies = [
+ "obelisk-component-builder",
+]
+
+[[package]]
 name = "debugid"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"

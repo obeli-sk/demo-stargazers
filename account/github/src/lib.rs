@@ -88,6 +88,7 @@ pub struct UserArguments {
     pub login: String,
 }
 
+#[cfg(test)]
 mod tests {
 
     #[test]

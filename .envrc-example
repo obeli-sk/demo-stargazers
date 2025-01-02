@@ -1,2 +1,7 @@
 use flake .
 watch_file ./rust-toolchain.toml ./flake.nix
+
+export GITHUB_TOKEN="..."
+export OPENAI_API_KEY="..."
+export TURSO_TOKEN="..."
+export TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"

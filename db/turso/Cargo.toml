@@ -1,0 +1,22 @@
+[package]
+name = "db-turso"
+description = "Activity that implements the db interface using Turso."
+
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+version.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+waki.workspace = true
+wit-bindgen.workspace = true
+
+[dev-dependencies]
+rand = { version = "0.8", default-features = false, features = ["small_rng", "std"] }

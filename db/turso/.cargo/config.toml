@@ -1,0 +1,5 @@
+[build]
+target = "wasm32-wasip2"
+
+[target.wasm32-wasip2]
+runner = "wasmtime run -Scli -Shttp  --env TURSO_TOKEN --env TURSO_LOCATION"

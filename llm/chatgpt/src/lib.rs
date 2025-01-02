@@ -93,6 +93,7 @@ impl Guest for Component {
     }
 }
 
+#[cfg(test)]
 mod tests {
 
     #[test]

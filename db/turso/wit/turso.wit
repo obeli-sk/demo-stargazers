@@ -1,0 +1,6 @@
+package stargazers:db-turso;
+
+world any {
+    export stargazers:db/user;
+    export stargazers:db/llm;
+}

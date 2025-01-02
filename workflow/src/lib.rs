@@ -7,22 +7,22 @@ struct Component;
 export!(Component);
 
 impl Guest for Component {
-    fn star_added(sender: String, repo: String) -> Result<(), String> {
+    fn star_added(login: String, repo: String) -> Result<(), String> {
         // Persist the user giving a star to the project.
-        let description = db::user::link(&sender, &repo)?;
+        let description = db::user::link_get_description(&login, &repo)?;
         if description.is_none() {
             // Fetch the account info from github.
             // TODO: account::info and get_settings_json should run in parallel
-            let info = account::info(&sender)?;
+            let info = account::info(&login)?;
             let settings_json = db::llm::get_settings_json()?;
             // Generate the user's description.
             let description = llm::respond(&info, &settings_json)?;
-            db::user::user_update(&sender, &description)?;
+            db::user::user_update(&login, &description)?;
         }
         Ok(())
     }
 
-    fn star_removed(sender: String, repo: String) -> Result<(), String> {
-        db::user::unlink(&sender, &repo)
+    fn star_removed(login: String, repo: String) -> Result<(), String> {
+        db::user::unlink(&login, &repo)
     }
 }
