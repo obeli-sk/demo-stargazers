@@ -96,7 +96,8 @@ mod tests {
     fn request_should_succeed() {
         use crate::exports::stargazers::account::account::Guest;
         use crate::Component;
-        let username = std::env::var("GITHUB_LOGIN").expect("`GITHUB_LOGIN` envvar must be set");
+        let username =
+            std::env::var("TEST_GITHUB_LOGIN").expect("`TEST_GITHUB_LOGIN` envvar must be set");
         let res = Component::info(username);
         let res = res.unwrap();
         println!("{res}");

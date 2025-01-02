@@ -4,6 +4,12 @@ Implements the [db WIT interface](../interface/db.wit) using Turso.
 ## Protocol
 The activity uses the [libSQL Remote Protocol](https://docs.turso.tech/sdk/http/reference).
 
+## Prerequisites
+Database domain and token with read and write permission is required.
+The token must be accesible as `TURSO_TOKEN` environment variable.
+The database domain must be accessible as `TURSO_LOCATION`, typically in
+the following form: `[databaseName]-[organizationSlug].turso.io`
+
 ## Testing
 
 ### Unit testing

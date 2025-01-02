@@ -37,13 +37,16 @@ fn handle(req: Request) -> Result<Response, ErrorCode> {
         return Err(ErrorCode::HttpRequestMethodInvalid);
     }
     // FIXME: Verify GitHub signature
-    let event: StarEvent = req.json().map_err(|err| {
+    let json_value: serde_json::Value = req.json().unwrap();
+    println!("Got {json_value}");
+
+    let event: StarEvent = serde_json::from_value(json_value).map_err(|err| {
         eprintln!("Cannot deserialize - {err:?}");
         ErrorCode::HttpRequestDenied
     })?;
     println!("Got event {event:?}");
     let repo = event.repository.to_string();
-    // FIXME: Use -schedule instead.
+    // FIXME: Use -schedule instead, return the execution id as a response header.
     match event.action {
         Action::Created => star_added(&event.sender.login, &repo),
         Action::Deleted => star_removed(&event.sender.login, &repo),

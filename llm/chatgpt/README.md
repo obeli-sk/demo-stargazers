@@ -8,6 +8,7 @@ It implements the [LLM Activity WIT](../interface/llm.wit) interface.
 OpenAI token is required. Navigate to [API Tokens](https://platform.openai.com/api-keys) and
 crate a new restricted token. Make sure the resource `/v1/chat/completions` under Model capabilities
 has the write permission.
+The token must be accesible as `OPENAI_API_KEY` environment variable.
 
 ## Configuration
 The second argument of `respond` WIT function is `settings`, which is JSON encoded string.

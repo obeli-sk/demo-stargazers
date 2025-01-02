@@ -14,6 +14,7 @@ impl Guest for Component {
             // Fetch the account info from github.
             // TODO: account::info and get_settings_json should run in parallel
             let info = account::info(&login)?;
+            // TODO: cache for 5 mins
             let settings_json = db::llm::get_settings_json()?;
             // Generate the user's description.
             let description = llm::respond(&info, &settings_json)?;
