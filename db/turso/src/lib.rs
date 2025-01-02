@@ -239,10 +239,24 @@ mod tests {
             turso::{
                 request::{NamedArg, PipelineAction, PipelineRequest, Stmt, TursoValue},
                 response::{QueryResult, Response},
-                TursoClient,
+                TursoClient, ENV_TURSO_LOCATION, ENV_TURSO_TOKEN,
             },
             Component,
         };
+
+        fn set_up() {
+            let test_token =
+                std::env::var(format!("TEST_{ENV_TURSO_TOKEN}")).unwrap_or_else(|_| {
+                    format!("TEST_{ENV_TURSO_TOKEN} must be set as an environment variable")
+                });
+            std::env::set_var(ENV_TURSO_TOKEN, test_token);
+
+            let test_location =
+                std::env::var(format!("TEST_{ENV_TURSO_LOCATION}")).unwrap_or_else(|_| {
+                    format!("TEST_{ENV_TURSO_LOCATION} must be set as an environment variable")
+                });
+            std::env::set_var(ENV_TURSO_LOCATION, test_location);
+        }
 
         fn random_string() -> String {
             use rand::SeedableRng;
@@ -250,42 +264,6 @@ mod tests {
             (0..10)
                 .map(|_| (rand::Rng::gen_range(&mut rng, b'a'..=b'z') as char))
                 .collect()
-        }
-
-        #[test]
-        #[ignore]
-        fn get_settings_json_should_succeed() {
-            const PARAM_SETTINGS: &str = "settings";
-            const EXPECTED: &str = r#"{"a":1}"#;
-            delete_from("llm");
-            // Create the row
-            TursoClient::new()
-                .post_json(&PipelineRequest {
-                    requests: vec![
-                        PipelineAction::Execute {
-                            stmt: Stmt {
-                                sql: format!(
-                                    "INSERT INTO llm (id, settings) VALUES (0, :{PARAM_SETTINGS});"
-                                ),
-                                named_args: vec![NamedArg {
-                                    name: PARAM_SETTINGS,
-                                    value: TursoValue::Text {
-                                        value: EXPECTED.to_string(),
-                                    },
-                                }],
-                            },
-                        },
-                        PipelineAction::Close,
-                    ],
-                })
-                .unwrap();
-            let settings_json = Component::get_settings_json().unwrap();
-            assert_eq!(EXPECTED, settings_json);
-            // Make a SELECT just to make sure it is stored where we expect.
-            assert_eq!(
-                vec![EXPECTED],
-                select_single_non_null_column("llm", "settings")
-            );
         }
 
         fn delete_from(table: &str) {
@@ -352,7 +330,45 @@ mod tests {
 
         #[test]
         #[ignore]
+        fn get_settings_json_should_succeed() {
+            set_up();
+            const PARAM_SETTINGS: &str = "settings";
+            const EXPECTED: &str = r#"{"a":1}"#;
+            delete_from("llm");
+            // Create the row
+            TursoClient::new()
+                .post_json(&PipelineRequest {
+                    requests: vec![
+                        PipelineAction::Execute {
+                            stmt: Stmt {
+                                sql: format!(
+                                    "INSERT INTO llm (id, settings) VALUES (0, :{PARAM_SETTINGS});"
+                                ),
+                                named_args: vec![NamedArg {
+                                    name: PARAM_SETTINGS,
+                                    value: TursoValue::Text {
+                                        value: EXPECTED.to_string(),
+                                    },
+                                }],
+                            },
+                        },
+                        PipelineAction::Close,
+                    ],
+                })
+                .unwrap();
+            let settings_json = Component::get_settings_json().unwrap();
+            assert_eq!(EXPECTED, settings_json);
+            // Make a SELECT just to make sure it is stored where we expect.
+            assert_eq!(
+                vec![EXPECTED],
+                select_single_non_null_column("llm", "settings")
+            );
+        }
+
+        #[test]
+        #[ignore]
         fn user_update_should_create_the_user() {
+            set_up();
             delete_from("users");
             let login = random_string();
             let description = random_string();
@@ -370,6 +386,7 @@ mod tests {
         #[test]
         #[ignore]
         fn link_and_update_should_work_on_the_same_user() {
+            set_up();
             delete_from("users");
             delete_from("repos");
             delete_from("stars");
@@ -391,6 +408,7 @@ mod tests {
         #[test]
         #[ignore]
         fn link_after_update_should_return_the_description() {
+            set_up();
             delete_from("users");
             delete_from("repos");
             delete_from("stars");
@@ -417,6 +435,7 @@ mod tests {
         #[test]
         #[ignore]
         fn user_link_unlink_should_retain_the_repo_only() {
+            set_up();
             delete_from("users");
             delete_from("repos");
             delete_from("stars");

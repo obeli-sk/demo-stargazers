@@ -103,9 +103,9 @@ mod tests {
         use crate::Component;
         use crate::{Message, Role, Settings};
 
-        let user_prompt = std::env::var("CHATGPT_USER_PROMPT")
+        let user_prompt = std::env::var("TEST_CHATGPT_USER_PROMPT")
             .unwrap_or_else(|_| "Tell me about Rust programming.".to_string());
-        let settings_json = std::env::var("CHATGPT_SETTINGS_JSON").unwrap_or_else(|_| {
+        let settings_json = std::env::var("TEST_CHATGPT_SETTINGS_JSON").unwrap_or_else(|_| {
             serde_json::to_string(&Settings {
                 messages: vec![Message {
                     role: Role::System,
