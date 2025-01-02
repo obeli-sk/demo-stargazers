@@ -27,7 +27,7 @@
               cargo-edit
               cargo-expand
               cargo-generate
-              nodePackages.localtunnel
+              cloudflared
               pkg-config
               rustToolchain
               wasm-tools
