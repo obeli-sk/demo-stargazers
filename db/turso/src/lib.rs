@@ -1,9 +1,9 @@
 mod turso;
 use crate::exports::stargazers::db::llm::Guest as LlmGuest;
 use crate::exports::stargazers::db::user::Guest as UserGuest;
-use turso::request::{NamedArg, PipelineAction, PipelineRequest, Stmt, TursoValue};
-use turso::response::extract_first_cell_from_nth_response;
-use turso::TursoClient;
+use turso::request::{NamedArg, PipelineAction, PipelineRequest, Stmt};
+use turso::response::extract_first_value_from_nth_response;
+use turso::{TursoClient, TursoValue};
 use wit_bindgen::generate;
 
 generate!({ generate_all });
@@ -25,9 +25,13 @@ impl LlmGuest for Component {
         };
 
         let resp = TursoClient::new().post_json(&request_body)?;
-        extract_first_cell_from_nth_response(resp, 0)?
-            .value
-            .ok_or_else(|| "No value in the first cell".to_string())
+        if let TursoValue::Text { value: first_value } =
+            extract_first_value_from_nth_response(resp, 0)?
+        {
+            Ok(first_value)
+        } else {
+            Err("No text value in the first cell".to_string())
+        }
     }
 }
 
@@ -106,7 +110,10 @@ impl UserGuest for Component {
         };
 
         let resp = TursoClient::new().post_json(&request_body)?;
-        Ok(extract_first_cell_from_nth_response(resp, 3)?.value)
+        match extract_first_value_from_nth_response(resp, 3)? {
+            TursoValue::Text { value: third_value } => Ok(Some(third_value)),
+            TursoValue::Null => Ok(None),
+        }
     }
 
     fn unlink(login: String, repo: String) -> Result<(), String> {
@@ -189,7 +196,10 @@ impl UserGuest for Component {
 
 #[cfg(test)]
 mod tests {
-    use crate::turso::response::{extract_first_cell_from_nth_response, PipelineResponse};
+    use crate::turso::{
+        response::{extract_first_value_from_nth_response, PipelineResponse},
+        TursoValue,
+    };
     use serde_json::json;
 
     #[test]
@@ -226,10 +236,12 @@ mod tests {
         }))
         .unwrap();
         let resp = resp.ok_responses().unwrap();
-        let settings_json = extract_first_cell_from_nth_response(resp, 0)
-            .unwrap()
-            .value
-            .expect("value must be sent");
+        let TursoValue::Text {
+            value: settings_json,
+        } = extract_first_value_from_nth_response(resp, 0).unwrap()
+        else {
+            panic!("No text value in the expected coordinates");
+        };
         assert_eq!(settings_json, "{\"a\":1}");
     }
 
@@ -237,9 +249,9 @@ mod tests {
         use crate::{
             exports::stargazers::db::{llm::Guest as _, user::Guest as _},
             turso::{
-                request::{NamedArg, PipelineAction, PipelineRequest, Stmt, TursoValue},
+                request::{NamedArg, PipelineAction, PipelineRequest, Stmt},
                 response::{QueryResult, Response},
-                TursoClient, ENV_TURSO_LOCATION, ENV_TURSO_TOKEN,
+                TursoClient, TursoValue, ENV_TURSO_LOCATION, ENV_TURSO_TOKEN,
             },
             Component,
         };
@@ -324,7 +336,15 @@ mod tests {
                 panic!("Wrong response {first_result:?}");
             };
             rows.into_iter()
-                .map(|row| row.0.into_iter().map(|cell| cell.value).collect::<Vec<_>>())
+                .map(|row| {
+                    row.0
+                        .into_iter()
+                        .map(|cell| match cell {
+                            TursoValue::Text { value } => Some(value),
+                            TursoValue::Null => None,
+                        })
+                        .collect::<Vec<_>>()
+                })
                 .collect()
         }
 

@@ -32,7 +32,7 @@ export TEST_TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"
 
 To run the integration tests:
 ```sh
-WASMTIME_BACKTRACE_DETAILS=1 cargo test -- --nocapture --ignored
+cargo test -- --nocapture --ignored
 ```
 
 #### Ad-hoc querying using curl

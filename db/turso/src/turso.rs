@@ -1,9 +1,12 @@
 use request::{PipelineAction, PipelineRequest};
 use response::PipelineResponse;
+use serde::{Deserialize, Serialize};
 use waki::Client;
 
 pub mod request {
     use serde::Serialize;
+
+    use super::TursoValue;
     #[derive(Serialize)]
     pub struct PipelineRequest {
         pub requests: Vec<PipelineAction>,
@@ -27,16 +30,19 @@ pub mod request {
         pub name: &'static str,
         pub value: TursoValue,
     }
-
-    #[derive(Debug, Serialize, PartialEq)]
-    #[serde(tag = "type", rename_all = "lowercase")]
-    pub enum TursoValue {
-        Text { value: String }, // TODO: Cow, support other value types.
-    }
+}
+#[derive(Debug, Serialize, Deserialize, PartialEq)]
+#[serde(tag = "type", rename_all = "lowercase")]
+#[non_exhaustive]
+pub enum TursoValue {
+    Text { value: String }, // TODO: Cow, support other value types.
+    Null,
 }
 
 pub mod response {
     use serde::Deserialize;
+
+    use super::TursoValue;
 
     #[derive(Debug, Deserialize)]
     pub struct PipelineResponse {
@@ -65,6 +71,7 @@ pub mod response {
     }
 
     #[derive(Debug, Deserialize)]
+    #[allow(dead_code)] // The content will be printed using Debug formatting.
     pub struct ResponseResultError {
         pub message: String,
         pub code: String,
@@ -83,20 +90,13 @@ pub mod response {
     }
 
     #[derive(Debug, Deserialize)]
-    pub struct QueryRow(pub Vec<Cell>);
+    pub struct QueryRow(pub Vec<TursoValue>);
 
-    #[derive(Debug, Deserialize)]
-    pub struct Cell {
-        #[serde(rename = "type")]
-        pub cell_type: String,
-        pub value: Option<String>,
-    }
-
-    /// Extracts the first [`Cell`] from the first row of the n-th response.
-    pub fn extract_first_cell_from_nth_response(
+    /// Extracts the first [`TursoValue`] from the first row of the n-th response.
+    pub fn extract_first_value_from_nth_response(
         responses: Vec<Option<Response>>,
         n: usize,
-    ) -> Result<Cell, String> {
+    ) -> Result<TursoValue, String> {
         let query_result = match responses.into_iter().nth(n) {
             Some(Some(Response::Execute {
                 result: Some(query_result),
