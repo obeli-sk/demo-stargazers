@@ -14,8 +14,11 @@ crate-type = ["cdylib"]
 
 [dependencies]
 derive_more.workspace = true
-serde.workspace = true
+hex.workspace = true
+hmac.workspace = true
 serde_json.workspace = true
-waki.workspace = true
+serde.workspace = true
+sha2.workspace = true
 waki-macros.workspace = true
+waki.workspace = true
 wit-bindgen.workspace = true

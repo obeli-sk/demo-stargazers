@@ -19,4 +19,4 @@ waki.workspace = true
 wit-bindgen.workspace = true
 
 [dev-dependencies]
-rand = { version = "0.8", default-features = false, features = ["small_rng", "std"] }
+rand.workspace = true

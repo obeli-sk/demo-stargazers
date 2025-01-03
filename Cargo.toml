@@ -23,9 +23,13 @@ rust-version = "1.83.0"
 
 [workspace.dependencies]
 derive_more = { version = "1.0", features = ["display"] }
+hex = "0.4.3"
+hmac = "0.12.1"
 obelisk-component-builder = { git = "https://github.com/obeli-sk/obelisk", rev = "175b29586971d53a0c9f6bcfc43801f941572b87" }
+rand = { version = "0.8", default-features = false, features = ["small_rng", "std"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+sha2 = "0.10.8"
 waki = { version = "0.5.1", features = ["json"] }
 waki-macros = "0.5.1"
 wit-bindgen = "0.36.0"

@@ -35,3 +35,4 @@ http_server = "webhook_server"
 routes = [{methods = ["POST"], route = ""}]
 forward_stdout="stderr"
 forward_stderr="stderr"
+env_vars = ["GITHUB_WEBHOOK_SECRET"] # "GITHUB_WEBHOOK_INSECURE=true" to disable signature verification

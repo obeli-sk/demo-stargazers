@@ -4,6 +4,10 @@ use wit_bindgen::generate;
 
 generate!({ generate_all });
 
+const HTTP_HEADER_SIGNATURE: &str = "X-Hub-Signature-256";
+const ENV_VAR_GITHUB_WEBHOOK_INSECURE: &str = "GITHUB_WEBHOOK_INSECURE";
+const ENV_VAR_GITHUB_WEBHOOK_SECRET: &str = "GITHUB_WEBHOOK_SECRET";
+
 #[derive(Debug, Clone, serde::Deserialize)]
 struct StarEvent {
     action: Action,
@@ -36,11 +40,27 @@ fn handle(req: Request) -> Result<Response, ErrorCode> {
     if !matches!(req.method(), Method::Post) {
         return Err(ErrorCode::HttpRequestMethodInvalid);
     }
-    // FIXME: Verify GitHub signature
-    let json_value: serde_json::Value = req.json().unwrap();
-    println!("Got {json_value}");
-
-    let event: StarEvent = serde_json::from_value(json_value).map_err(|err| {
+    let sha256_signature = req.header(HTTP_HEADER_SIGNATURE).cloned();
+    let body = req.body().unwrap();
+    if matches!(
+        std::env::var(ENV_VAR_GITHUB_WEBHOOK_INSECURE).as_deref(),
+        Ok("true")
+    ) {
+        println!(
+            "WARN: Not verifying the request because {ENV_VAR_GITHUB_WEBHOOK_INSECURE} is set to `true`!"
+        );
+    } else {
+        let secret = std::env::var(ENV_VAR_GITHUB_WEBHOOK_SECRET).unwrap_or_else(|_| {
+            panic!("{ENV_VAR_GITHUB_WEBHOOK_SECRET} must be passed as environment variable")
+        });
+        let sha256_signature = sha256_signature
+            .unwrap_or_else(|| panic!("HTTP header {HTTP_HEADER_SIGNATURE} must be set"));
+        let sha256_signature = sha256_signature.to_str().unwrap_or_else(|_| {
+            panic!("HTTP header {HTTP_HEADER_SIGNATURE} must be ASCII-encoded")
+        });
+        verify_signature(&secret, &body, sha256_signature);
+    }
+    let event: StarEvent = serde_json::from_slice(&body).map_err(|err| {
         eprintln!("Cannot deserialize - {err:?}");
         ErrorCode::HttpRequestDenied
     })?;
@@ -53,4 +73,81 @@ fn handle(req: Request) -> Result<Response, ErrorCode> {
     }
     .map_err(|_| ErrorCode::InternalError(None))?;
     Response::builder().build() // Send response: 200 OK
+}
+
+/// Verify a message using a shared secret and X-Hub-Signature-256 formatted hash.
+///
+/// See [Validating webhook deliveries](https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries#validating-webhook-deliveries)
+/// for details.
+fn verify_signature(secret: &str, payload: &[u8], sha256_signature: &str) {
+    use hmac::{Hmac, Mac};
+    use sha2::Sha256;
+
+    let sha256_signature = sha256_signature
+        .strip_prefix("sha256=")
+        .expect("`X-Hub-Signature-256` must start with `sha256=`");
+    let sha256_signature =
+        hex::decode(sha256_signature).expect("`X-Hub-Signature-256` must be hex-ecoded");
+
+    // Create alias for HMAC-SHA256
+    type HmacSha256 = Hmac<Sha256>;
+
+    let mut mac =
+        HmacSha256::new_from_slice(secret.as_bytes()).expect("HMAC can take key of any size");
+
+    mac.update(payload);
+    mac.verify_slice(&sha256_signature)
+        .expect("verification must succeed");
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::verify_signature;
+
+    #[test]
+    fn sha256_should_work() {
+        let secret = "It's a Secret to Everybody";
+        let payload = "Hello, World!";
+        verify_signature(
+            secret,
+            payload.as_bytes(),
+            "sha256=757107ea0eb2509fc211221cce984b8a37570b6d7586c22c46f4379c8b043e17",
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn wrong_sha256_should_panic() {
+        let secret = "It's a Secret to Everybody";
+        let payload = "Hello, World!";
+        verify_signature(
+            secret,
+            payload.as_bytes(),
+            "sha256=757107ea0eb2509fc211221cce984b8a37570b6d7586c22c46f4379c8b043e18",
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn wrong_prefix_should_panic() {
+        let secret = "It's a Secret to Everybody";
+        let payload = "Hello, World!";
+        verify_signature(
+            secret,
+            payload.as_bytes(),
+            "757107ea0eb2509fc211221cce984b8a37570b6d7586c22c46f4379c8b043e18",
+        );
+    }
+
+    #[test]
+    #[should_panic]
+    fn invalid_hex_should_panic() {
+        let secret = "It's a Secret to Everybody";
+        let payload = "Hello, World!";
+        verify_signature(
+            secret,
+            payload.as_bytes(),
+            "sha256=757107ea0eb2509fc211221cce984b8a37570b6d7586c22c46f4379c8b043e1X",
+        );
+    }
 }

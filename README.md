@@ -16,7 +16,7 @@ user doesn't have any starred repositories anymore, the user will be deleted as 
 
 ## Local deployment
 
-Create three Turso databases (dev, test, prod) with the provided `[schema](db/turso/ddl/schema.sql).
+Create three Turso databases (dev, test, prod) with the provided [SQL schema](activity/db/turso/ddl/schema.sql).
 Set up all the required environment variables:
 ```sh
 export GITHUB_TOKEN="..."
@@ -66,7 +66,7 @@ echo '{
 --data @-
 ```
 
-### Run the server
+### Running the obelisk server
 ```sh
 obelisk server run --config ./obelisk.toml
 ```
@@ -76,21 +76,5 @@ After a couple of seconds the server should start listening:
 * Web UI at [localhost:8080](http://127.0.0.1:8080)
 
 The workflow can be started using the Web UI.
-The webhook endpoint can be triggered using `curl`, see the [webhook documentation](webhook/README.md).
-
-### Setting up the GitHub webhook
-The endpoint must be publicly available in order for GitHub to be able to send the events.
-Either deploy the Obelisk server on a VPS, or use a tunneling software.
-
-Create a webhook under your repo settings. Go to Settings/Webhooks. The URL should match
-the following template: `https://github.com/[account]/[repo]/settings/hooks`.
-
-Add a new webhook, select individual events and make sure only Stars events are enabled.
-
-To obtain a public address using `cloudflared`, run:
-```sh
-cloudflared tunnel --url http://127.0.0.1:9090
-```
-
-Set up the webhook on your GitHub repository and try starring it.
-Check the [Web UI](http://127.0.0.1:8080) of Obelisk for execution details.
+The webhook endpoint can be triggered using `curl` or by seting up the webhook
+in a GitHub repo. See the [webhook documentation](webhook/README.md).
