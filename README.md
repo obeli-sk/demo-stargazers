@@ -28,7 +28,16 @@ Details are described in each activity's documentation.
 
 Configure the LLM system prompt:
 ```sh
-SETTINGS_JSON='{"messages":[{"role":"system", "content":"You are a helpful assistant"}], "model":"gpt-3.5-turbo", "max_tokens": 200}'
+SETTINGS_JSON='{
+    "messages": [
+        {
+            "role": "system",
+            "content": "Generate conscise information about GitHub users based on the JSON provided."
+        }
+    ],
+    "model": "gpt-3.5-turbo",
+    "max_tokens": 200
+}'
 
 echo '{
   "requests": [

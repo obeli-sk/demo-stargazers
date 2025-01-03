@@ -24,3 +24,25 @@ but were omitted for simplicity.
 export OPENAI_API_KEY=...
 cargo test -- --ignored --nocapture
 ```
+
+To execute an ad-hoc query:
+```sh
+curl -X POST https://api.openai.com/v1/chat/completions \
+-H "Authorization: Bearer ${OPENAI_API_KEY}" \
+-H "Content-Type: application/json" \
+-d '{
+    "messages": [
+        {
+            "role": "system",
+            "content": "You are a helpful assistant"
+        },
+        {
+            "role": "user",
+            "content": "Tell me about Rust programming."
+        }
+    ],
+    "model": "gpt-3.5-turbo",
+    "max_tokens": 200
+}'
+
+```
