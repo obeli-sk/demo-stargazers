@@ -1,0 +1,37 @@
+api.listening_addr = "127.0.0.1:5005"   # Address and port on which the API server will listen.
+webui.listening_addr = "127.0.0.1:8080" # Address and port on which the webui will listen.
+
+[log.stdout]
+enabled = true
+
+[[activity_wasm]]
+name = "activity_llm_chatgpt"
+location.path = "target/wasm32-wasip2/release/llm_chatgpt.wasm"
+exec.lock_expiry.secs = 10
+env_vars = ["OPENAI_API_KEY"]
+
+[[activity_wasm]]
+name = "activity_account_github"
+location.path = "target/wasm32-wasip2/release/account_github.wasm"
+env_vars = ["GITHUB_TOKEN"]
+
+[[activity_wasm]]
+name = "activity_db_turso"
+location.path = "target/wasm32-wasip2/release/db_turso.wasm"
+env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
+
+[[workflow]]
+name = "workflow"
+location.path = "target/wasm32-unknown-unknown/release/workflow_component.wasm"
+
+[[http_server]]
+name = "webhook_server"
+listening_addr = "127.0.0.1:9090"
+
+[[webhook_endpoint]]
+name = "webhook"
+location.path = "target/wasm32-wasip2/release/webhook.wasm"
+http_server = "webhook_server"
+routes = [{methods = ["POST"], route = ""}]
+forward_stdout="stderr"
+forward_stderr="stderr"

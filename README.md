@@ -1,6 +1,6 @@
 # Stargazers
 
-A sample [obelisk](https://github.com/obeli-sk/obelisk) workflow
+A simple [obelisk](https://github.com/obeli-sk/obelisk) workflow
 that monitors a project stargazers using a webhook.
 When a user stars the project, a webhook event is received.
 
@@ -11,4 +11,77 @@ basic info on the user, and then an activity is called that
 transforms the info into a summary using an external LLM service.
 The summary is then persisted.
 
-On a *star deleted* event an activity will delete the specific row from the database.
+On a *star deleted* event an activity will delete the relation. If a
+user doesn't have any starred repositories anymore, the user will be deleted as well.
+
+## Local deployment
+
+Create three Turso databases (dev, test, prod) with the provided `[schema](db/turso/ddl/schema.sql).
+Set up all the required environment variables:
+```sh
+export GITHUB_TOKEN="..."
+export OPENAI_API_KEY="..."
+export TURSO_TOKEN="..."
+export TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"
+```
+Details are described in each activity's documentation.
+
+Configure the LLM system prompt:
+```sh
+SETTINGS_JSON='{"messages":[{"role":"system", "content":"You are a helpful assistant"}], "model":"gpt-3.5-turbo", "max_tokens": 200}'
+
+echo '{
+  "requests": [
+    {
+      "type": "execute",
+      "stmt": {
+        "sql": "INSERT INTO llm (id, settings) VALUES (0, :settings) ON CONFLICT (id) DO UPDATE SET settings = :settings",
+        "named_args": [
+          {
+            "name": "settings",
+            "value": {
+              "type": "text",
+              "value": "'$(echo $SETTINGS_JSON | sed 's/\"/\\"/g')'"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "close"
+    }
+  ]
+}' | curl -X POST "https://${TURSO_LOCATION}/v2/pipeline" \
+-H "Authorization: Bearer ${TURSO_TOKEN}" \
+-H "Content-Type: application/json" \
+--data @-
+```
+
+### Run the server
+```sh
+obelisk server run --config ./obelisk.toml
+```
+After a couple of seconds the server should start listening:
+* webhook at http://127.0.0.1:9090
+* gRPC at 127.0.0.1:5005
+* Web UI at [localhost:8080](http://127.0.0.1:8080)
+
+The workflow can be started using the Web UI.
+The webhook endpoint can be triggered using `curl`, see the [webhook documentation](webhook/README.md).
+
+### Setting up the GitHub webhook
+The endpoint must be publicly available in order for GitHub to be able to send the events.
+Either deploy the Obelisk server on a VPS, or use a tunneling software.
+
+Create a webhook under your repo settings. Go to Settings/Webhooks. The URL should match
+the following template: `https://github.com/[account]/[repo]/settings/hooks`.
+
+Add a new webhook, select individual events and make sure only Stars events are enabled.
+
+To obtain a public address using `cloudflared`, run:
+```sh
+cloudflared tunnel --url http://127.0.0.1:9090
+```
+
+Set up the webhook on your GitHub repository and try starring it.
+Check the [Web UI](http://127.0.0.1:8080) of Obelisk for execution details.
