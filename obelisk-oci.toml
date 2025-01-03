@@ -1,0 +1,38 @@
+api.listening_addr = "127.0.0.1:5005"   # Address and port on which the API server will listen.
+webui.listening_addr = "127.0.0.1:8080" # Address and port on which the webui will listen.
+
+[log.stdout]
+enabled = true
+
+[[activity_wasm]]
+name = "activity_llm_chatgpt"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_llm_chatgpt:2025-01-03@sha256:7838bcbbdf9562affa65418599d1d96433bd61308aba8c6c9b54d2009440485a"
+exec.lock_expiry.secs = 10
+env_vars = ["OPENAI_API_KEY"]
+
+[[activity_wasm]]
+name = "activity_account_github"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_account_github:2025-01-03@sha256:47812c75d32833a54c7d61b94f74b58bd81e97ffd7953a0b21d7aa40d133a431"
+env_vars = ["GITHUB_TOKEN"]
+
+[[activity_wasm]]
+name = "activity_db_turso"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_db_turso:2025-01-03@sha256:63904807ca945b2cc6cdb146170c42e9f1a4dbf4e7396c2d9fb16f4b6f09dcff"
+env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
+
+[[workflow]]
+name = "workflow"
+location.oci = "docker.io/getobelisk/demo_stargazers_workflow:2025-01-03@sha256:9993a8bc6759c2bc964d61da3b22be3846bb72f1358e377b6d17befeacd13958"
+
+[[http_server]]
+name = "webhook_server"
+listening_addr = "127.0.0.1:9090"
+
+[[webhook_endpoint]]
+name = "webhook"
+location.oci = "docker.io/getobelisk/demo_stargazers_webhook:2025-01-03@sha256:8e94b72970ea81c85f054cb890bcfacc09b43c410e7d68899f2ab0c2e0962a20"
+http_server = "webhook_server"
+routes = [{methods = ["POST"], route = ""}]
+forward_stdout="stderr"
+forward_stderr="stderr"
+env_vars = ["GITHUB_WEBHOOK_SECRET"] # "GITHUB_WEBHOOK_INSECURE=true" to disable signature verification

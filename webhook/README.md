@@ -3,27 +3,29 @@
 This webook endpoint receives Star events of a configured repository, triggers
 `star-added` or `star-removed` [workflows](wit/deps/workflow-interface/workflow.wit).
 
-## Security
+## Prerequisites
+
+### Security
 It is advised to [verify each webhook request](https://docs.github.com/en/webhooks/using-webhooks/validating-webhook-deliveries).
 Set up the shared secret and export it as an environemnt variable:
 ```sh
 export GITHUB_WEBHOOK_SECRET="..."
 ```
-Then in [obelisk.toml](../obelisk.toml) verify that the variable is forwarded:
+Then in your `obelisk.toml` verify that the variable is forwarded:
 ```toml
 [[webhook_endpoint]]
 name = "webhook"
 env_vars = ["GITHUB_WEBHOOK_SECRET"]
 ```
 
-The verification can be turned off for testing purposes in [obelisk.toml](../obelisk.toml):
+The verification can be turned off for testing purposes in your `obelisk.toml`:
 ```toml
 [[webhook_endpoint]]
 name = "webhook"
 env_vars = ["GITHUB_WEBHOOK_INSECURE=true"]
 ```
 
-## Exposing the HTTP server
+### Exposing the HTTP server
 The endpoint must be publicly available in order for GitHub to be able to send the events.
 Either deploy the Obelisk server on a VPS, or use a tunneling software.
 
@@ -32,7 +34,7 @@ To obtain a public address using `cloudflared`, run:
 cloudflared tunnel --url http://127.0.0.1:9090
 ```
 
-## Configuring GitHub
+### Configuring GitHub
 Create a webhook under your repo settings. Go to Settings/Webhooks. The URL should match
 the following template: `https://github.com/[account]/[repo]/settings/hooks`.
 
@@ -52,6 +54,7 @@ cargo test --target=x86_64-unknown-linux-gnu
 ```
 
 ## Manual end-to-end testing
+Disable the request verification as mentioned above.
 Start the `obelisk` server according to the root [README](../README.md).
 Execute a request locally:
 ```sh

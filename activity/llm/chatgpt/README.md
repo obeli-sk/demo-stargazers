@@ -9,6 +9,9 @@ OpenAI token is required. Navigate to [API Tokens](https://platform.openai.com/a
 crate a new restricted token. Make sure the resource `/v1/chat/completions` under Model capabilities
 has the write permission.
 The token must be accesible as `OPENAI_API_KEY` environment variable.
+```sh
+export OPENAI_API_KEY="..."
+```
 
 ## Configuration
 The second argument of `respond` WIT function is `settings`, which is JSON encoded string.

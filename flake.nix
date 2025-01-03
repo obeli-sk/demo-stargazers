@@ -23,6 +23,7 @@
         {
           devShells.default = pkgs.mkShell {
             nativeBuildInputs = with pkgs; [
+              # TODO: add obelisk
               cargo-binstall
               cargo-edit
               cargo-expand
