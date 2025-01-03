@@ -1,5 +1,5 @@
 [package]
-name = "llm-chatgpt-builder"
+name = "activity-db-turso-builder"
 description = "Runs cargo build for the parent package"
 
 authors.workspace = true

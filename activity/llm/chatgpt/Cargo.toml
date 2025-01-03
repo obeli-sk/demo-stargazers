@@ -1,5 +1,5 @@
 [package]
-name = "llm-chatgpt"
+name = "activity-llm-chatgpt"
 description = "Activity that fetches an LLM-generated response for a given prompt."
 
 authors.workspace = true

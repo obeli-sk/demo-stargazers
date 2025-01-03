@@ -1,12 +1,12 @@
 [workspace]
 resolver = "2"
 members = [
-    "account/github",
-    "account/github/builder",
-    "db/turso",
-    "db/turso/builder",
-    "llm/chatgpt",
-    "llm/chatgpt/builder",
+    "activity/account/github",
+    "activity/account/github/builder",
+    "activity/db/turso",
+    "activity/db/turso/builder",
+    "activity/llm/chatgpt",
+    "activity/llm/chatgpt/builder",
     "webhook",
     "webhook/builder",
     "workflow",

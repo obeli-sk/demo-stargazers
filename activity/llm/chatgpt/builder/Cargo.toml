@@ -1,5 +1,5 @@
 [package]
-name = "account-github-builder"
+name = "activity-llm-chatgpt-builder"
 description = "Runs cargo build for the parent package"
 
 authors.workspace = true

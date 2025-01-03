@@ -1,5 +1,5 @@
 [package]
-name = "account-github"
+name = "activity-account-github"
 description = "Activity that fetches basic info like repositories, contributions etc. for a given account."
 
 authors.workspace = true

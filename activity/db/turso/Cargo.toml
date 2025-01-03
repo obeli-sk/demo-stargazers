@@ -1,5 +1,5 @@
 [package]
-name = "db-turso"
+name = "activity-db-turso"
 description = "Activity that implements the db interface using Turso."
 
 authors.workspace = true
