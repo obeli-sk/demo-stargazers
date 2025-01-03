@@ -22,7 +22,7 @@ env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
 
 [[workflow]]
 name = "workflow"
-location.path = "target/wasm32-unknown-unknown/release/workflow_component.wasm"
+location.path = "target/wasm32-unknown-unknown/release/workflow.wasm"
 
 [[http_server]]
 name = "webhook_server"

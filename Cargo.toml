@@ -25,8 +25,8 @@ rust-version = "1.83.0"
 derive_more = { version = "1.0", features = ["display"] }
 hex = "0.4.3"
 hmac = "0.12.1"
-obelisk-component-builder = { git = "https://github.com/obeli-sk/obelisk", rev = "175b29586971d53a0c9f6bcfc43801f941572b87" }
 rand = { version = "0.8", default-features = false, features = ["small_rng", "std"] }
+obelisk-component-builder = { git = "https://github.com/obeli-sk/obelisk", rev = "22fc57be88dfd8aeaeb3de9cae0af227637da643" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 sha2 = "0.10.8"
