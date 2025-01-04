@@ -3,6 +3,9 @@ package stargazers:workflow-impl;
 world any {
     export stargazers:workflow/workflow;
 
+    // Import the implemented interface for `backfill`
+    import stargazers:workflow/workflow;
+    // activities
     import stargazers:account/account;
     import stargazers:db/llm;
     import stargazers:db/user;

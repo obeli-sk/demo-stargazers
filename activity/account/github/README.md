@@ -13,6 +13,38 @@ export GITHUB_TOKEN=...
 ## Testing
 
 ```sh
-export TEST_GITHUB_LOGIN=...
+export TEST_GITHUB_LOGIN="..."
+export TEST_GITHUB_REPO="..."
+# optinally export TEST_GITHUB_STARGAZERS_CURSOR="..."
 cargo test -- --ignored --nocapture
+```
+
+
+### Ad-hoc GraphQL query for debugging
+```sh
+QUERY='
+query QueryStargazers($repo: URI!, $page: Int!, $cursor: String) {
+  resource(url: $repo) {
+    ... on Repository {
+      __typename
+      stargazers(first: $page, after: $cursor) {
+        nodes {
+          login
+        }
+        edges {
+          cursor
+        }
+      }
+    }
+  }
+}
+'
+
+echo '
+{"query":"'$(echo $QUERY)'", "variables":{"repo":"obeli-sk/obelisk", "page":2}}
+' | curl -X POST \
+-H "User-Agent: test" \
+-H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/graphql \
+-d @-
+
 ```

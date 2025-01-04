@@ -13,7 +13,11 @@ version.workspace = true
 crate-type = ["cdylib"]
 
 [dependencies]
+cynic.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 waki.workspace = true
 wit-bindgen.workspace = true
+
+[build-dependencies]
+cynic-codegen.workspace = true
