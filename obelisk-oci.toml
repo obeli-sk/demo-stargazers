@@ -14,6 +14,7 @@ env_vars = ["OPENAI_API_KEY"]
 name = "activity_account_github"
 location.oci = "docker.io/getobelisk/demo_stargazers_activity_account_github:2025-01-03@sha256:47812c75d32833a54c7d61b94f74b58bd81e97ffd7953a0b21d7aa40d133a431"
 env_vars = ["GITHUB_TOKEN"]
+exec.lock_expiry.secs = 5
 
 [[activity_wasm]]
 name = "activity_db_turso"
@@ -32,7 +33,10 @@ listening_addr = "127.0.0.1:9090"
 name = "webhook"
 location.oci = "docker.io/getobelisk/demo_stargazers_webhook:2025-01-03@sha256:8e94b72970ea81c85f054cb890bcfacc09b43c410e7d68899f2ab0c2e0962a20"
 http_server = "webhook_server"
-routes = [{methods = ["POST"], route = ""}]
-forward_stdout="stderr"
-forward_stderr="stderr"
-env_vars = ["GITHUB_WEBHOOK_SECRET"] # "GITHUB_WEBHOOK_INSECURE=true" to disable signature verification
+routes = [{ methods = ["POST"], route = "" }]
+forward_stdout = "stderr"
+forward_stderr = "stderr"
+env_vars = [
+    "GITHUB_WEBHOOK_SECRET",
+    # "GITHUB_WEBHOOK_INSECURE=true" to disable signature verification
+]
