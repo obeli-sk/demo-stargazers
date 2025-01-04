@@ -1,6 +1,5 @@
 # Turso Activity
-Implements the [db WIT interface](../interface/db.wit) using [Turso](https://turso.tech/)
-using the [libSQL Remote Protocol](https://docs.turso.tech/sdk/http/reference).
+Implements the [db WIT interface](../interface/db.wit) using [Turso](https://turso.tech/).
 
 ## Prerequisites
 The activity needs an active database with the following [schema](ddl/schema.sql).
@@ -81,7 +80,8 @@ cargo test -- --nocapture --ignored
 ```
 
 #### Ad-hoc querying using curl
-The following will gett the data from the `users` table:
+The following will get the data from the `users` table
+using the [libSQL Remote Protocol](https://docs.turso.tech/sdk/http/reference):
 ```sh
 curl -X POST "https://${TEST_TURSO_LOCATION}/v2/pipeline" \
 -H "Authorization: Bearer ${TEST_TURSO_TOKEN}" \
