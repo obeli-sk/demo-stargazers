@@ -124,17 +124,14 @@ pub struct TursoClient {
 }
 
 impl TursoClient {
-    pub fn new() -> Self {
-        let token = std::env::var(ENV_TURSO_TOKEN).unwrap_or_else(|_| {
-            format!("{ENV_TURSO_TOKEN} must be set as an environment variable")
-        });
-        let turso_location = std::env::var(ENV_TURSO_LOCATION).unwrap_or_else(|_| {
-            format!("{ENV_TURSO_LOCATION} must be set as an environment variable")
-        });
-
+    pub fn new() -> Result<Self, String> {
+        let token = std::env::var(ENV_TURSO_TOKEN)
+            .map_err(|_| format!("{ENV_TURSO_TOKEN} must be set as an environment variable"))?;
+        let turso_location = std::env::var(ENV_TURSO_LOCATION)
+            .map_err(|_| format!("{ENV_TURSO_LOCATION} must be set as an environment variable"))?;
         let client = Client::new();
         let url = format!("https://{turso_location}/v2/pipeline");
-        Self { url, token, client }
+        Ok(Self { url, token, client })
     }
 
     fn bearer(&self) -> String {

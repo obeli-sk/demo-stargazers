@@ -27,7 +27,7 @@ impl LlmGuest for Component {
             ],
         };
 
-        let resp = TursoClient::new().post_json(&request_body)?;
+        let resp = TursoClient::new()?.post_json(&request_body)?;
         if let TursoValue::Text { value: first_value } =
             extract_first_value_from_nth_response(resp, 0)?
         {
@@ -112,7 +112,7 @@ impl UserGuest for Component {
             ],
         };
 
-        let resp = TursoClient::new().post_json(&request_body)?;
+        let resp = TursoClient::new()?.post_json(&request_body)?;
         match extract_first_value_from_nth_response(resp, 3)? {
             TursoValue::Text { value: third_value } => Ok(Some(third_value)),
             TursoValue::Null => Ok(None),
@@ -161,7 +161,7 @@ impl UserGuest for Component {
             ],
         };
 
-        TursoClient::new().post_json(&request_body)?;
+        TursoClient::new()?.post_json(&request_body)?;
 
         Ok(())
     }
@@ -191,7 +191,7 @@ impl UserGuest for Component {
             ],
         };
 
-        TursoClient::new().post_json(&request_body)?;
+        TursoClient::new()?.post_json(&request_body)?;
 
         Ok(())
     }
@@ -262,13 +262,13 @@ mod tests {
         fn set_up() {
             let test_token =
                 std::env::var(format!("TEST_{ENV_TURSO_TOKEN}")).unwrap_or_else(|_| {
-                    format!("TEST_{ENV_TURSO_TOKEN} must be set as an environment variable")
+                    panic!("TEST_{ENV_TURSO_TOKEN} must be set as an environment variable")
                 });
             std::env::set_var(ENV_TURSO_TOKEN, test_token);
 
             let test_location =
                 std::env::var(format!("TEST_{ENV_TURSO_LOCATION}")).unwrap_or_else(|_| {
-                    format!("TEST_{ENV_TURSO_LOCATION} must be set as an environment variable")
+                    panic!("TEST_{ENV_TURSO_LOCATION} must be set as an environment variable")
                 });
             std::env::set_var(ENV_TURSO_LOCATION, test_location);
         }
@@ -284,6 +284,7 @@ mod tests {
         fn delete_from(table: &str) {
             println!("DELETE FROM {table}");
             TursoClient::new()
+                .unwrap()
                 .post_json(&PipelineRequest {
                     requests: vec![
                         // Add user
@@ -318,6 +319,7 @@ mod tests {
             let sql = format!("SELECT {} FROM {table}", params.join(","));
             println!("{sql}");
             let resp = TursoClient::new()
+                .unwrap()
                 .post_json(&PipelineRequest {
                     requests: vec![
                         PipelineAction::Execute {
@@ -360,6 +362,7 @@ mod tests {
             delete_from("llm");
             // Create the row
             TursoClient::new()
+                .unwrap()
                 .post_json(&PipelineRequest {
                     requests: vec![
                         PipelineAction::Execute {
