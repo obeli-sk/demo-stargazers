@@ -28,7 +28,13 @@ export OPENAI_API_KEY=...
 cargo test -- --ignored --nocapture
 ```
 
-To execute an ad-hoc query:
+To execute the activity directly (e.g. using CLI or the Web UI):
+* parameter `user-prompt`: `"Tell me about Rust programming."`
+* parameter `settings-json`: `"{\"messages\": [{\"role\": \"system\",\"content\": \"You are a helpful assistant\"}],\"model\": \"gpt-3.5-turbo\",\"max_tokens\": 200}"`
+
+
+
+To execute an ad-hoc query using curl:
 ```sh
 curl -X POST https://api.openai.com/v1/chat/completions \
 -H "Authorization: Bearer ${OPENAI_API_KEY}" \
@@ -47,5 +53,4 @@ curl -X POST https://api.openai.com/v1/chat/completions \
     "model": "gpt-3.5-turbo",
     "max_tokens": 200
 }'
-
 ```
