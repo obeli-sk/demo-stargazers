@@ -34,17 +34,12 @@ impl Guest for Component {
 
     fn backfill(repo: String) -> Result<(), String> {
         let mut cursor = None;
-        loop {
-            match list_stargazers(&repo, cursor.as_deref())? {
-                Some(resp) => {
-                    for login in resp.logins {
-                        // Submit a child workflow
-                        imported_workflow::star_added(&login, &repo)?;
-                    }
-                    cursor = Some(resp.cursor);
-                }
-                None => break,
+        while let Some(resp) = list_stargazers(&repo, cursor.as_deref())? {
+            for login in resp.logins {
+                // Submit a child workflow
+                imported_workflow::star_added(&login, &repo)?;
             }
+            cursor = Some(resp.cursor);
         }
         Ok(())
     }
