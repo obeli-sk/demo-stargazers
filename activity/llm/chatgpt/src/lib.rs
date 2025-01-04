@@ -55,9 +55,8 @@ struct Settings {
 
 impl Guest for Component {
     fn respond(user_prompt: String, settings: String) -> Result<String, String> {
-        let api_key = env::var(ENV_OPENAI_API_KEY).unwrap_or_else(|_| {
-            panic!("{ENV_OPENAI_API_KEY} must be set as an environment variable")
-        });
+        let api_key = env::var(ENV_OPENAI_API_KEY)
+            .map_err(|_| format!("{ENV_OPENAI_API_KEY} must be set as an environment variable"))?;
 
         let settings: Settings =
             serde_json::from_str(&settings).expect("`settings_json` must be parseable");
