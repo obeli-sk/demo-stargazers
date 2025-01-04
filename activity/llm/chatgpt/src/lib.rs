@@ -4,6 +4,8 @@ use std::env;
 use waki::Client;
 use wit_bindgen::generate;
 
+const ENV_OPENAI_API_KEY: &str = "OPENAI_API_KEY";
+
 generate!({ generate_all });
 pub(crate) struct Component;
 export!(Component);
@@ -53,8 +55,9 @@ struct Settings {
 
 impl Guest for Component {
     fn respond(user_prompt: String, settings: String) -> Result<String, String> {
-        let api_key = env::var("OPENAI_API_KEY")
-            .expect("OPENAI_API_KEY must be set as an environment variable");
+        let api_key = env::var(ENV_OPENAI_API_KEY).unwrap_or_else(|_| {
+            panic!("{ENV_OPENAI_API_KEY} must be set as an environment variable")
+        });
 
         let settings: Settings =
             serde_json::from_str(&settings).expect("`settings_json` must be parseable");

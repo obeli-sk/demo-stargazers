@@ -3,6 +3,8 @@ use response::PipelineResponse;
 use serde::{Deserialize, Serialize};
 use waki::Client;
 
+use crate::{ENV_TURSO_LOCATION, ENV_TURSO_TOKEN};
+
 pub mod request {
     use serde::Serialize;
 
@@ -114,9 +116,6 @@ pub mod response {
         Ok(first_cell)
     }
 }
-
-pub const ENV_TURSO_TOKEN: &str = "TURSO_TOKEN";
-pub const ENV_TURSO_LOCATION: &str = "TURSO_LOCATION";
 
 pub struct TursoClient {
     url: String,

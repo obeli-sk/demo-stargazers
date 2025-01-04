@@ -6,6 +6,9 @@ use turso::response::extract_first_value_from_nth_response;
 use turso::{TursoClient, TursoValue};
 use wit_bindgen::generate;
 
+pub const ENV_TURSO_TOKEN: &str = "TURSO_TOKEN";
+pub const ENV_TURSO_LOCATION: &str = "TURSO_LOCATION";
+
 generate!({ generate_all });
 pub(crate) struct Component;
 export!(Component);
@@ -251,9 +254,9 @@ mod tests {
             turso::{
                 request::{NamedArg, PipelineAction, PipelineRequest, Stmt},
                 response::{QueryResult, Response},
-                TursoClient, TursoValue, ENV_TURSO_LOCATION, ENV_TURSO_TOKEN,
+                TursoClient, TursoValue,
             },
-            Component,
+            Component, ENV_TURSO_LOCATION, ENV_TURSO_TOKEN,
         };
 
         fn set_up() {

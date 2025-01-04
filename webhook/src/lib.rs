@@ -5,8 +5,8 @@ use wit_bindgen::generate;
 generate!({ generate_all });
 
 const HTTP_HEADER_SIGNATURE: &str = "X-Hub-Signature-256";
-const ENV_VAR_GITHUB_WEBHOOK_INSECURE: &str = "GITHUB_WEBHOOK_INSECURE";
-const ENV_VAR_GITHUB_WEBHOOK_SECRET: &str = "GITHUB_WEBHOOK_SECRET";
+const ENV_GITHUB_WEBHOOK_INSECURE: &str = "GITHUB_WEBHOOK_INSECURE";
+const ENV_GITHUB_WEBHOOK_SECRET: &str = "GITHUB_WEBHOOK_SECRET";
 
 #[derive(Debug, Clone, serde::Deserialize)]
 struct StarEvent {
@@ -43,15 +43,15 @@ fn handle(req: Request) -> Result<Response, ErrorCode> {
     let sha256_signature = req.header(HTTP_HEADER_SIGNATURE).cloned();
     let body = req.body().unwrap();
     if matches!(
-        std::env::var(ENV_VAR_GITHUB_WEBHOOK_INSECURE).as_deref(),
+        std::env::var(ENV_GITHUB_WEBHOOK_INSECURE).as_deref(),
         Ok("true")
     ) {
         println!(
-            "WARN: Not verifying the request because {ENV_VAR_GITHUB_WEBHOOK_INSECURE} is set to `true`!"
+            "WARN: Not verifying the request because {ENV_GITHUB_WEBHOOK_INSECURE} is set to `true`!"
         );
     } else {
-        let secret = std::env::var(ENV_VAR_GITHUB_WEBHOOK_SECRET).unwrap_or_else(|_| {
-            panic!("{ENV_VAR_GITHUB_WEBHOOK_SECRET} must be passed as environment variable")
+        let secret = std::env::var(ENV_GITHUB_WEBHOOK_SECRET).unwrap_or_else(|_| {
+            panic!("{ENV_GITHUB_WEBHOOK_SECRET} must be passed as environment variable")
         });
         let sha256_signature = sha256_signature
             .unwrap_or_else(|| panic!("HTTP header {HTTP_HEADER_SIGNATURE} must be set"));
