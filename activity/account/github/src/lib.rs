@@ -23,12 +23,6 @@ struct GraphQLRequest {
     variables: serde_json::Value,
 }
 
-#[derive(Debug, serde::Deserialize)]
-struct GraphqlResponse {
-    data: Option<serde_json::Value>,
-    errors: Option<Vec<serde_json::Value>>,
-}
-
 fn send_query<T: Serialize + ?Sized, R: serde::de::DeserializeOwned>(
     query: &T,
 ) -> Result<R, String> {
@@ -87,7 +81,7 @@ impl Guest for Component {
             variables: serde_json::to_value(&UserArguments { login })
                 .expect("`UserArguments` must be serializable"),
         };
-        let resp: GraphqlResponse = send_query(&query)?;
+        let resp: GraphQlResponse<serde_json::Value> = send_query(&query)?;
         if let Some(data) = resp.data {
             Ok(data.to_string())
         } else {
