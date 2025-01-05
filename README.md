@@ -48,7 +48,7 @@ Follow the prerequisites section of the [webhook README](./webhook//README.md).
 obelisk server run --config ./obelisk-oci.toml
 ```
 
-The server start downloading the WASM components from the Docker Hub. Wait for the following
+The server will start downloading the WASM components from the Docker Hub. Wait for the following
 lines in the process output:
 
 ```log

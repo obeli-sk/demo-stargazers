@@ -12,13 +12,19 @@ export GITHUB_TOKEN=...
 
 ## Testing
 
+## Unit testing
+```sh
+cargo test
+```
+
+## Integration testing
+
 ```sh
 export TEST_GITHUB_LOGIN="..."
 export TEST_GITHUB_REPO="..."
 # optinally export TEST_GITHUB_STARGAZERS_CURSOR="..."
 cargo test -- --ignored --nocapture
 ```
-
 
 ### Ad-hoc GraphQL query for debugging
 ```sh

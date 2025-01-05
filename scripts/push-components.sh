@@ -22,6 +22,9 @@ push() {
     sed -i -E "/name = \"${FILE_NAME_WITHOUT_EXT}\"/{n;s|location\.oci = \".*\"|location.oci = \"${OUTPUT}\"|}" "$TOML_FILE"
 }
 
+# Make sure all components are fresh
+cargo build
+
 push "target/wasm32-wasip2/release/activity_llm_chatgpt.wasm"
 push "target/wasm32-wasip2/release/activity_account_github.wasm"
 push "target/wasm32-wasip2/release/activity_db_turso.wasm"
