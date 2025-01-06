@@ -27,7 +27,7 @@ location.oci = "docker.io/getobelisk/demo_stargazers_workflow:2024-01-05@sha256:
 
 [[http_server]]
 name = "webhook_server"
-listening_addr = "127.0.0.1:9090"
+listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
 name = "webhook"

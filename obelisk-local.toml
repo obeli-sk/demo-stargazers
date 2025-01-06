@@ -27,7 +27,7 @@ location.path = "target/wasm32-unknown-unknown/release/workflow.wasm"
 
 [[http_server]]
 name = "webhook_server"
-listening_addr = "127.0.0.1:9090"
+listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
 name = "webhook"
