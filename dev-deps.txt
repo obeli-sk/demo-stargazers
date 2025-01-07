@@ -1,7 +1,7 @@
-cargo-binstall 1.10.16
+cargo-binstall 1.10.18
 cargo-edit-upgrade 0.13.0
-cargo-expand 1.0.95
-cloudflared version 2024.11.1 (built unknown)
+cargo-expand 1.0.96
+cloudflared version 2024.12.2 (built unknown)
 pkg-config 0.29.2
 rustc 1.83.0 (90b35a623 2024-11-26)
 wasm-tools 1.222.0
