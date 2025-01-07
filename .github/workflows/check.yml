@@ -1,0 +1,72 @@
+name: check
+permissions:
+  contents: read
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash -xe {0}
+
+jobs:
+  fmt:
+    name: cargo fmt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          extra_nix_config: "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
+      - name: Populate the nix store
+        run: nix develop --command echo
+      - name: cargo fmt
+        run: nix develop --command cargo fmt --check
+  check-dev-deps:
+    name: Check dev-deps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          extra_nix_config: "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
+      - name: Populate the nix store
+        run: nix develop --command echo
+      - run: nix develop --command ./scripts/dev-deps.sh
+      - run: cat dev-deps.txt
+      - run: |
+          if git diff --quiet -- dev-deps.txt; then
+              echo "No changes in dev-deps"
+          else
+              echo "Changes in dev-deps detected:"
+              echo "$(git diff -- dev-deps.txt)"
+              exit 1
+          fi
+  clippy:
+    name: clippy
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - id: git-info
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          extra_nix_config: "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
+      - name: Populate the nix store
+        run: nix develop --command echo
+      - name: cargo clippy
+        run: nix develop --command cargo clippy --workspace --all-targets -- -D warnings

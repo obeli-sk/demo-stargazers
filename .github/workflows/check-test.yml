@@ -1,0 +1,51 @@
+name: check-test
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
+on:
+  workflow_run:
+    workflows:
+      - check
+    types:
+      - completed
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash -xe {0}
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: git-info
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          extra_nix_config: "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
+      - name: Populate the nix store
+        run: nix develop --command echo
+      - name: Build tests
+        run: nix develop --command cargo nextest run --workspace --all-features --no-run
+      - name: cargo test
+        env:
+          CI: true
+        run: nix develop --command cargo nextest run --workspace --all-features
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          check_name: Test results - nosim
+          files: |
+            target/nextest/${{ github.job }}/junit.xml
