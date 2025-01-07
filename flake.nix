@@ -28,6 +28,7 @@
               cargo-edit
               cargo-expand
               cargo-generate
+              cargo-nextest
               cloudflared
               pkg-config
               rustToolchain

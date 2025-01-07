@@ -10,6 +10,7 @@ rm -f dev-deps.txt
 echo "cargo-binstall $(cargo-binstall -V)" >> dev-deps.txt
 cargo upgrade --version >> dev-deps.txt
 cargo-expand --version >> dev-deps.txt
+cargo nextest --version | head -n 1 >> dev-deps.txt
 cloudflared --version >> dev-deps.txt
 echo "pkg-config $(pkg-config --version)" >> dev-deps.txt
 rustc --version >> dev-deps.txt
