@@ -1,0 +1,46 @@
+name: check-verify
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
+on:
+  workflow_run:
+    workflows:
+      - check-test
+    types:
+      - completed
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash -xe {0}
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: git-info
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+          echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
+      - name: Install Nix
+        uses: cachix/install-nix-action@v30
+        with:
+          extra_nix_config: "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
+      - name: Populate the nix store
+        run: nix develop --command echo
+      - name: Build WASM components
+        run: nix develop --command cargo build
+      - name: Install obelisk
+        run: nix develop --command cargo binstall --no-confirm --install-path . obelisk
+      - name: Verify obelisk-local.toml
+        run: ./obelisk server verify --config obelisk-local.toml
+      - name: Verify obelisk-oci.toml
+        run: /obelisk server verify --config obelisk-oci.toml
