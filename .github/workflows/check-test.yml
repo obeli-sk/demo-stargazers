@@ -41,11 +41,11 @@ jobs:
       - name: cargo test
         env:
           CI: true
-        run: nix develop --command cargo nextest run --workspace --all-features
+        run: nix develop --command cargo nextest run --workspace --all-features --profile ci-unit
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          check_name: Test results - nosim
+          check_name: Test results
           files: |
-            target/nextest/${{ github.job }}/junit.xml
+            target/nextest/ci-unit/junit.xml

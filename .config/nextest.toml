@@ -1,0 +1,9 @@
+[profile.ci-unit]
+failure-output = "immediate"
+fail-fast = false
+status-level = "all"
+slow-timeout = { period = "10s", terminate-after = 4 }
+junit.path = "junit.xml"
+junit.report-name = "unit"
+junit.store-success-output = true
+junit.store-failure-output = true
