@@ -45,8 +45,11 @@ cynic-codegen = "3.9.1"
 derive_more = { version = "1.0", features = ["display"] }
 hex = "0.4.3"
 hmac = "0.12.1"
-obelisk-component-builder = { git = "https://github.com/obeli-sk/obelisk", rev = "22fc57be88dfd8aeaeb3de9cae0af227637da643" }
-rand = { version = "0.8", default-features = false, features = ["small_rng", "std"] }
+obelisk-component-builder = { git = "https://github.com/obeli-sk/obelisk", rev = "42a973ca0c9eb6038849378485a181c5f718706b" }
+rand = { version = "0.8", default-features = false, features = [
+    "small_rng",
+    "std",
+] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 sha2 = "0.10.8"
@@ -56,9 +59,3 @@ wit-bindgen = "0.36.0"
 
 [profile.release]
 opt-level = "s"
-
-[patch.crates-io]
-wast = { git = "https://github.com/bytecodealliance/wasm-tools.git", rev = "1e85a2a6b2fabbf0fd96767e3d3e3193182e07f0" }
-wit-parser = { git = "https://github.com/bytecodealliance/wasm-tools.git", rev = "1e85a2a6b2fabbf0fd96767e3d3e3193182e07f0" }
-wasmparser = { git = "https://github.com/bytecodealliance/wasm-tools.git", rev = "1e85a2a6b2fabbf0fd96767e3d3e3193182e07f0" }
-wit-component = { git = "https://github.com/bytecodealliance/wasm-tools.git", rev = "1e85a2a6b2fabbf0fd96767e3d3e3193182e07f0" }
