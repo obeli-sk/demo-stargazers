@@ -41,7 +41,7 @@ jobs:
 
       # TODO replace with binstall after 0.9 release
       - name: Install obelisk
-        run: nix build github:obeli-sk/obelisk#obeliskGlibcGenericDev
+        run: nix build github:obeli-sk/obelisk#obeliskMuslDev
       - name: Verify obelisk-local.toml
         run: result/bin/obelisk server verify --config obelisk-local.toml
       - name: Verify obelisk-oci.toml
