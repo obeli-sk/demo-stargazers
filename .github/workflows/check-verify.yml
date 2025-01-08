@@ -22,7 +22,7 @@ defaults:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
@@ -38,9 +38,11 @@ jobs:
         run: nix develop --command echo
       - name: Build WASM components
         run: nix develop --command cargo build
+
+      # TODO replace with binstall after 0.9 release
       - name: Install obelisk
-        run: nix develop --command cargo binstall --no-confirm --install-path . obelisk
+        run: nix build github:obeli-sk/obelisk#obeliskGlibcGenericDev
       - name: Verify obelisk-local.toml
-        run: ./obelisk server verify --config obelisk-local.toml
+        run: result/bin/obelisk server verify --config obelisk-local.toml
       - name: Verify obelisk-oci.toml
-        run: /obelisk server verify --config obelisk-oci.toml
+        run: result/bin/obelisk server verify --config obelisk-oci.toml
