@@ -45,7 +45,7 @@ cynic-codegen = "3.9.1"
 derive_more = { version = "1.0", features = ["display"] }
 hex = "0.4.3"
 hmac = "0.12.1"
-obelisk-component-builder = { git = "https://github.com/obeli-sk/obelisk", rev = "42a973ca0c9eb6038849378485a181c5f718706b" }
+obelisk-component-builder = "0.10.0"
 rand = { version = "0.8", default-features = false, features = [
     "small_rng",
     "std",
