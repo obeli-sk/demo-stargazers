@@ -40,24 +40,22 @@ jobs:
         run: nix develop --command cargo build
 
       - name: Download obelisk
-        run: |
-          REPO="obeli-sk/obelisk"
-          FILE="obelisk-x86_64-unknown-linux-gnu.tar.gz"
+        run: nix develop --command cargo binstall obelisk --install-path . -y
 
-          LATEST_TAG=$(curl -sI -L https://github.com/$REPO/releases/latest \
-              | grep -i "location:" \
-              | grep -oP 'tag/\K[^/]+' \
-              | sed 's/\r//')
-
-          if [ -z "$LATEST_TAG" ]; then
-            echo "Failed to determine the latest release tag!"
-            exit 1
-          fi
-
-          ARTIFACT_URL="https://github.com/$REPO/releases/download/$LATEST_TAG/$FILE"
-          curl --fail -L -o "$FILE" $ARTIFACT_URL
-          tar xzfv "$FILE"
       - name: Verify obelisk-local.toml
-        run: ./obelisk server verify --config obelisk-local.toml
+        run: |
+          export GITHUB_TOKEN=""
+          export GITHUB_WEBHOOK_SECRET=""
+          export OPENAI_API_KEY=""
+          export TURSO_TOKEN=""
+          export TURSO_LOCATION=""
+          ./obelisk server verify --config obelisk-local.toml
       - name: Verify obelisk-oci.toml
-        run: ./obelisk server verify --config obelisk-oci.toml
+        run: |
+          export GITHUB_TOKEN=""
+          export GITHUB_WEBHOOK_SECRET=""
+          export OPENAI_API_KEY=""
+          export TURSO_TOKEN=""
+          export TURSO_LOCATION=""
+
+          ./obelisk server verify --config obelisk-oci.toml
