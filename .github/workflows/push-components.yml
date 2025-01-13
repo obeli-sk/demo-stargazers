@@ -1,5 +1,8 @@
 name: push-components
 
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
     inputs:
@@ -43,4 +46,19 @@ jobs:
       - name: Run push-components.sh
         run: |
           which obelisk
-          nix develop --command ./scripts/push-components.sh "${{ github.event.inputs.tag }}"
+          nix develop --command ./scripts/push-components.sh $TAG
+        env:
+          TAG: ${{ github.event.inputs.tag }}
+      - name: Configure git before push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Push obelisk-oci.toml
+        run: |
+          git add obelisk-oci.toml
+          git commit -m "chore: Bump components to $TAG"
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+          git push origin main
+        env:
+          TAG: ${{ github.event.inputs.tag }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
