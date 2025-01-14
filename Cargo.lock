@@ -514,8 +514,9 @@ checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
 
 [[package]]
 name = "obelisk-component-builder"
-version = "0.9.0"
-source = "git+https://github.com/obeli-sk/obelisk?rev=42a973ca0c9eb6038849378485a181c5f718706b#42a973ca0c9eb6038849378485a181c5f718706b"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b8d00c06ac194bae64f0f3f40b927e4f6eca7da7346f35b15f8e77c0a8075df"
 dependencies = [
  "cargo_metadata",
 ]
