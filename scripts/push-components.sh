@@ -7,14 +7,12 @@ cd "$(dirname "$0")/.."
 
 TAG="$1"
 TOML_FILE="obelisk-oci.toml"
+PREFIX="docker.io/getobelisk/demo_stargazers"
 
 push() {
     RELATIVE_PATH=$1
     FILE_NAME_WITHOUT_EXT=$(basename "$RELATIVE_PATH" | sed 's/\.[^.]*$//')
-    # Define the OCI location
-    PREFIX="docker.io/getobelisk/demo_stargazers"
-    OCI_LOCATION="${PREFIX}_${FILE_NAME_WITHOUT_EXT}:${TAG}"
-    # Push the WASM component and capture the output
+    OCI_LOCATION="${PREFIX}${FILE_NAME_WITHOUT_EXT}:${TAG}"
     echo "Pushing ${RELATIVE_PATH} to ${OCI_LOCATION}..."
     OUTPUT=$(obelisk client component push "$RELATIVE_PATH" "$OCI_LOCATION")
 
@@ -23,7 +21,7 @@ push() {
 }
 
 # Make sure all components are fresh
-cargo build
+cargo check --workspace
 
 push "target/wasm32-wasip2/release/activity_llm_chatgpt.wasm"
 push "target/wasm32-wasip2/release/activity_account_github.wasm"
