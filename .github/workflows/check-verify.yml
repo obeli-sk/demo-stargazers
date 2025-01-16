@@ -44,18 +44,7 @@ jobs:
 
       - name: Verify obelisk-local.toml
         run: |
-          export GITHUB_TOKEN=""
-          export GITHUB_WEBHOOK_SECRET=""
-          export OPENAI_API_KEY=""
-          export TURSO_TOKEN=""
-          export TURSO_LOCATION=""
-          ./obelisk server verify --config obelisk-local.toml
+          ./obelisk server verify --config obelisk-local.toml --ignore-missing-env-vars
       - name: Verify obelisk-oci.toml
         run: |
-          export GITHUB_TOKEN=""
-          export GITHUB_WEBHOOK_SECRET=""
-          export OPENAI_API_KEY=""
-          export TURSO_TOKEN=""
-          export TURSO_LOCATION=""
-
-          ./obelisk server verify --config obelisk-oci.toml
+          ./obelisk server verify --config obelisk-oci.toml --ignore-missing-env-vars
