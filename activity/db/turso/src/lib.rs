@@ -239,12 +239,11 @@ impl UserGuest for Component {
 }
 
 fn process_resp_list_stargazers(
-    resp: Vec<Option<turso::response::Response>>,
+    resp: Vec<turso::response::Response>,
 ) -> Result<Vec<Stargazer>, String> {
     // must contain two responses: execute and close
     let resp: Vec<QueryResult> = resp
         .into_iter()
-        .filter_map(|r| r)
         .filter_map(|r| match r {
             Response::Execute {
                 result: Some(result),
@@ -549,9 +548,9 @@ mod tests {
                 .unwrap();
             assert_eq!(2, resp.len());
             let first_result = resp.into_iter().next().unwrap();
-            let Some(Response::Execute {
+            let Response::Execute {
                 result: Some(QueryResult { rows, cols: _ }),
-            }) = first_result
+            } = first_result
             else {
                 panic!("Wrong response {first_result:?}");
             };

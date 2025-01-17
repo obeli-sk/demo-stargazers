@@ -53,7 +53,7 @@ pub mod response {
     }
 
     impl PipelineResponse {
-        pub fn ok_responses(self) -> Result<Vec<Option<Response>>, String> {
+        pub fn ok_responses(self) -> Result<Vec<Response>, String> {
             self.results
                 .into_iter()
                 .map(|res| match res {
@@ -69,7 +69,7 @@ pub mod response {
     #[derive(Debug, Deserialize)]
     #[serde(tag = "type", rename_all = "lowercase")]
     pub enum ResponseResult {
-        Ok { response: Option<Response> },
+        Ok { response: Response },
         Error { error: ResponseResultError },
     }
 
@@ -105,13 +105,13 @@ pub mod response {
 
     /// Extracts the first [`TursoValue`] from the first row of the n-th response.
     pub fn extract_first_value_from_nth_response(
-        responses: Vec<Option<Response>>,
+        responses: Vec<Response>,
         n: usize,
     ) -> Result<TursoValue, String> {
         let query_result = match responses.into_iter().nth(n) {
-            Some(Some(Response::Execute {
+            Some(Response::Execute {
                 result: Some(query_result),
-            })) => query_result,
+            }) => query_result,
             _ => return Err("First response result is unexpected".to_string()),
         };
         let first_row = match query_result.rows.into_iter().next() {
@@ -154,10 +154,7 @@ impl TursoClient {
             .header("Content-Type", "application/json")
     }
 
-    pub fn post_json(
-        &self,
-        request: &PipelineRequest,
-    ) -> Result<Vec<Option<response::Response>>, String> {
+    pub fn post_json(&self, request: &PipelineRequest) -> Result<Vec<response::Response>, String> {
         assert_eq!(
             Some(&PipelineAction::Close),
             request.requests.last(),
