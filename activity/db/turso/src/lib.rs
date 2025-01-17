@@ -291,12 +291,12 @@ fn process_resp_list_stargazers(
             let login = values
                 .next()
                 .ok_or_else(|| "missing value".to_string())??
-                .ok_or_else(|| "mandatory value is missing")?;
+                .ok_or("mandatory value is missing")?;
             let description = values.next().ok_or_else(|| "missing value".to_string())??;
             let repo = values
                 .next()
                 .ok_or_else(|| "missing value".to_string())??
-                .ok_or_else(|| "mandatory value is missing")?;
+                .ok_or("mandatory value is missing")?;
             Ok(Stargazer {
                 login,
                 description,
