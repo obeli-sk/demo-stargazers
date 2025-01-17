@@ -62,11 +62,12 @@ echo '{
 
 ### Unit testing
 ```sh
-cargo test
+cargo nextest run
 ```
 
 ### Integration testing
 ⚠️ Warning: Executing integration tests will clear the data in the testing database.
+Each integration test expects to be the sole writer to the database.
 
 Create a token, then export it as environment variables:
 ```sh
@@ -76,7 +77,7 @@ export TEST_TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"
 
 To run the integration tests:
 ```sh
-cargo test -- --nocapture --ignored
+cargo nextest run --test-threads=1 -- --ignored
 ```
 
 #### Ad-hoc querying using curl

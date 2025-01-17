@@ -33,7 +33,7 @@ listening_addr = "0.0.0.0:9090"
 name = "webhook"
 location.oci = "docker.io/getobelisk/demo_stargazers_webhook:2025-01-13@sha256:78164e60828f251a4762c3584f4a1c7fc07aa4f7b5bc958af8c8d703cc3fa9b9"
 http_server = "webhook_server"
-routes = [{ methods = ["POST"], route = "" }]
+routes = [{ methods = ["POST", "GET"], route = "" }]
 forward_stdout = "stderr"
 forward_stderr = "stderr"
 env_vars = [

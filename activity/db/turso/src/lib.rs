@@ -1,15 +1,16 @@
 mod turso;
 use crate::exports::stargazers::db::llm::Guest as LlmGuest;
 use crate::exports::stargazers::db::user::Guest as UserGuest;
+use exports::stargazers::db::user::Stargazer;
 use turso::request::{NamedArg, PipelineAction, PipelineRequest, Stmt};
-use turso::response::extract_first_value_from_nth_response;
+use turso::response::{extract_first_value_from_nth_response, QueryResult, Response};
 use turso::{TursoClient, TursoValue};
 use wit_bindgen::generate;
 
 pub const ENV_TURSO_TOKEN: &str = "TURSO_TOKEN";
 pub const ENV_TURSO_LOCATION: &str = "TURSO_LOCATION";
 
-generate!({ generate_all });
+generate!({ generate_all, additional_derives: [PartialEq] });
 pub(crate) struct Component;
 export!(Component);
 
@@ -116,6 +117,9 @@ impl UserGuest for Component {
         match extract_first_value_from_nth_response(resp, 3)? {
             TursoValue::Text { value: third_value } => Ok(Some(third_value)),
             TursoValue::Null => Ok(None),
+            other => Err(format!(
+                "unexpected data type, expected Text or Null, got {other:?}"
+            )),
         }
     }
 
@@ -127,7 +131,10 @@ impl UserGuest for Component {
             requests: vec![
                 PipelineAction::Execute {
                     stmt: Stmt {
-                        sql: format!("DELETE FROM stars WHERE repo_name = :{PARAM_REPO} AND user_name = :{PARAM_LOGIN};"),
+                        sql: format!(
+                            "DELETE FROM stars WHERE \
+                            repo_name = :{PARAM_REPO} AND user_name = :{PARAM_LOGIN};"
+                        ),
                         named_args: vec![
                             NamedArg {
                                 name: PARAM_REPO,
@@ -146,15 +153,15 @@ impl UserGuest for Component {
                 },
                 PipelineAction::Execute {
                     stmt: Stmt {
-                        sql: format!("DELETE FROM users WHERE name = :{PARAM_LOGIN} AND NOT EXISTS (SELECT 1 FROM stars WHERE user_name = :{PARAM_LOGIN});"),
-                        named_args: vec![
-                            NamedArg {
-                                name: PARAM_LOGIN,
-                                value: TursoValue::Text {
-                                    value: login,
-                                },
-                            },
-                        ],
+                        sql: format!(
+                            "DELETE FROM users WHERE \
+                            name = :{PARAM_LOGIN} AND NOT EXISTS \
+                            (SELECT 1 FROM stars WHERE user_name = :{PARAM_LOGIN});"
+                        ),
+                        named_args: vec![NamedArg {
+                            name: PARAM_LOGIN,
+                            value: TursoValue::Text { value: login },
+                        }],
                     },
                 },
                 PipelineAction::Close,
@@ -174,15 +181,19 @@ impl UserGuest for Component {
             requests: vec![
                 PipelineAction::Execute {
                     stmt: Stmt {
-                        sql: format!("INSERT INTO users (name, description) VALUES (:{PARAM_LOGIN}, :{PARAM_DESCRIPTION}) ON CONFLICT(name) DO UPDATE SET description = excluded.description;"),
+                        sql: format!(
+                            "INSERT INTO users (name, description) VALUES \
+                        (:{PARAM_LOGIN}, :{PARAM_DESCRIPTION}) \
+                        ON CONFLICT(name) DO UPDATE SET description = excluded.description;"
+                        ),
                         named_args: vec![
                             NamedArg {
                                 name: PARAM_LOGIN,
-                                value: TursoValue::Text{value: username},
+                                value: TursoValue::Text { value: username },
                             },
                             NamedArg {
                                 name: PARAM_DESCRIPTION,
-                                value: TursoValue::Text{value: description},
+                                value: TursoValue::Text { value: description },
                             },
                         ],
                     },
@@ -195,48 +206,137 @@ impl UserGuest for Component {
 
         Ok(())
     }
+
+    fn list_stargazers(_last: u8) -> Result<Vec<Stargazer>, String> {
+        // const PARAM_LIMIT: &str = "limit";
+        let request_body = PipelineRequest {
+            requests: vec![
+                PipelineAction::Execute {
+                    stmt: Stmt {
+                        sql: format!(
+                            "SELECT u.name as login, u.description, s.repo_name as repo \
+                            FROM users u \
+                            INNER JOIN stars s ON u.name = s.user_name \
+                            " // LIMIT :{PARAM_LIMIT}
+                        ),
+                        named_args: vec![
+                        //     NamedArg {
+                        //     name: PARAM_LIMIT,
+                        //     value: TursoValue::Number {
+                        //         value: i128::from(last),
+                        //     },
+                        // }
+                        ],
+                    },
+                },
+                PipelineAction::Close,
+            ],
+        };
+
+        let resp = TursoClient::new()?.post_json(&request_body)?;
+        process_resp_list_stargazers(resp)
+    }
+}
+
+fn process_resp_list_stargazers(
+    resp: Vec<Option<turso::response::Response>>,
+) -> Result<Vec<Stargazer>, String> {
+    // must contain two responses: execute and close
+    let resp: Vec<QueryResult> = resp
+        .into_iter()
+        .filter_map(|r| r)
+        .filter_map(|r| match r {
+            Response::Execute {
+                result: Some(result),
+            } => Some(result),
+            _ => None,
+        })
+        .collect();
+    if resp.len() != 1 {
+        return Err(format!(
+            "unexpected result count, expected 1, got {}",
+            resp.len()
+        ));
+    }
+    let resp = resp.into_iter().next().expect("length already checked");
+    let cols: Vec<_> = resp.cols.into_iter().map(|col| col.name).collect();
+    if cols != ["login", "description", "repo"] {
+        return Err(format!("wrong cols returned: {cols:?}"));
+    }
+    resp.rows
+        .into_iter()
+        .map(|mut row| {
+            let mut values = row.0.drain(..).map(|value| match value {
+                TursoValue::Text { value } => Ok(Some(value.clone())),
+                TursoValue::Null => Ok(None),
+                other => Err(format!("unexpected type of {other:?}")),
+            });
+
+            let login = values
+                .next()
+                .ok_or_else(|| "missing value".to_string())??
+                .ok_or_else(|| "mandatory value is missing")?;
+            let description = values.next().ok_or_else(|| "missing value".to_string())??;
+            let repo = values
+                .next()
+                .ok_or_else(|| "missing value".to_string())??
+                .ok_or_else(|| "mandatory value is missing")?;
+            Ok(Stargazer {
+                login,
+                description,
+                repo,
+            })
+        })
+        .collect()
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::turso::{
-        response::{extract_first_value_from_nth_response, PipelineResponse},
-        TursoValue,
+    use crate::{
+        exports::stargazers::db::user::Stargazer,
+        process_resp_list_stargazers,
+        turso::{
+            response::{extract_first_value_from_nth_response, PipelineResponse},
+            TursoValue,
+        },
     };
-    use serde_json::json;
 
     #[test]
     fn test_parse_settings_from_response() {
-        let resp: PipelineResponse = serde_json::from_value(json!({
-            "baton": null,
-            "base_url": null,
-            "results": [
-                {
-                    "type": "ok",
-                    "response": {
-                        "type": "execute",
-                        "result": {
-                            "cols": [{"name": "settings", "decltype": "TEXT"}],
-                            "rows": [
-                                [{"type": "text", "value": "{\"a\":1}"}]
-                            ],
-                            "affected_row_count": 0,
-                            "last_insert_rowid": null,
-                            "replication_index": "14",
-                            "rows_read": 1,
-                            "rows_written": 0,
-                            "query_duration_ms": 0.054
+        let resp: PipelineResponse = serde_json::from_str(
+            r#"
+            {
+                "baton": null,
+                "base_url": null,
+                "results": [
+                    {
+                        "type": "ok",
+                        "response": {
+                            "type": "execute",
+                            "result": {
+                                "cols": [{"name": "settings", "decltype": "TEXT"}],
+                                "rows": [
+                                    [{"type": "text", "value": "{\"a\":1}"}]
+                                ],
+                                "affected_row_count": 0,
+                                "last_insert_rowid": null,
+                                "replication_index": "14",
+                                "rows_read": 1,
+                                "rows_written": 0,
+                                "query_duration_ms": 0.054
+                            }
+                        }
+                    },
+                    {
+                        "type": "ok",
+                        "response": {
+                            "type": "close"
                         }
                     }
-                },
-                {
-                    "type": "ok",
-                    "response": {
-                        "type": "close"
-                    }
-                }
-            ]
-        }))
+                ]
+            }
+            "#,
+        )
         .unwrap();
         let resp = resp.ok_responses().unwrap();
         let TursoValue::Text {
@@ -248,9 +348,124 @@ mod tests {
         assert_eq!(settings_json, "{\"a\":1}");
     }
 
+    #[test]
+    fn process_resp_list_stargazers_should_parse_ok_response() {
+        let resp: PipelineResponse = serde_json::from_str(
+            r#"
+            {
+                "baton": null,
+                "base_url": null,
+                "results": [
+                    {
+                        "type": "ok",
+                        "response": {
+                            "type": "execute",
+                            "result": {
+                                "cols": [
+                                    {
+                                        "name": "login",
+                                        "decltype": "TEXT"
+                                    },
+                                    {
+                                        "name": "description",
+                                        "decltype": "TEXT"
+                                    },
+                                    {
+                                        "name": "repo",
+                                        "decltype": "TEXT"
+                                    }
+                                ],
+                                "rows": [
+                                    [
+                                        {
+                                            "type": "text",
+                                            "value": "u1"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "value": "d1"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "value": "repo"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "type": "text",
+                                            "value": "u2"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "value": "d2"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "value": "repo"
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            "type": "text",
+                                            "value": "none"
+                                        },
+                                        {
+                                            "type": "null"
+                                        },
+                                        {
+                                            "type": "text",
+                                            "value": "repo"
+                                        }
+                                    ]
+                                ],
+                                "affected_row_count": 0,
+                                "last_insert_rowid": null,
+                                "replication_index": "727",
+                                "rows_read": 20,
+                                "rows_written": 0,
+                                "query_duration_ms": 0.132
+                            }
+                        }
+                    },
+                    {
+                        "type": "ok",
+                        "response": {
+                            "type": "close"
+                        }
+                    }
+                ]
+            }
+            "#,
+        )
+        .unwrap();
+        let resp = resp.ok_responses().unwrap();
+        let resp = process_resp_list_stargazers(resp).unwrap();
+        let expected = vec![
+            Stargazer {
+                login: "u1".to_string(),
+                description: Some("d1".to_string()),
+                repo: "repo".to_string(),
+            },
+            Stargazer {
+                login: "u2".to_string(),
+                description: Some("d2".to_string()),
+                repo: "repo".to_string(),
+            },
+            Stargazer {
+                login: "none".to_string(),
+                description: None,
+                repo: "repo".to_string(),
+            },
+        ];
+        assert_eq!(expected, resp);
+    }
+
     mod integration {
         use crate::{
-            exports::stargazers::db::{llm::Guest as _, user::Guest as _},
+            exports::stargazers::db::{
+                llm::Guest as _,
+                user::{Guest as _, Stargazer},
+            },
             turso::{
                 request::{NamedArg, PipelineAction, PipelineRequest, Stmt},
                 response::{QueryResult, Response},
@@ -335,7 +550,7 @@ mod tests {
             assert_eq!(2, resp.len());
             let first_result = resp.into_iter().next().unwrap();
             let Some(Response::Execute {
-                result: Some(QueryResult { rows }),
+                result: Some(QueryResult { rows, cols: _ }),
             }) = first_result
             else {
                 panic!("Wrong response {first_result:?}");
@@ -347,6 +562,7 @@ mod tests {
                         .map(|cell| match cell {
                             TursoValue::Text { value } => Some(value),
                             TursoValue::Null => None,
+                            other => panic!("wrong data type {other:?}"),
                         })
                         .collect::<Vec<_>>()
                 })
@@ -419,7 +635,8 @@ mod tests {
             let login = random_string();
             let repo = random_string();
             println!("Creating user `{login}` and repo `{repo}`");
-            Component::link_get_description(login.clone(), repo.clone()).unwrap();
+            let description = Component::link_get_description(login.clone(), repo.clone()).unwrap();
+            assert!(description.is_none());
 
             let description = random_string();
             println!("Updating user `{login}` with description `{description}`");
@@ -429,6 +646,37 @@ mod tests {
                 vec![vec![Some(login), Some(description)]],
                 select("users", &["name", "description"])
             );
+        }
+
+        #[test]
+        #[ignore]
+        fn list_stargazers_should_work() {
+            set_up();
+            delete_from("users");
+            delete_from("repos");
+            delete_from("stars");
+            let mut expected_stargazers = vec![];
+
+            let mut insert = |stargazer: Stargazer| {
+                Component::link_get_description(stargazer.login.clone(), stargazer.repo.clone())
+                    .unwrap();
+                if let Some(description) = stargazer.description.clone() {
+                    Component::user_update(stargazer.login.clone(), description).unwrap();
+                }
+                expected_stargazers.push(stargazer);
+            };
+            insert(Stargazer {
+                login: random_string(),
+                description: Some(random_string()),
+                repo: random_string(),
+            });
+            insert(Stargazer {
+                login: random_string(),
+                description: None,
+                repo: random_string(),
+            });
+            let actual = Component::list_stargazers(2).unwrap();
+            assert_eq!(expected_stargazers, actual);
         }
 
         #[test]

@@ -33,7 +33,7 @@ listening_addr = "0.0.0.0:9090"
 name = "webhook"
 location.path = "target/wasm32-wasip2/release/webhook.wasm"
 http_server = "webhook_server"
-routes = [{ methods = ["POST"], route = "" }]
+routes = [{ methods = ["POST", "GET"], route = "" }]
 forward_stdout = "stderr"
 forward_stderr = "stderr"
 env_vars = [

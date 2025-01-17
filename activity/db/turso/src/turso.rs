@@ -37,7 +37,8 @@ pub mod request {
 #[serde(tag = "type", rename_all = "lowercase")]
 #[non_exhaustive]
 pub enum TursoValue {
-    Text { value: String }, // TODO: Cow, support other value types.
+    Text { value: String }, // TODO: Cow
+    Number { value: i128 },
     Null,
 }
 
@@ -89,6 +90,14 @@ pub mod response {
     #[derive(Debug, Deserialize)]
     pub struct QueryResult {
         pub rows: Vec<QueryRow>,
+        pub cols: Vec<QueryCol>,
+    }
+
+    #[expect(dead_code)]
+    #[derive(Debug, Deserialize)]
+    pub struct QueryCol {
+        pub name: String,
+        pub decltype: String,
     }
 
     #[derive(Debug, Deserialize)]

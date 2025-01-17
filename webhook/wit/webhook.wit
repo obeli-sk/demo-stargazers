@@ -1,5 +1,8 @@
 package stargazers:webhook;
 
 world any {
+    // Import the workflow for the webhook endpoint (POST).
     import stargazers:workflow/workflow;
+    // Import the database action for rendering a table of stargazers (GET).
+    import stargazers:db/user;
 }

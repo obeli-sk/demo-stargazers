@@ -76,3 +76,8 @@ curl -X POST http://127.0.0.1:9090 -d '{
 
 Observe the execution log. After the workflow succeeds, the database should contain
 the user, repo, their relation, and the user should have a generated description.
+
+To list last updated stargazers, run
+```sh
+curl -v http://127.0.0.1:9090
+```

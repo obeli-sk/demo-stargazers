@@ -1,7 +1,13 @@
 package stargazers:db;
 
 interface user {
-    /// A user has stared a repo.
+    record stargazer {
+        login: string,
+        repo: string,
+        description: option<string>,
+    }
+
+    /// A user has stared a repo. Persist the user, relation and the repo if needed.
     /// Returns the user's description if already present.
     link-get-description: func(login: string, repo: string) -> result<option<string>, string>;
     /// A user has unstarred a repo. Delete the user if there are no other relations.
@@ -9,9 +15,12 @@ interface user {
     /// Update the description of a user.
     /// User must exist at this point, if not, the operation should fail.
     user-update: func(username: string, description: string) -> result<_, string>;
+
+    /// Return last few stargazers from the database.
+    list-stargazers: func(last: u8) -> result<list<stargazer>, string>;
 }
 
 interface llm {
-
+    /// Return a string containing JSON configuration for the `llm` activity.
     get-settings-json: func() -> result<string, string>;
 }

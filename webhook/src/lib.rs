@@ -1,8 +1,12 @@
+use crate::stargazers::db::user::list_stargazers;
 use stargazers::workflow::workflow::{star_added, star_removed};
 use waki::{handler, ErrorCode, Method, Request, Response};
 use wit_bindgen::generate;
 
-generate!({ generate_all });
+generate!({
+    generate_all,
+    additional_derives: [serde::Serialize],
+});
 
 const HTTP_HEADER_SIGNATURE: &str = "X-Hub-Signature-256";
 const ENV_GITHUB_WEBHOOK_INSECURE: &str = "GITHUB_WEBHOOK_INSECURE";
@@ -37,9 +41,16 @@ struct Repository {
 
 #[handler]
 fn handle(req: Request) -> Result<Response, ErrorCode> {
-    if !matches!(req.method(), Method::Post) {
-        return Err(ErrorCode::HttpRequestMethodInvalid);
+    if matches!(req.method(), Method::Post) {
+        handle_webhook(req)
+    } else if matches!(req.method(), Method::Get) {
+        handle_get(req)
+    } else {
+        Err(ErrorCode::HttpRequestMethodInvalid)
     }
+}
+
+fn handle_webhook(req: Request) -> Result<Response, ErrorCode> {
     let sha256_signature = req.header(HTTP_HEADER_SIGNATURE).cloned();
     let body = req.body().unwrap();
     if matches!(
@@ -47,8 +58,8 @@ fn handle(req: Request) -> Result<Response, ErrorCode> {
         Ok("true")
     ) {
         println!(
-            "WARN: Not verifying the request because {ENV_GITHUB_WEBHOOK_INSECURE} is set to `true`!"
-        );
+        "WARN: Not verifying the request because {ENV_GITHUB_WEBHOOK_INSECURE} is set to `true`!"
+    );
     } else {
         let secret = std::env::var(ENV_GITHUB_WEBHOOK_SECRET).unwrap_or_else(|_| {
             panic!("{ENV_GITHUB_WEBHOOK_SECRET} must be passed as environment variable")
@@ -66,7 +77,7 @@ fn handle(req: Request) -> Result<Response, ErrorCode> {
     })?;
     println!("Got event {event:?}");
     let repo = event.repository.to_string();
-    // FIXME: Use -schedule instead, return the execution id as a response header.
+    // Execute the workflow.
     match event.action {
         Action::Created => star_added(&event.sender.login, &repo),
         Action::Deleted => star_removed(&event.sender.login, &repo),
@@ -98,6 +109,15 @@ fn verify_signature(secret: &str, payload: &[u8], sha256_signature: &str) {
     mac.update(payload);
     mac.verify_slice(&sha256_signature)
         .expect("verification must succeed");
+}
+
+/// Render a table with last few stargazers.
+fn handle_get(_req: Request) -> Result<Response, ErrorCode> {
+    let list = list_stargazers(5).map_err(|err| {
+        eprintln!("{err}");
+        ErrorCode::InternalError(None)
+    })?;
+    Response::builder().json(&list).build()
 }
 
 #[cfg(test)]
