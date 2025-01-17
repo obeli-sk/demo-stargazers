@@ -6,7 +6,8 @@ CREATE TABLE repos (
 
 CREATE TABLE users (
     name TEXT PRIMARY KEY,
-    description TEXT
+    description TEXT,
+    updated_at TEXT NOT NULL
 );
 
 CREATE TABLE stars (

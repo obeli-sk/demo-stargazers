@@ -1,7 +1,10 @@
 mod turso;
+use std::time::SystemTime;
+
 use crate::exports::stargazers::db::llm::Guest as LlmGuest;
 use crate::exports::stargazers::db::user::Guest as UserGuest;
 use exports::stargazers::db::user::Stargazer;
+use humantime::format_rfc3339_millis;
 use turso::request::{NamedArg, PipelineAction, PipelineRequest, Stmt};
 use turso::response::{extract_first_value_from_nth_response, QueryResult, Response};
 use turso::{TursoClient, TursoValue};
@@ -43,13 +46,18 @@ impl UserGuest for Component {
     fn link_get_description(login: String, repo: String) -> Result<Option<String>, String> {
         const PARAM_LOGIN: &str = "login";
         const PARAM_REPO: &str = "repo";
-
+        const PARAM_NOW: &str = "now";
+        let now = SystemTime::now();
+        let now = format_rfc3339_millis(now).to_string();
         let request_body = PipelineRequest {
             requests: vec![
                 // Add user
                 PipelineAction::Execute {
                     stmt: Stmt {
-                        sql: format!("INSERT INTO users (name) VALUES (:{PARAM_LOGIN}) ON CONFLICT DO NOTHING;"),
+                        sql: format!("INSERT INTO users (name, updated_at) VALUES
+                            (:{PARAM_LOGIN}, :{PARAM_NOW}) \
+                            ON CONFLICT(name) DO UPDATE \
+                            SET updated_at = :{PARAM_NOW}"),
                         named_args: vec![
                             NamedArg {
                                 name: PARAM_LOGIN,
@@ -57,6 +65,12 @@ impl UserGuest for Component {
                                     value: login.clone(),
                                 },
                             },
+                            NamedArg {
+                                name: PARAM_NOW,
+                                value: TursoValue::Text {
+                                    value: now.clone()
+                                }
+                            }
                         ],
                     },
                 },
@@ -77,7 +91,8 @@ impl UserGuest for Component {
                 // Add the star relation
                 PipelineAction::Execute {
                     stmt: Stmt {
-                        sql: format!("INSERT INTO stars (user_name, repo_name) VALUES (:{PARAM_LOGIN}, :{PARAM_REPO}) ON CONFLICT DO NOTHING;"),
+                        sql: format!("INSERT INTO stars (user_name, repo_name) VALUES \
+                            (:{PARAM_LOGIN}, :{PARAM_REPO}) ON CONFLICT DO NOTHING;"),
                         named_args: vec![
                             NamedArg {
                                 name: PARAM_LOGIN,
@@ -103,7 +118,7 @@ impl UserGuest for Component {
                             NamedArg {
                                 name: PARAM_LOGIN,
                                 value: TursoValue::Text {
-                                    value: login.clone(),
+                                    value: login,
                                 },
                             },
                         ]
@@ -114,7 +129,8 @@ impl UserGuest for Component {
         };
 
         let resp = TursoClient::new()?.post_json(&request_body)?;
-        match extract_first_value_from_nth_response(resp, 3)? {
+        // len() - 1 = Close, len() - 2 = last select
+        match extract_first_value_from_nth_response(resp, request_body.requests.len() - 2)? {
             TursoValue::Text { value: third_value } => Ok(Some(third_value)),
             TursoValue::Null => Ok(None),
             other => Err(format!(
@@ -176,15 +192,19 @@ impl UserGuest for Component {
     fn user_update(username: String, description: String) -> Result<(), String> {
         const PARAM_LOGIN: &str = "login";
         const PARAM_DESCRIPTION: &str = "description";
+        const PARAM_NOW: &str = "now";
+        let now = SystemTime::now();
+        let now = format_rfc3339_millis(now);
 
         let request_body = PipelineRequest {
             requests: vec![
                 PipelineAction::Execute {
                     stmt: Stmt {
                         sql: format!(
-                            "INSERT INTO users (name, description) VALUES \
-                        (:{PARAM_LOGIN}, :{PARAM_DESCRIPTION}) \
-                        ON CONFLICT(name) DO UPDATE SET description = excluded.description;"
+                            "INSERT INTO users (name, description, updated_at) VALUES \
+                            (:{PARAM_LOGIN}, :{PARAM_DESCRIPTION}, :{PARAM_NOW}) \
+                            ON CONFLICT(name) DO UPDATE \
+                            SET description = excluded.description, updated_at = :{PARAM_NOW};"
                         ),
                         named_args: vec![
                             NamedArg {
@@ -194,6 +214,12 @@ impl UserGuest for Component {
                             NamedArg {
                                 name: PARAM_DESCRIPTION,
                                 value: TursoValue::Text { value: description },
+                            },
+                            NamedArg {
+                                name: PARAM_NOW,
+                                value: TursoValue::Text {
+                                    value: now.to_string(),
+                                },
                             },
                         ],
                     },
@@ -207,8 +233,7 @@ impl UserGuest for Component {
         Ok(())
     }
 
-    fn list_stargazers(_last: u8) -> Result<Vec<Stargazer>, String> {
-        // const PARAM_LIMIT: &str = "limit";
+    fn list_stargazers(last: u8) -> Result<Vec<Stargazer>, String> {
         let request_body = PipelineRequest {
             requests: vec![
                 PipelineAction::Execute {
@@ -217,22 +242,14 @@ impl UserGuest for Component {
                             "SELECT u.name as login, u.description, s.repo_name as repo \
                             FROM users u \
                             INNER JOIN stars s ON u.name = s.user_name \
-                            " // LIMIT :{PARAM_LIMIT}
+                            ORDER BY u.updated_at DESC LIMIT {last}"
                         ),
-                        named_args: vec![
-                        //     NamedArg {
-                        //     name: PARAM_LIMIT,
-                        //     value: TursoValue::Number {
-                        //         value: i128::from(last),
-                        //     },
-                        // }
-                        ],
+                        named_args: vec![],
                     },
                 },
                 PipelineAction::Close,
             ],
         };
-
         let resp = TursoClient::new()?.post_json(&request_body)?;
         process_resp_list_stargazers(resp)
     }
@@ -654,28 +671,72 @@ mod tests {
             delete_from("users");
             delete_from("repos");
             delete_from("stars");
-            let mut expected_stargazers = vec![];
 
-            let mut insert = |stargazer: Stargazer| {
+            let insert = |stargazer: &Stargazer| {
                 Component::link_get_description(stargazer.login.clone(), stargazer.repo.clone())
                     .unwrap();
                 if let Some(description) = stargazer.description.clone() {
                     Component::user_update(stargazer.login.clone(), description).unwrap();
                 }
-                expected_stargazers.push(stargazer);
             };
-            insert(Stargazer {
+            let s_old = Stargazer {
                 login: random_string(),
                 description: Some(random_string()),
                 repo: random_string(),
-            });
-            insert(Stargazer {
+            };
+            insert(&s_old);
+            let s_new = Stargazer {
                 login: random_string(),
                 description: None,
                 repo: random_string(),
-            });
+            };
+            insert(&s_new);
             let actual = Component::list_stargazers(2).unwrap();
-            assert_eq!(expected_stargazers, actual);
+            assert_eq!(vec![s_new.clone(), s_old], actual);
+            // Get only the latest update
+            let actual = Component::list_stargazers(1).unwrap();
+            assert_eq!(vec![s_new], actual);
+        }
+
+        #[test]
+        #[ignore]
+        fn list_stargazers_should_be_updated_on_description_update() {
+            set_up();
+            delete_from("users");
+            delete_from("repos");
+            delete_from("stars");
+
+            let insert = |stargazer: &Stargazer| {
+                Component::link_get_description(stargazer.login.clone(), stargazer.repo.clone())
+                    .unwrap();
+                if let Some(description) = stargazer.description.clone() {
+                    Component::user_update(stargazer.login.clone(), description).unwrap();
+                }
+            };
+            let mut s_old = Stargazer {
+                login: random_string(),
+                description: None,
+                repo: random_string(),
+            };
+            insert(&s_old);
+            let s_new = Stargazer {
+                login: random_string(),
+                description: None,
+                repo: random_string(),
+            };
+            insert(&s_new);
+            let actual = Component::list_stargazers(2).unwrap();
+            assert_eq!(vec![s_new.clone(), s_old.clone()], actual);
+            // Update the description of s_old to change its `updated_at`
+            s_old.description = Some(random_string());
+            Component::user_update(
+                s_old.login.clone(),
+                s_old.description.clone().expect("description was just set"),
+            )
+            .unwrap();
+            // Get the reordered list
+            let actual = Component::list_stargazers(2).unwrap();
+            assert_eq!(vec![s_old, s_new], actual);
         }
 
         #[test]
