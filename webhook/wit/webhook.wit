@@ -1,8 +1,8 @@
 package stargazers:webhook;
 
 world any {
-    // Import the workflow for the webhook endpoint (POST).
-    import stargazers:workflow/workflow;
-    // Import the database action for rendering a table of stargazers (GET).
+    // Import the workflow -ext interface for scheduling `star_added`, `star_removed` executions.
+    import stargazers:workflow-obelisk-ext/workflow;
+    // Import the database action for running `list-stargazers`.
     import stargazers:db/user;
 }

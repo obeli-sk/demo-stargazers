@@ -1,5 +1,6 @@
+use crate::obelisk::types::time::ScheduleAt::Now;
 use crate::stargazers::db::user::list_stargazers;
-use stargazers::workflow::workflow::{star_added, star_removed};
+use stargazers::workflow_obelisk_ext::workflow::{star_added_schedule, star_removed_schedule};
 use waki::{handler, ErrorCode, Method, Request, Response};
 use wit_bindgen::generate;
 
@@ -78,12 +79,13 @@ fn handle_webhook(req: Request) -> Result<Response, ErrorCode> {
     println!("Got event {event:?}");
     let repo = event.repository.to_string();
     // Execute the workflow.
-    match event.action {
-        Action::Created => star_added(&event.sender.login, &repo),
-        Action::Deleted => star_removed(&event.sender.login, &repo),
-    }
-    .map_err(|_| ErrorCode::InternalError(None))?;
-    Response::builder().build() // Send response: 200 OK
+    let execution_id = match event.action {
+        Action::Created => star_added_schedule(Now, &event.sender.login, &repo),
+        Action::Deleted => star_removed_schedule(Now, &event.sender.login, &repo),
+    };
+    let resp = Response::builder();
+    let resp = resp.header("execution-id", execution_id.id);
+    resp.build() // Send response: 200 OK
 }
 
 /// Verify a message using a shared secret and X-Hub-Signature-256 formatted hash.
