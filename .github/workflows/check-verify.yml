@@ -6,11 +6,9 @@ permissions:
   pull-requests: write
 
 on:
-  workflow_run:
-    workflows:
-      - check-test
-    types:
-      - completed
+  push:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
@@ -23,7 +21,6 @@ defaults:
 jobs:
   verify:
     runs-on: ubuntu-24.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
       - id: git-info
