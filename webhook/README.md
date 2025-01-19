@@ -25,13 +25,18 @@ name = "webhook"
 env_vars = ["GITHUB_WEBHOOK_INSECURE=true"]
 ```
 
-### Exposing the HTTP server
-The endpoint must be publicly available in order for GitHub to be able to send the events.
-Either deploy the Obelisk server on a VPS, or use a tunneling software.
+### Creating a tunnel to expose the local HTTP server
+The webhook server configured in `obelisk.toml` must be publicly available
+so that GitHub can start sending the events.
 
-To obtain a public address using `cloudflared`, run:
+To create a tunnel with a public address,
+use [Cloudflare Tunnel client](https://github.com/cloudflare/cloudflared):
 ```sh
 cloudflared tunnel --url http://127.0.0.1:9090
+```
+To test the tunnel, run
+```sh
+curl -v https://some-domain.trycloudflare.com
 ```
 
 ### Configuring GitHub

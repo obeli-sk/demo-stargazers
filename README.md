@@ -4,15 +4,65 @@ A simple [Obelisk](https://github.com/obeli-sk/obelisk) workflow
 that monitors a project stargazers using a webhook.
 When a user stars the project, a webhook event is received.
 
-On a *star added* event a new workflow execution is submitted.
-First, an activity persists the GitHub username, then, a background check is started.
-The background check is just a GitHub request getting
-basic info on the user, and then an activity is called that
-transforms the info into a summary using an external LLM service.
-The summary is then persisted.
+## Workflow functions
 
-On a *star deleted* event an activity will delete the relation. If a
-user doesn't have any starred repositories anymore, the user will be deleted as well.
+### Star Added Event
+
+On receiving a *star added* GitHub webhook event:
+
+1. **Persist Username**: A workflow execution is triggered to store the GitHub username in the database.
+2. **Fetch User Info**: Requests basic user info from GitHub, like repositories, organizations etc.
+3. **Transform User Info**: An external Language Model (LLM) service is used to process this info into a summary.
+4. **Persist Summary**: The generated summary is stored in the database.
+
+### Star Deleted Event
+
+On receiving a *star deleted* GitHub webhook event:
+
+1. **Delete Relations**: An action is triggered to remove the user's star relation from the database.
+2. **User Deletion**: If no repositories are starred by the user anymore, the user's data is removed completely.
+
+### Backfill
+Supports reprocessing of current stargazers.
+
+## Workflow Code Example
+
+```rust
+impl Guest for Component {
+    fn star_added(login: String, repo: String) -> Result<(), String> {
+        // Persist the user giving a star to the project.
+        let description = db::user::link_get_description(&login, &repo)?;
+        if description.is_none() {
+            // Fetch the account info from GitHub.
+            let info = account::account_info(&login)?;
+            let settings_json = db::llm::get_settings_json()?;
+            // Generate the user's description.
+            let description = llm::respond(&info, &settings_json)?;
+            db::user::user_update(&login, &description)?;
+        }
+        Ok(())
+    }
+
+    fn star_removed(login: String, repo: String) -> Result<(), String> {
+        db::user::unlink(&login, &repo)
+    }
+
+    fn backfill(repo: String) -> Result<(), String> {
+        let mut cursor = None;
+        while let Some(resp) = account::list_stargazers(&repo, cursor.as_deref())? {
+            for login in resp.logins {
+                // Submit a child workflow
+                imported_workflow::star_added(&login, &repo)?;
+            }
+            cursor = Some(resp.cursor);
+        }
+        Ok(())
+    }
+}
+```
+
+The actual workflow source can be found [here](./workflow/src/lib.rs)
+Note that this code has no parallelism.
 
 ## Running
 
@@ -59,7 +109,8 @@ INFO Serving gRPC requests at 127.0.0.1:5005
 
 The workflow can be started using the Web UI.
 The webhook endpoint can be triggered using `curl` or by seting up the webhook
-in a GitHub repo. See the [webhook documentation](webhook/README.md).
+in a GitHub repo. See the [webhook documentation](webhook/README.md) for details
+on how to set up GitHub and a https tunnel to the local instance.
 
 ### Building the WASM components locally
 The configuration above downloads the WASM Components from the Docker Hub.
