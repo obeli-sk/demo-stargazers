@@ -5,9 +5,16 @@ world any {
 
     // Import the implemented interface for `backfill`
     import stargazers:workflow/workflow;
+    import stargazers:workflow-obelisk-ext/workflow;
     // activities
     import stargazers:account/account;
+    import stargazers:account-obelisk-ext/account;
     import stargazers:db/llm;
+    import stargazers:db-obelisk-ext/llm;
     import stargazers:db/user;
+    import stargazers:db-obelisk-ext/user;
     import stargazers:llm/llm;
+    import stargazers:llm-obelisk-ext/llm;
+    // host provided activities
+    import obelisk:workflow/host-activities;
 }
