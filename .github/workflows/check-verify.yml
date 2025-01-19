@@ -33,18 +33,18 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@v30
         with:
-          extra_nix_config: "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=
+            substituters = https://cache.nixos.org/ https://cache.garnix.io
       - name: Populate the nix store
         run: nix develop --command echo
       - name: Build WASM components
         run: nix develop --command cargo build
 
-      - name: Download obelisk
-        run: nix develop --command cargo binstall obelisk --install-path . -y
-
       - name: Verify obelisk-local.toml
         run: |
-          ./obelisk server verify --config obelisk-local.toml --ignore-missing-env-vars
+          obelisk server verify --config obelisk-local.toml --ignore-missing-env-vars
       - name: Verify obelisk-oci.toml
         run: |
-          ./obelisk server verify --config obelisk-oci.toml --ignore-missing-env-vars
+          obelisk server verify --config obelisk-oci.toml --ignore-missing-env-vars

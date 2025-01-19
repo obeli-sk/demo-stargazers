@@ -30,13 +30,12 @@ jobs:
       - name: Install Nix
         uses: cachix/install-nix-action@v30
         with:
-          extra_nix_config: "access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}"
+          extra_nix_config: |
+            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+            trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=
+            substituters = https://cache.nixos.org/ https://cache.garnix.io
       - name: Populate the nix store
         run: nix develop --command echo
-      - name: Download obelisk
-        run: |
-          nix develop --command cargo binstall obelisk --install-path . -y
-          echo $(pwd) >> $GITHUB_PATH
       - name: Log in to Docker Hub
         run: |
           echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
@@ -45,7 +44,6 @@ jobs:
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
       - name: Run push-components.sh
         run: |
-          which obelisk
           nix develop --command ./scripts/push-components.sh $TAG
         env:
           TAG: ${{ github.event.inputs.tag }}
