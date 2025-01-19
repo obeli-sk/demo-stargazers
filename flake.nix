@@ -8,8 +8,9 @@
         nixpkgs.follows = "nixpkgs";
       };
     };
+    obelisk.url = "github:obeli-sk/obelisk/latest";
   };
-  outputs = { self, nixpkgs, flake-utils, rust-overlay }:
+  outputs = { self, nixpkgs, flake-utils, rust-overlay, obelisk }:
     flake-utils.lib.eachDefaultSystem
       (system:
         let
@@ -22,13 +23,13 @@
         {
           devShells.default = pkgs.mkShell {
             nativeBuildInputs = with pkgs; [
-              # TODO: add obelisk
               cargo-binstall
               cargo-edit
               cargo-expand
               cargo-generate
               cargo-nextest
               cloudflared
+              obelisk.packages.${system}.default
               pkg-config
               rustToolchain
               wasm-tools
