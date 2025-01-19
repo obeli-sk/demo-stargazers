@@ -61,8 +61,8 @@ impl Guest for Component {
 }
 ```
 
-The actual workflow source can be found [here](./workflow/src/lib.rs)
-Note that this code has no parallelism.
+The complete workflow source can be found [here](./workflow/src/lib.rs). Note that this code has no parallelism.
+The parallel version of the `star-added` function is in branch `parallel`.
 
 ## Running
 
