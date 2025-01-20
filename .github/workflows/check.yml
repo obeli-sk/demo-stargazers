@@ -4,8 +4,6 @@ permissions:
 
 on:
   push:
-    branches:
-      - "**"
   pull_request:
 
 concurrency:
@@ -20,8 +18,14 @@ jobs:
   fmt:
     name: cargo fmt
     runs-on: ubuntu-24.04
+    needs: cache-nix-store
     steps:
       - uses: actions/checkout@v4
+
+      - name: Compute cache key
+        id: cache-key
+        run: echo "key=$(sha256sum flake.lock | cut -d ' ' -f1)" >> $GITHUB_ENV
+
       - name: Install Nix
         uses: cachix/install-nix-action@v30
         with:
@@ -29,15 +33,26 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=
             substituters = https://cache.nixos.org/ https://cache.garnix.io
-      - name: Populate the nix store
-        run: nix develop --command echo
+
+      - name: Restore cached Nix store
+        uses: actions/cache@v4
+        with:
+          path: /nix/store
+          key: nix-store-${{ env.key }}
+
       - name: cargo fmt
         run: nix develop --command cargo fmt --check
   check-dev-deps:
     name: Check dev-deps
     runs-on: ubuntu-latest
+    needs: cache-nix-store
     steps:
       - uses: actions/checkout@v4
+
+      - name: Compute cache key
+        id: cache-key
+        run: echo "key=$(sha256sum flake.lock | cut -d ' ' -f1)" >> $GITHUB_ENV
+
       - name: Install Nix
         uses: cachix/install-nix-action@v30
         with:
@@ -45,10 +60,17 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=
             substituters = https://cache.nixos.org/ https://cache.garnix.io
-      - name: Populate the nix store
-        run: nix develop --command echo
+
+      - name: Restore cached Nix store
+        uses: actions/cache@v4
+        with:
+          path: /nix/store
+          key: nix-store-${{ env.key }}
+
       - run: nix develop --command ./scripts/dev-deps.sh
+
       - run: cat dev-deps.txt
+
       - run: |
           if git diff --quiet -- dev-deps.txt; then
               echo "No changes in dev-deps"
@@ -60,14 +82,14 @@ jobs:
   clippy:
     name: clippy
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
+    needs: cache-nix-store
     steps:
       - uses: actions/checkout@v4
-      - id: git-info
-        run: |
-          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-          echo "branch=$(git rev-parse --abbrev-ref HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Compute cache key
+        id: cache-key
+        run: echo "key=$(sha256sum flake.lock | cut -d ' ' -f1)" >> $GITHUB_ENV
+
       - name: Install Nix
         uses: cachix/install-nix-action@v30
         with:
@@ -75,7 +97,12 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=
             substituters = https://cache.nixos.org/ https://cache.garnix.io
-      - name: Populate the nix store
-        run: nix develop --command echo
+
+      - name: Restore cached Nix store
+        uses: actions/cache@v4
+        with:
+          path: /nix/store
+          key: nix-store-${{ env.key }}
+
       - name: cargo clippy
         run: nix develop --command cargo clippy --workspace --all-targets -- -D warnings

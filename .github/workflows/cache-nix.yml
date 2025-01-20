@@ -1,26 +1,17 @@
-name: check-test
-permissions:
-  contents: read
-  issues: read
-  checks: write
-  pull-requests: write
-
+name: Cache Nix Store
 on:
   push:
+    paths:
+      - "flake.lock" # Trigger only when flake.lock changes
   pull_request:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
 
 defaults:
   run:
     shell: bash -xe {0}
 
 jobs:
-  unit-test:
+  cache-nix-store:
     runs-on: ubuntu-24.04
-    needs: cache-nix-store
     steps:
       - uses: actions/checkout@v4
 
@@ -28,7 +19,15 @@ jobs:
         id: cache-key
         run: echo "key=$(sha256sum flake.lock | cut -d ' ' -f1)" >> $GITHUB_ENV
 
+      - name: Restore cached Nix store
+        uses: actions/cache@v4
+        id: nix-cache
+        with:
+          path: /nix/store
+          key: nix-store-${{ env.key }}
+
       - name: Install Nix
+        if: steps.nix-cache.outputs.cache-hit != 'true'
         uses: cachix/install-nix-action@v30
         with:
           extra_nix_config: |
@@ -36,24 +35,13 @@ jobs:
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=
             substituters = https://cache.nixos.org/ https://cache.garnix.io
 
-      - name: Restore cached Nix store
+      - name: Build Nix dependencies
+        if: steps.nix-cache.outputs.cache-hit != 'true'
+        run: nix develop --command echo
+
+      - name: Save Nix store cache
+        if: steps.nix-cache.outputs.cache-hit != 'true'
         uses: actions/cache@v4
         with:
           path: /nix/store
           key: nix-store-${{ env.key }}
-
-      - name: Build tests
-        run: nix develop --command cargo nextest run --workspace --all-features --no-run
-
-      - name: cargo test
-        env:
-          CI: true
-        run: nix develop --command cargo nextest run --workspace --all-features --profile ci-unit
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          check_name: Test results
-          files: |
-            target/nextest/ci-unit/junit.xml

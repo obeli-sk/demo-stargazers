@@ -22,10 +22,15 @@ defaults:
 jobs:
   push-components:
     runs-on: ubuntu-24.04
+    needs: cache-nix-store
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.ref }} # Use the ref if provided, otherwise defaults to the current branch/commit
+
+      - name: Compute cache key
+        id: cache-key
+        run: echo "key=$(sha256sum flake.lock | cut -d ' ' -f1)" >> $GITHUB_ENV
 
       - name: Install Nix
         uses: cachix/install-nix-action@v30
@@ -34,23 +39,31 @@ jobs:
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=
             substituters = https://cache.nixos.org/ https://cache.garnix.io
-      - name: Populate the nix store
-        run: nix develop --command echo
+
+      - name: Restore cached Nix store
+        uses: actions/cache@v4
+        with:
+          path: /nix/store
+          key: nix-store-${{ env.key }}
+
       - name: Log in to Docker Hub
         run: |
           echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
         env:
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+
       - name: Run push-components.sh
         run: |
           nix develop --command ./scripts/push-components.sh $TAG
         env:
           TAG: ${{ github.event.inputs.tag }}
+
       - name: Configure git before push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+
       - name: Push obelisk-oci.toml
         run: |
           git add obelisk-oci.toml
