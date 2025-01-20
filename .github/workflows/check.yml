@@ -21,16 +21,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: nixbuild/nix-quick-install-action@v29
+
       - name: Restore and cache Nix store
         uses: nix-community/cache-nix-action@v5
         with:
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix') }}
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v30
-        with:
-          extra_nix_config: |
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.lock') }}
 
       - name: Populate the nix store
         run: nix develop --command echo
@@ -43,16 +39,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: nixbuild/nix-quick-install-action@v29
+
       - name: Restore and cache Nix store
         uses: nix-community/cache-nix-action@v5
         with:
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix') }}
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v30
-        with:
-          extra_nix_config: |
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.lock') }}
 
       - name: Populate the nix store
         run: nix develop --command echo
@@ -75,16 +67,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: nixbuild/nix-quick-install-action@v29
+
       - name: Restore and cache Nix store
         uses: nix-community/cache-nix-action@v5
         with:
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix') }}
-
-      - name: Install Nix
-        uses: cachix/install-nix-action@v30
-        with:
-          extra_nix_config: |
-            access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.lock') }}
 
       - name: Populate the nix store
         run: nix develop --command echo
