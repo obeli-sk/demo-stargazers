@@ -35,7 +35,7 @@ jobs:
             trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g=
             substituters = https://cache.nixos.org/ https://cache.garnix.io
 
-      - name: Build Nix dependencies
+      - name: Populate the nix store
         if: steps.nix-cache.outputs.cache-hit != 'true'
         run: nix develop --command echo
 

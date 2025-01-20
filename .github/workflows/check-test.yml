@@ -20,7 +20,6 @@ defaults:
 jobs:
   unit-test:
     runs-on: ubuntu-24.04
-    needs: cache-nix-store
     steps:
       - uses: actions/checkout@v4
 
@@ -41,6 +40,9 @@ jobs:
         with:
           path: /nix/store
           key: nix-store-${{ env.key }}
+
+      - name: Populate the nix store
+        run: nix develop --command echo
 
       - name: Build tests
         run: nix develop --command cargo nextest run --workspace --all-features --no-run

@@ -22,7 +22,6 @@ defaults:
 jobs:
   push-components:
     runs-on: ubuntu-24.04
-    needs: cache-nix-store
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,6 +44,9 @@ jobs:
         with:
           path: /nix/store
           key: nix-store-${{ env.key }}
+
+      - name: Populate the nix store
+        run: nix develop --command echo
 
       - name: Log in to Docker Hub
         run: |
