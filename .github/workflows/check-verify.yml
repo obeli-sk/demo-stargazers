@@ -23,21 +23,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Compute cache key
-        id: cache-key
-        run: echo "key=$(sha256sum flake.lock | cut -d ' ' -f1)" >> $GITHUB_ENV
+      - name: Restore and cache Nix store
+        uses: nix-community/cache-nix-action@v5
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('**/*.nix') }}
 
       - name: Install Nix
         uses: cachix/install-nix-action@v30
         with:
           extra_nix_config: |
             access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
-
-      - name: Restore cached Nix store
-        uses: actions/cache@v4
-        with:
-          path: /nix/store
-          key: nix-store-${{ env.key }}
 
       - name: Populate the nix store
         run: nix develop --command echo
