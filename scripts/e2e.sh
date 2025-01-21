@@ -4,6 +4,7 @@ set -exuo pipefail
 cd "$(dirname "$0")/.."
 
 OBELISK_TOML="$1"
+TRUNCATE="${2:-}"
 
 # Make sure all components are fresh
 cargo check --workspace
@@ -28,6 +29,26 @@ cleanup() {
 }
 
 trap cleanup EXIT
+
+delete_from() {
+    TABLE="$1"
+    curl -X POST "https://${TURSO_LOCATION}/v2/pipeline" \
+    -H "Authorization: Bearer ${TURSO_TOKEN}" \
+    -H "Content-Type: application/json" \
+    -d '{
+    "requests": [
+        { "type": "execute", "stmt": { "sql": "DELETE FROM '${TABLE}'" } },
+        { "type": "close" }
+    ]
+    }'
+}
+
+# If TRUNCATE is set to "truncate", delete data
+if [[ "$TRUNCATE" == "truncate" ]]; then
+    delete_from "stars"
+    delete_from "users"
+    delete_from "repos"
+fi
 
 # Wait for obelisk to start responding
 SECONDS=0
