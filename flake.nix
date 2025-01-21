@@ -35,13 +35,16 @@
               cargo-expand
               cargo-generate
               cargo-nextest
-              cloudflared
-              curlMinimal
               obelisk.packages.${system}.default
               pkg-config
               rustToolchain
               wasm-tools
               wasmtime
+              # e2e tests
+              openssl
+              curlMinimal
+              # local tunnel
+              cloudflared
             ];
           };
         }
