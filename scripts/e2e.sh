@@ -3,11 +3,13 @@
 set -exuo pipefail
 cd "$(dirname "$0")/.."
 
+OBELISK_TOML="$1"
+
 # Make sure all components are fresh
 cargo check --workspace
 
-obelisk server verify --config ./obelisk-local.toml
-obelisk server run --config ./obelisk-local.toml &
+obelisk server verify --config $OBELISK_TOML
+obelisk server run --config $OBELISK_TOML &
 PID=$!
 cleanup() {
     echo "Sending SIGINT to process $PID..."
