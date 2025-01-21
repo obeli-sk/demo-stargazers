@@ -3,7 +3,7 @@ use std::time::SystemTime;
 
 use crate::exports::stargazers::db::llm::Guest as LlmGuest;
 use crate::exports::stargazers::db::user::Guest as UserGuest;
-use exports::stargazers::db::user::Stargazer;
+use exports::stargazers::db::user::{Ordering, Stargazer};
 use humantime::format_rfc3339_millis;
 use turso::request::{NamedArg, PipelineAction, PipelineRequest, Stmt};
 use turso::response::{extract_first_value_from_nth_response, QueryResult, Response};
@@ -233,7 +233,18 @@ impl UserGuest for Component {
         Ok(())
     }
 
-    fn list_stargazers(last: u8) -> Result<Vec<Stargazer>, String> {
+    fn list_stargazers(
+        last: u8,
+        repo: Option<String>,
+        ordering: Ordering,
+    ) -> Result<Vec<Stargazer>, String> {
+        const PARAM_REPO: &str = "repo";
+        let ordering = if ordering == Ordering::Descending {
+            "DESC"
+        } else {
+            ""
+        };
+
         let request_body = PipelineRequest {
             requests: vec![
                 PipelineAction::Execute {
@@ -242,9 +253,22 @@ impl UserGuest for Component {
                             "SELECT u.name as login, u.description, s.repo_name as repo \
                             FROM users u \
                             INNER JOIN stars s ON u.name = s.user_name \
-                            ORDER BY u.updated_at DESC LIMIT {last}"
+                            {where}
+                            ORDER BY u.updated_at {ordering} LIMIT {last}",
+                            where = if repo.is_some() {
+                                format!("WHERE s.repo_name=:{PARAM_REPO}")
+                            } else {
+                                String::new()
+                            }
                         ),
-                        named_args: vec![],
+                        named_args: if let Some(repo) = repo {
+                            vec![NamedArg {
+                                name: PARAM_REPO,
+                                value: TursoValue::Text { value: repo },
+                            }]
+                        } else {
+                            vec![]
+                        },
                     },
                 },
                 PipelineAction::Close,
@@ -480,7 +504,7 @@ mod tests {
         use crate::{
             exports::stargazers::db::{
                 llm::Guest as _,
-                user::{Guest as _, Stargazer},
+                user::{Guest as _, Ordering, Stargazer},
             },
             turso::{
                 request::{NamedArg, PipelineAction, PipelineRequest, Stmt},
@@ -671,6 +695,8 @@ mod tests {
             delete_from("users");
             delete_from("repos");
             delete_from("stars");
+            let repo1 = random_string();
+            let repo2 = random_string();
 
             let insert = |stargazer: &Stargazer| {
                 Component::link_get_description(stargazer.login.clone(), stargazer.repo.clone())
@@ -679,23 +705,41 @@ mod tests {
                     Component::user_update(stargazer.login.clone(), description).unwrap();
                 }
             };
-            let s_old = Stargazer {
+
+            let s_old_repo1 = Stargazer {
                 login: random_string(),
                 description: Some(random_string()),
-                repo: random_string(),
+                repo: repo1.clone(),
             };
-            insert(&s_old);
-            let s_new = Stargazer {
+            insert(&s_old_repo1);
+
+            let s_new_repo1 = Stargazer {
                 login: random_string(),
                 description: None,
-                repo: random_string(),
+                repo: repo1.clone(),
             };
-            insert(&s_new);
-            let actual = Component::list_stargazers(2).unwrap();
-            assert_eq!(vec![s_new.clone(), s_old], actual);
-            // Get only the latest update
-            let actual = Component::list_stargazers(1).unwrap();
-            assert_eq!(vec![s_new], actual);
+            insert(&s_new_repo1);
+
+            let s_repo2 = Stargazer {
+                login: random_string(),
+                description: None,
+                repo: repo2.clone(),
+            };
+            insert(&s_repo2);
+
+            // get all 3 ordered by latest first
+            let actual = Component::list_stargazers(3, None, Ordering::Descending).unwrap();
+            assert_eq!(
+                vec![s_repo2.clone(), s_new_repo1.clone(), s_old_repo1.clone()],
+                actual
+            );
+            // Get only the latest from repo1
+            let actual =
+                Component::list_stargazers(1, Some(repo1.clone()), Ordering::Descending).unwrap();
+            assert_eq!(vec![s_new_repo1.clone()], actual);
+            // Get the oldest only from all repos
+            let actual = Component::list_stargazers(1, None, Ordering::Ascending).unwrap();
+            assert_eq!(vec![s_old_repo1.clone()], actual);
         }
 
         #[test]
@@ -725,7 +769,7 @@ mod tests {
                 repo: random_string(),
             };
             insert(&s_new);
-            let actual = Component::list_stargazers(2).unwrap();
+            let actual = Component::list_stargazers(2, None, Ordering::Descending).unwrap();
             assert_eq!(vec![s_new.clone(), s_old.clone()], actual);
             // Update the description of s_old to change its `updated_at`
             s_old.description = Some(random_string());
@@ -735,7 +779,7 @@ mod tests {
             )
             .unwrap();
             // Get the reordered list
-            let actual = Component::list_stargazers(2).unwrap();
+            let actual = Component::list_stargazers(2, None, Ordering::Descending).unwrap();
             assert_eq!(vec![s_old, s_new], actual);
         }
 

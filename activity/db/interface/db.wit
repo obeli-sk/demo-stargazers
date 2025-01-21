@@ -7,6 +7,11 @@ interface user {
         description: option<string>,
     }
 
+    enum ordering {
+        ascending,
+        descending,
+    }
+
     /// A user has stared a repo. Persist the user, relation and the repo if needed.
     /// Returns the user's description if already present.
     link-get-description: func(login: string, repo: string) -> result<option<string>, string>;
@@ -17,7 +22,7 @@ interface user {
     user-update: func(username: string, description: string) -> result<_, string>;
 
     /// Return last few stargazers from the database.
-    list-stargazers: func(last: u8) -> result<list<stargazer>, string>;
+    list-stargazers: func(last: u8, repo: option<string>, ordering: ordering) -> result<list<stargazer>, string>;
 }
 
 interface llm {

@@ -1,6 +1,8 @@
 use crate::obelisk::types::time::ScheduleAt::Now;
-use crate::stargazers::db::user::list_stargazers;
-use stargazers::workflow_obelisk_ext::workflow::{star_added_schedule, star_removed_schedule};
+use stargazers::{
+    db::{self, user::Ordering},
+    workflow_obelisk_ext::workflow::{star_added_schedule, star_removed_schedule},
+};
 use waki::{handler, ErrorCode, Method, Request, Response};
 use wit_bindgen::generate;
 
@@ -114,8 +116,21 @@ fn verify_signature(secret: &str, payload: &[u8], sha256_signature: &str) {
 }
 
 /// Render a table with last few stargazers.
-fn handle_get(_req: Request) -> Result<Response, ErrorCode> {
-    let list = list_stargazers(5).map_err(|err| {
+fn handle_get(req: Request) -> Result<Response, ErrorCode> {
+    const MAX_LIMIT: u8 = 5;
+    let query = req.query();
+    let limit = query
+        .get("limit")
+        .and_then(|limit| limit.parse::<u8>().ok())
+        .map(|limit| limit.min(MAX_LIMIT))
+        .unwrap_or(MAX_LIMIT);
+    let repo = query.get("repo").map(|x| x.as_str());
+    let ordering = if query.get("ordering").map(|s| s.as_str()) == Some("asc") {
+        Ordering::Ascending
+    } else {
+        Ordering::Descending
+    };
+    let list = db::user::list_stargazers(limit, repo, ordering).map_err(|err| {
         eprintln!("{err}");
         ErrorCode::InternalError(None)
     })?;
