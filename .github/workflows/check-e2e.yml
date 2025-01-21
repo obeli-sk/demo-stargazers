@@ -42,20 +42,18 @@ jobs:
 
       - name: Verify obelisk-local.toml
         env:
-          GITHUB_WEBHOOK_SECRET: "not verified"
           OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
         run: |
-          nix develop --command ./scripts/e2e.sh obelisk-local.toml truncate
+          nix develop --command ./scripts/e2e.sh ./obelisk-local.toml tomasol obeli-sk demo-strgazers truncate
 
       - name: Verify obelisk-oci.toml
         env:
-          GITHUB_WEBHOOK_SECRET: "not verified"
           OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
         run: |
-          nix develop --command ./scripts/e2e.sh obelisk-oci.toml truncate
+          nix develop --command ./scripts/e2e.sh obelisk-oci.toml tomasol obeli-sk demo-strgazers truncate

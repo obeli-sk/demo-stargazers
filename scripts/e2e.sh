@@ -4,7 +4,12 @@ set -exuo pipefail
 cd "$(dirname "$0")/.."
 
 OBELISK_TOML="$1"
-TRUNCATE="${2:-}"
+USER="$2"
+STAR_ACCOUNT="$3"
+STAR_REPO="$4"
+TRUNCATE="${5:-}"
+
+export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
 
 # Make sure all components are fresh
 cargo check --workspace
@@ -60,11 +65,44 @@ while ! obelisk client component list 2>/dev/null; do
     sleep 1
 done
 
-obelisk client execution submit --follow stargazers:workflow/workflow.backfill '["obeli-sk/demo-stargazers"]'
-JSON=$(curl "localhost:9090?repo=obeli-sk/demo-stargazers&ordering=asc&limit=1")
+PAYLOAD='{
+    "action": "created",
+    "sender": {
+        "login": "'${USER}'"
+    },
+    "repository": {
+        "owner": {
+            "login": "'${STAR_ACCOUNT}'"
+        },
+        "name": "'${STAR_REPO}'"
+    }
+}'
+
+SIGNATURE=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$GITHUB_WEBHOOK_SECRET" | cut -d ' ' -f2)
+SIGNATURE="sha256=$SIGNATURE"
+
+# Send the webhook event
+EXECUTION_ID=$(curl -X POST http://127.0.0.1:9090 \
+-H "X-Hub-Signature-256:$SIGNATURE" \
+-d "$PAYLOAD" -i | grep -i "execution-id" | cut -d ' ' -f2- | tr -d '\r')
+
+# Wait until the scheduled execution of the workflow finishes.
+obelisk client execution get --follow $EXECUTION_ID
+
+# Get the first and only user back from the database.
+JSON=$(curl "localhost:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1")
 LOGIN=$(echo $JSON | jq .[0].login -r)
-if [[ "$LOGIN" != "tomasol" ]]; then
-    echo "Error: First stargazer should be 'tomasol', got '$LOGIN'" >&2
+if [[ "$LOGIN" != ${USER} ]]; then
+    echo "Error: First stargazer should be '${USER}', got '$LOGIN'" >&2
     exit 1
 fi
+DESCRIPTION=$(echo $JSON | jq .[0].description -r)
+
+if [ "$DESCRIPTION" == "null" ]; then
+  echo "Error: description is null" >&2
+  exit 1
+else
+  echo "Description: $DESCRIPTION"
+fi
+
 echo "End to end test succeeded."
