@@ -1,7 +1,6 @@
 package obelisk:workflow;
 
-// FIXME: Rename to workflow-support
-interface host-activities {
+interface workflow-support {
     use obelisk:types/time.{duration};
     use obelisk:types/execution.{join-set-id};
 
@@ -10,6 +9,4 @@ interface host-activities {
 
     /// Create new join set. Closing the join set at the execution finish will block until all child executions are finished.
     new-join-set: func() -> join-set-id; // TODO: rename to new-join-set-awaiting
-
-    // TODO: `new-join-set-terminating` that cancels all remaining child executions on close
 }

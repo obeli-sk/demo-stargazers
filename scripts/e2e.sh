@@ -3,6 +3,9 @@
 set -exuo pipefail
 cd "$(dirname "$0")/.."
 
+# Make sure all components are fresh
+cargo check --workspace
+
 obelisk server verify --config ./obelisk-local.toml
 obelisk server run --config ./obelisk-local.toml &
 PID=$!
