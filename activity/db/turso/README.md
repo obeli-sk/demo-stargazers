@@ -67,7 +67,7 @@ echo '{
     {
       "type": "execute",
       "stmt": {
-        "sql": "INSERT INTO llm (id, settings) VALUES (0, :settings) ON CONFLICT (id) DO UPDATE SET settings = :settings",
+        "sql": "INSERT INTO llm (id, settings) VALUES (1, :settings) ON CONFLICT (id) DO UPDATE SET settings = :settings",
         "named_args": [
           {
             "name": "settings",

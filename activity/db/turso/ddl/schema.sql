@@ -14,4 +14,7 @@ CREATE TABLE stars (
     UNIQUE (repo_name, user_name)
 );
 
-CREATE TABLE llm (id INTEGER PRIMARY KEY, settings TEXT NOT NULL);
+CREATE TABLE llm (
+    id INTEGER PRIMARY KEY CHECK (id = 1),
+    settings TEXT NOT NULL
+);
