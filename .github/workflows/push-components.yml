@@ -12,8 +12,9 @@ on:
         type: string
       ref:
         description: "The ref (branch or SHA) to process"
-        required: false
+        required: true
         type: string
+        default: "main"
 
 defaults:
   run:
@@ -65,7 +66,7 @@ jobs:
           git add obelisk-oci.toml
           git commit -m "chore: Bump components to $TAG"
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
-          git push origin main
+          git push origin ${{ github.event.inputs.ref }}
         env:
           TAG: ${{ github.event.inputs.tag }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
