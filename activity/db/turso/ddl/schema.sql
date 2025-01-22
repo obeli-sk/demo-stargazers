@@ -1,8 +1,4 @@
-# WIT interface user
-
-CREATE TABLE repos (
-    name TEXT PRIMARY KEY
-);
+CREATE TABLE repos (name TEXT PRIMARY KEY);
 
 CREATE TABLE users (
     name TEXT PRIMARY KEY,
@@ -18,9 +14,7 @@ CREATE TABLE stars (
     UNIQUE (repo_name, user_name)
 );
 
-# WIT interface llm
-
 CREATE TABLE llm (
-    id INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY CHECK (id = 1),
     settings TEXT NOT NULL
 );

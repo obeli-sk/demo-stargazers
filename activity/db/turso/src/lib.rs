@@ -23,7 +23,7 @@ impl LlmGuest for Component {
             requests: vec![
                 PipelineAction::Execute {
                     stmt: Stmt {
-                        sql: "SELECT settings FROM llm WHERE id = 0".to_string(),
+                        sql: "SELECT settings FROM llm WHERE id = 1".to_string(),
                         ..Stmt::default()
                     },
                 },
@@ -624,7 +624,7 @@ mod tests {
                         PipelineAction::Execute {
                             stmt: Stmt {
                                 sql: format!(
-                                    "INSERT INTO llm (id, settings) VALUES (0, :{PARAM_SETTINGS});"
+                                    "INSERT INTO llm (id, settings) VALUES (1, :{PARAM_SETTINGS});"
                                 ),
                                 named_args: vec![NamedArg {
                                     name: PARAM_SETTINGS,
