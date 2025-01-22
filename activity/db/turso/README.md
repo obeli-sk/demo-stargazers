@@ -2,10 +2,6 @@
 Implements the [db WIT interface](../interface/db.wit) using [Turso](https://turso.tech/).
 
 ## Prerequisites
-The activity needs an active database with the following [schema](ddl/schema.sql).
-It is advised to use the "Schema only" parent database and then
-create child databases for development, testing and production.
-
 Database domain and token with read and write permission is required.
 The token must be accesible as `TURSO_TOKEN` environment variable.
 The database domain must be accessible as `TURSO_LOCATION`, typically in
@@ -15,6 +11,41 @@ the following form: `[databaseName]-[organizationSlug].turso.io`
 export TURSO_TOKEN="..."
 export TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"
 ```
+
+The activity needs an active database with the following [schema](ddl/schema.sql).
+```sh
+generate_json() {
+  local file=$1
+  local DDL=$(cat "$file")
+  local json='{"requests": ['
+
+  local FIRST=true
+  local STMT=""
+  while IFS= read -r line; do
+    if [[ -n "$line" && "$line" != "--"* ]]; then
+      if [[ "$line" == *';' ]]; then
+        STMT+="$line"
+        [[ "$FIRST" == true ]] && FIRST=false || json+=','
+        json+="  {\"type\": \"execute\", \"stmt\": {\"sql\": \"$STMT\"}}"
+        STMT=""
+      else
+        STMT+="$line "
+      fi
+    fi
+  done <<< "$DDL"
+
+  json+='  ,{"type": "close"}'
+  json+=']}'
+  echo "$json"
+}
+
+DDL="ddl/schema.sql"
+generate_json $DDL | curl -X POST "https://${TURSO_LOCATION}/v2/pipeline" \
+-H "Authorization: Bearer ${TURSO_TOKEN}" \
+-H "Content-Type: application/json" \
+--data @-
+```
+
 
 ### Inserting initial data
 
