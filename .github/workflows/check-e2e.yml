@@ -7,6 +7,12 @@ permissions:
 
 on:
   push:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The ref (branch or SHA) to process"
+        required: false
+        type: string
 
 concurrency:
   group: global-singleton
@@ -21,6 +27,8 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref }} # Use the ref if provided, otherwise defaults to the current branch/commit
 
       - uses: nixbuild/nix-quick-install-action@v29
         with:
