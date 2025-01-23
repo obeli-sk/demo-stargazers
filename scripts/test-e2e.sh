@@ -8,7 +8,8 @@ TRUNCATE="${2:-}"
 USER="someuser"
 STAR_ACCOUNT="someghaccount"
 STAR_REPO="someghrepo"
-GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
+
+export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
 
 # Make sure all components are fresh
 cargo check --workspace
