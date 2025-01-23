@@ -65,4 +65,4 @@ jobs:
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
         run: |
-          nix develop --command ./scripts/e2e.sh obelisk-oci.toml truncate
+          nix develop --command ./scripts/test-e2e.sh obelisk-oci.toml truncate
