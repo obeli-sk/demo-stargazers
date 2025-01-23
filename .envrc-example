@@ -7,6 +7,7 @@ export OPENAI_API_KEY="..."
 export TURSO_TOKEN="..."
 export TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"
 
+export TEST_OPENAI_API_KEY="..."
 export TEST_TURSO_TOKEN="..."
 export TEST_TURSO_LOCATION="..."
 export TEST_GITHUB_LOGIN="..."

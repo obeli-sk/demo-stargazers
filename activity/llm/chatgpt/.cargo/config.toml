@@ -2,4 +2,4 @@
 target = "wasm32-wasip2"
 
 [target.wasm32-wasip2]
-runner = "wasmtime run -Scli -Shttp --env OPENAI_API_KEY"
+runner = "wasmtime run -Scli -Shttp --env TEST_OPENAI_API_KEY"

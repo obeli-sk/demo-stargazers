@@ -21,18 +21,16 @@ send a system message and restrict the number of tokens returned by the service.
 Those settings could be encoded directly in [llm.wit](../interface/llm.wit),
 but were omitted for simplicity.
 
-## Testing
+## Integration testing
 
 ```sh
-export OPENAI_API_KEY=...
+export TEST_OPENAI_API_KEY=...
 cargo nextest run -- --ignored
 ```
 
 To execute the activity directly (e.g. using CLI or the Web UI):
 * parameter `user-prompt`: `"Tell me about Rust programming."`
 * parameter `settings-json`: `"{\"messages\": [{\"role\": \"system\",\"content\": \"You are a helpful assistant\"}],\"model\": \"gpt-3.5-turbo\",\"max_tokens\": 200}"`
-
-
 
 To execute an ad-hoc query using curl:
 ```sh
