@@ -24,7 +24,7 @@ defaults:
     shell: bash -xe {0}
 
 jobs:
-  unit-test:
+  integration-test:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -51,6 +51,8 @@ jobs:
           CI: true
           TEST_OPENAI_API_KEY: ${{ secrets.TEST_OPENAI_API_KEY }}
           TEST_GITHUB_TOKEN: ${{ secrets.TEST_GITHUB_TOKEN }}
+          TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
+          TEST_GITHUB_REPO: ${{ secrets.TEST_GITHUB_REPO }}
           TEST_TURSO_TOKEN: ${{ secrets.TEST_TURSO_TOKEN }}
           TEST_TURSO_LOCATION: ${{ secrets.TEST_TURSO_LOCATION }}
 
