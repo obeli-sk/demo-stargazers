@@ -53,6 +53,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
+          TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
         run: |
@@ -62,6 +63,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
+          TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
         run: |

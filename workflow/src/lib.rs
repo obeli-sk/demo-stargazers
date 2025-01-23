@@ -34,6 +34,7 @@ impl Guest for Component {
 
             // Generate the user's description.
             let description = llm::respond(&info, &settings_json)?;
+            // Persist the generated description.
             db::user::user_update(&login, &description)?;
         }
         Ok(())
