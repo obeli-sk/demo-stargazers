@@ -7,19 +7,20 @@ It implements the [Account Activity WIT](../interface/account.wit) interface.
 [Classic GitHub token](https://github.com/settings/tokens/) with `read:org` permission is required.
 The token must be accesible as `GITHUB_TOKEN` environment variable.
 ```sh
-export GITHUB_TOKEN=...
+export GITHUB_TOKEN="..."
 ```
 
 ## Testing
 
 ## Unit testing
 ```sh
-cargo test
+cargo nextest run
 ```
 
 ## Integration testing
 
 ```sh
+export TEST_GITHUB_TOKEN="..."
 export TEST_GITHUB_LOGIN="..."
 export TEST_GITHUB_REPO="..."
 # optinally export TEST_GITHUB_STARGAZERS_CURSOR="..."
