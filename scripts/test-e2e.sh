@@ -5,7 +5,6 @@ cd "$(dirname "$0")/.."
 
 OBELISK_TOML="$1"
 TRUNCATE="${2:-}"
-USER="someuser"
 STAR_ACCOUNT="someghaccount"
 STAR_REPO="someghrepo"
 
@@ -68,7 +67,7 @@ done
 PAYLOAD='{
     "action": "created",
     "sender": {
-        "login": "'${USER}'"
+        "login": "'${TEST_GITHUB_LOGIN}'"
     },
     "repository": {
         "owner": {
@@ -92,8 +91,8 @@ obelisk client execution get --follow $EXECUTION_ID
 # Get the first and only user back from the database.
 JSON=$(curl "localhost:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1")
 LOGIN=$(echo $JSON | jq .[0].login -r)
-if [[ "$LOGIN" != ${USER} ]]; then
-    echo "Error: First stargazer should be '${USER}', got '$LOGIN'" >&2
+if [[ "$LOGIN" != ${TEST_GITHUB_LOGIN} ]]; then
+    echo "Error: First stargazer should be '${TEST_GITHUB_LOGIN}', got '$LOGIN'" >&2
     exit 1
 fi
 DESCRIPTION=$(echo $JSON | jq .[0].description -r)

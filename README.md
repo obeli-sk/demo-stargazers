@@ -133,5 +133,5 @@ scripts/test-integration.sh
 ```
 ### End to end testing
 ```sh
-scripts/test-e2e.sh ./obelisk-local.toml truncate
+TEST_GITHUB_LOGIN=youruser scripts/test-e2e.sh ./obelisk-local.toml
 ```
