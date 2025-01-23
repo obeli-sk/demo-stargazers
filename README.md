@@ -1,70 +1,47 @@
 # Stargazers
 
-A simple [Obelisk](https://github.com/obeli-sk/obelisk) workflow
-that monitors a project stargazers using a webhook.
-When a user stars the project, a webhook event is received.
+A simple [Obelisk](https://github.com/obeli-sk/obelisk) webhook endpoint and a workflow
+that monitors GitHub repositories. Every step is persisted and replayed during crash recovery.
 
-## Workflow functions
-
-### Star Added Event
-
-On receiving a *star added* GitHub webhook event:
-
-1. **Persist Username**: A workflow execution is triggered to store the GitHub username in the database.
-2. **Fetch User Info**: Requests basic user info from GitHub, like repositories, organizations etc.
-3. **Transform User Info**: An external Language Model (LLM) service is used to process this info into a summary.
-4. **Persist Summary**: The generated summary is stored in the database.
-
-### Star Deleted Event
-
-On receiving a *star deleted* GitHub webhook event:
-
-1. **Delete Relations**: An action is triggered to remove the user's star relation from the database.
-2. **User Deletion**: If no repositories are starred by the user anymore, the user's data is removed completely.
-
-### Backfill
-Supports reprocessing of current stargazers.
-
-## Workflow Code Example
+## Workflow Code Example - `star-added`
 
 ```rust
-impl Guest for Component {
-    fn star_added(login: String, repo: String) -> Result<(), String> {
-        // Persist the user giving a star to the project.
-        let description = db::user::link_get_description(&login, &repo)?;
-        if description.is_none() {
-            // Fetch the account info from GitHub.
-            let info = account::account_info(&login)?;
-            let settings_json = db::llm::get_settings_json()?;
-            // Generate the user's description.
-            let description = llm::respond(&info, &settings_json)?;
-            db::user::user_update(&login, &description)?;
-        }
-        Ok(())
+fn star_added(login: String, repo: String) -> Result<(), String> {
+    // 1. Persist the user giving a star to the project.
+    let description = db::user::link_get_description(&login, &repo)?;
+    if description.is_none() {
+        // 2. Fetch the account info from GitHub.
+        let info = account::account_info(&login)?;
+        // 3. Fetch the prompt from Turso database.
+        let settings_json = db::llm::get_settings_json()?;
+        // 4. Generate the user's description.
+        let description = llm::respond(&info, &settings_json)?;
+        // 5. Persist the generated description.
+        db::user::user_update(&login, &description)?;
     }
-
-    fn star_removed(login: String, repo: String) -> Result<(), String> {
-        db::user::unlink(&login, &repo)
-    }
-
-    fn backfill(repo: String) -> Result<(), String> {
-        let mut cursor = None;
-        while let Some(resp) = account::list_stargazers(&repo, cursor.as_deref())? {
-            for login in resp.logins {
-                // Submit a child workflow
-                imported_workflow::star_added(&login, &repo)?;
-            }
-            cursor = Some(resp.cursor);
-        }
-        Ok(())
-    }
+    Ok(())
 }
 ```
 
-The complete workflow source can be found [here](./workflow/src/lib.rs). Note that this code has no parallelism.
+Here is the complete [workflow source](./workflow/src/lib.rs) and the
+[WIT file](./workflow/wit/deps/workflow-interface/workflow.wit) describing the interface .
 The parallel version of the `star-added` function is in branch `parallel`.
 
-## Setting up the external services
+The following screenshot shows how the `star-added` workflow calls the activities
+with their respective numbers.
+
+![jaeger trace](assets/images/jaeger-workflow-serial-numbers.png "Jaeger trace of star-added workflow")
+
+Executions can be submitted, inspected etc. using the Web UI.
+
+![webui animation](assets/images/webui.gif)
+
+
+
+
+## Setting up
+
+### Setting up the external services
 The activities require tokens to be present.
 
 #### Turso activity
@@ -79,7 +56,7 @@ Follow the prerequisites section of the [activity-account-github README](./activ
 #### GitHub webhook endpoint
 Follow the prerequisites section of the [webhook README](./webhook//README.md).
 
-## Running
+### Running
 
 Set up the environment:
 If [direnv](https://github.com/direnv/direnv) and [Nix](https://nixos.org/) are available:
@@ -95,7 +72,6 @@ Otherwise install the following:
 
 The exact versions of dependencies used for development and testing are in [dev-deps.txt](./dev-deps.txt).
 
-### Running the obelisk server
 ```sh
 obelisk server run --config ./obelisk-oci.toml
 ```
@@ -104,9 +80,9 @@ The server will start downloading the WASM components from the Docker Hub. Wait 
 lines in the process output:
 
 ```log
-INFO init:spawn_executors_and_webhooks: HTTP server `webhook_server` is listening on http://127.0.0.1:9090
-INFO init:spawn_executors_and_webhooks: HTTP server `webui` is listening on http://127.0.0.1:8080
-INFO Serving gRPC requests at 127.0.0.1:5005
+HTTP server `webhook_server` is listening on http://127.0.0.1:9090
+HTTP server `webui` is listening on http://127.0.0.1:8080
+Serving gRPC requests at 127.0.0.1:5005
 ```
 
 The workflow can be started using the Web UI.
@@ -120,18 +96,4 @@ To build all the components locally run
 ```sh
 cargo build
 obelisk server run --config ./obelisk-local.toml
-```
-
-## Testing
-### Unit testing
-```sh
-scripts/test-unit.sh
-```
-### Integration testing
-```sh
-scripts/test-integration.sh
-```
-### End to end testing
-```sh
-TEST_GITHUB_LOGIN=youruser scripts/test-e2e.sh ./obelisk-local.toml
 ```

@@ -17,12 +17,14 @@ impl Guest for Component {
         let description = db::user::link_get_description(&login, &repo)?;
         if description.is_none() {
             // Fetch the account info from github.
-            // TODO: account_info and get_settings_json should run in parallel
+            // account_info and get_settings_json should run in parallel. see branch `parallel`.
             let info = account::account_info(&login)?;
+            // Fetch the prompt from the database.
             // TODO: cache for 5 mins
             let settings_json = db::llm::get_settings_json()?;
             // Generate the user's description.
             let description = llm::respond(&info, &settings_json)?;
+            // Persist the generated description.
             db::user::user_update(&login, &description)?;
         }
         Ok(())
