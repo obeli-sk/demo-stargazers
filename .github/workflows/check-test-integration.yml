@@ -1,4 +1,4 @@
-name: check-test
+name: check-test-integration
 permissions:
   contents: read
   issues: read
@@ -16,8 +16,8 @@ on:
         type: string
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
+  group: global-singleton
+  cancel-in-progress: false
 
 defaults:
   run:
@@ -46,18 +46,12 @@ jobs:
       - name: Populate the nix store
         run: nix develop --command echo
 
-      - name: Build tests
-        run: nix develop --command cargo nextest run --workspace --all-features --no-run
-
-      - name: cargo test
+      - name: Run integration tests
         env:
           CI: true
-        run: nix develop --command cargo nextest run --workspace --all-features --profile ci-unit
+          TEST_OPENAI_API_KEY: ${{ secrets.TEST_OPENAI_API_KEY }}
+          TEST_GITHUB_TOKEN: ${{ secrets.TEST_GITHUB_TOKEN }}
+          TEST_TURSO_TOKEN: ${{ secrets.TEST_TURSO_TOKEN }}
+          TEST_TURSO_LOCATION: ${{ secrets.TEST_TURSO_LOCATION }}
 
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          check_name: Test results
-          files: |
-            target/nextest/ci-unit/junit.xml
+        run: nix develop --command ./scripts/test-integration.sh

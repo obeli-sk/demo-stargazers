@@ -1,0 +1,68 @@
+name: check-test-e2e
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The ref (branch or SHA) to process"
+        required: false
+        type: string
+
+concurrency:
+  group: global-singleton
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash -xe {0}
+
+jobs:
+  check-e2e:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref }} # Use the ref if provided, otherwise defaults to the current branch/commit
+
+      - uses: nixbuild/nix-quick-install-action@v29
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_conf: |
+            extra-substituters = https://cache.garnix.io
+            extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g
+
+      - name: Restore and cache Nix store
+        uses: nix-community/cache-nix-action@v5
+        with:
+          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.lock') }}
+
+      - name: Populate the nix store
+        run: nix develop --command echo
+
+      - name: Build WASM components
+        run: nix develop --command cargo build
+
+      - name: Verify obelisk-local.toml
+        env:
+          OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
+          TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
+          TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
+        run: |
+          nix develop --command ./scripts/test-e2e.sh ./obelisk-local.toml truncate
+
+      - name: Verify obelisk-oci.toml
+        env:
+          OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
+          TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
+          TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
+        run: |
+          nix develop --command ./scripts/e2e.sh obelisk-oci.toml truncate

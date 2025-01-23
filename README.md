@@ -64,6 +64,21 @@ impl Guest for Component {
 The complete workflow source can be found [here](./workflow/src/lib.rs). Note that this code has no parallelism.
 The parallel version of the `star-added` function is in branch `parallel`.
 
+## Setting up the external services
+The activities require tokens to be present.
+
+#### Turso activity
+Follow the prerequisites section of the [activity-db-turso README](./activity/db/turso/README.md).
+
+#### ChatGPT activity
+Follow the prerequisites section of the [activity-llm-chatgpt README](./activity/llm/chatgpt/README.md).
+
+#### GitHub activity
+Follow the prerequisites section of the [activity-account-github README](./activity/account/github/README.md).
+
+#### GitHub webhook endpoint
+Follow the prerequisites section of the [webhook README](./webhook//README.md).
+
 ## Running
 
 Set up the environment:
@@ -78,20 +93,7 @@ Otherwise install the following:
 * Optinally [Wasmtime](https://wasmtime.dev/) for integration testing of activities
 * Optinally [Cloudflared](https://github.com/cloudflare/cloudflared) for exposing the webhook endpoint
 
-
-### Setting up the external services
-
-#### Turso activity
-Follow the prerequisites section of the [activity-db-turso README](./activity/db/turso/README.md).
-
-#### ChatGPT activity
-Follow the prerequisites section of the [activity-llm-chatgpt README](./activity/llm/chatgpt/README.md).
-
-#### GitHub activity
-Follow the prerequisites section of the [activity-account-github README](./activity/account/github/README.md).
-
-#### GitHub webhook endpoint
-Follow the prerequisites section of the [webhook README](./webhook//README.md).
+The exact versions of dependencies used for development and testing are in [dev-deps.txt](./dev-deps.txt).
 
 ### Running the obelisk server
 ```sh
@@ -118,4 +120,18 @@ To build all the components locally run
 ```sh
 cargo build
 obelisk server run --config ./obelisk-local.toml
+```
+
+## Testing
+### Unit testing
+```sh
+scripts/test-unit.sh
+```
+### Integration testing
+```sh
+scripts/test-integration.sh
+```
+### End to end testing
+```sh
+scripts/test-e2e.sh ./obelisk-local.toml truncate
 ```

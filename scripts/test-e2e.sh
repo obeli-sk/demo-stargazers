@@ -4,12 +4,11 @@ set -exuo pipefail
 cd "$(dirname "$0")/.."
 
 OBELISK_TOML="$1"
-USER="$2"
-STAR_ACCOUNT="$3"
-STAR_REPO="$4"
-TRUNCATE="${5:-}"
-
-export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
+TRUNCATE="${2:-}"
+USER="someuser"
+STAR_ACCOUNT="someghaccount"
+STAR_REPO="someghrepo"
+GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
 
 # Make sure all components are fresh
 cargo check --workspace

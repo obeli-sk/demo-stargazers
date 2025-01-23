@@ -25,7 +25,7 @@ but were omitted for simplicity.
 
 ```sh
 export OPENAI_API_KEY=...
-cargo test -- --ignored --nocapture
+cargo nextest run -- --ignored
 ```
 
 To execute the activity directly (e.g. using CLI or the Web UI):

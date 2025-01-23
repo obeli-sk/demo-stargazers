@@ -23,7 +23,7 @@ cargo test
 export TEST_GITHUB_LOGIN="..."
 export TEST_GITHUB_REPO="..."
 # optinally export TEST_GITHUB_STARGAZERS_CURSOR="..."
-cargo test -- --ignored --nocapture
+cargo nextest run -- --ignored
 ```
 
 ### Ad-hoc GraphQL query for debugging

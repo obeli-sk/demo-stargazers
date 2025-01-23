@@ -1,4 +1,4 @@
-name: check-e2e
+name: check-test-unit
 permissions:
   contents: read
   issues: read
@@ -7,6 +7,7 @@ permissions:
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
     inputs:
       ref:
@@ -15,15 +16,15 @@ on:
         type: string
 
 concurrency:
-  group: global-singleton
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
 
 defaults:
   run:
     shell: bash -xe {0}
 
 jobs:
-  check-e2e:
+  unit-test:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -45,23 +46,15 @@ jobs:
       - name: Populate the nix store
         run: nix develop --command echo
 
-      - name: Build WASM components
-        run: nix develop --command cargo build
-
-      - name: Verify obelisk-local.toml
+      - name: Run unit tests
         env:
-          OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
-          TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
-          TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
-        run: |
-          nix develop --command ./scripts/e2e.sh ./obelisk-local.toml tomasol obeli-sk demo-strgazers truncate
+          CI: true
+        run: nix develop --command ./scripts/test-unit.sh --profile ci-unit
 
-      - name: Verify obelisk-oci.toml
-        env:
-          OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
-          TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
-          TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
-        run: |
-          nix develop --command ./scripts/e2e.sh obelisk-oci.toml tomasol obeli-sk demo-strgazers truncate
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          check_name: Test results
+          files: |
+            target/nextest/ci-unit/junit.xml
