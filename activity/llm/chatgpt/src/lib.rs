@@ -97,13 +97,22 @@ impl Guest for Component {
 
 #[cfg(test)]
 mod tests {
+    use crate::exports::stargazers::llm::llm::Guest;
+    use crate::Component;
+    use crate::ENV_OPENAI_API_KEY;
+    use crate::{Message, Role, Settings};
+
+    fn set_up() {
+        let test_token = std::env::var(format!("TEST_{ENV_OPENAI_API_KEY}")).unwrap_or_else(|_| {
+            panic!("TEST_{ENV_OPENAI_API_KEY} must be set as an environment variable")
+        });
+        std::env::set_var(ENV_OPENAI_API_KEY, test_token);
+    }
 
     #[test]
     #[ignore]
     fn request_should_succeed() {
-        use crate::exports::stargazers::llm::llm::Guest;
-        use crate::Component;
-        use crate::{Message, Role, Settings};
+        set_up();
 
         let user_prompt = std::env::var("TEST_CHATGPT_USER_PROMPT")
             .unwrap_or_else(|_| "Tell me about Rust programming.".to_string());

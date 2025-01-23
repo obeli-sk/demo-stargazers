@@ -144,14 +144,22 @@ pub struct UserArguments {
 
 #[cfg(test)]
 mod tests {
-    use crate::{extract_stargazers, stargazers::QueryStargazers};
+    use crate::exports::stargazers::account::account::Guest;
+    use crate::Component;
+    use crate::{extract_stargazers, stargazers::QueryStargazers, ENV_GITHUB_TOKEN};
     use cynic::GraphQlResponse;
+
+    fn set_up() {
+        let test_token = std::env::var(format!("TEST_{ENV_GITHUB_TOKEN}")).unwrap_or_else(|_| {
+            panic!("TEST_{ENV_GITHUB_TOKEN} must be set as an environment variable")
+        });
+        std::env::set_var(ENV_GITHUB_TOKEN, test_token);
+    }
 
     #[test]
     #[ignore]
     fn account_info_request_should_succeed() {
-        use crate::exports::stargazers::account::account::Guest;
-        use crate::Component;
+        set_up();
         let username =
             std::env::var("TEST_GITHUB_LOGIN").expect("`TEST_GITHUB_LOGIN` envvar must be set");
         let res = Component::account_info(username);
@@ -162,8 +170,7 @@ mod tests {
     #[test]
     #[ignore]
     fn list_stargazers_request_should_succeed() {
-        use crate::exports::stargazers::account::account::Guest;
-        use crate::Component;
+        set_up();
         let repo =
             std::env::var("TEST_GITHUB_REPO").expect("`TEST_GITHUB_REPO` envvar must be set");
         let cursor = std::env::var("TEST_GITHUB_STARGAZERS_CURSOR").ok();
