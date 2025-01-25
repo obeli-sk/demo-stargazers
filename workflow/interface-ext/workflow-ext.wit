@@ -11,6 +11,12 @@ interface workflow {
 
     star-added-schedule: func(schedule-at: schedule-at, login: string, repo: string) -> execution-id;
 
+    star-added-parallel-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id;
+
+    star-added-parallel-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<_, string>>, tuple<execution-id, execution-error>>;
+
+    star-added-parallel-schedule: func(schedule-at: schedule-at, login: string, repo: string) -> execution-id;
+
     star-removed-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id;
 
     star-removed-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<_, string>>, tuple<execution-id, execution-error>>;

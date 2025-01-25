@@ -24,8 +24,7 @@ fn star_added(login: String, repo: String) -> Result<(), String> {
 ```
 
 Here is the complete [workflow source](./workflow/src/lib.rs) and the
-[WIT file](./workflow/interface/workflow.wit) describing the interface .
-The parallel version of the `star-added` function is in branch `parallel`.
+[WIT file](./workflow/interface/workflow.wit) describing the interface.
 
 The following screenshot shows how the `star-added` workflow calls the activities
 with their respective numbers.
