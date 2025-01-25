@@ -65,8 +65,9 @@ impl Guest for Component {
     }
 
     fn backfill(repo: String) -> Result<(), String> {
+        let page_size = 5;
         let mut cursor = None;
-        while let Some(resp) = account::list_stargazers(&repo, cursor.as_deref())? {
+        while let Some(resp) = account::list_stargazers(&repo, page_size, cursor.as_deref())? {
             for login in resp.logins {
                 // Submit a child workflow
                 imported_workflow::star_added(&login, &repo)?;
@@ -78,8 +79,9 @@ impl Guest for Component {
     }
 
     fn backfill_parallel(repo: String) -> Result<(), String> {
+        let page_size = 5;
         let mut cursor = None;
-        while let Some(resp) = account::list_stargazers(&repo, cursor.as_deref())? {
+        while let Some(resp) = account::list_stargazers(&repo, page_size, cursor.as_deref())? {
             for login in resp.logins {
                 // No need to await the result of the child workflow.
                 // When this execution completes, all join sets will be awaited.

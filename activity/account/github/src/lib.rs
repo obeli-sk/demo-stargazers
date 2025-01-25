@@ -89,11 +89,15 @@ impl Guest for Component {
         }
     }
 
-    fn list_stargazers(repo: String, cursor: Option<String>) -> Result<Option<Stargazers>, String> {
+    fn list_stargazers(
+        repo: String,
+        page_size: u8,
+        cursor: Option<String>,
+    ) -> Result<Option<Stargazers>, String> {
         use cynic::QueryBuilder;
         let vars = QueryStargazersVariables {
             cursor: cursor.as_deref(),
-            page: 5,
+            page: i32::from(page_size),
             repo: stargazers::Uri(repo),
         };
         let query = QueryStargazers::build(vars);
@@ -173,8 +177,9 @@ mod tests {
         set_up();
         let repo =
             std::env::var("TEST_GITHUB_REPO").expect("`TEST_GITHUB_REPO` envvar must be set");
+        let page_size = 5;
         let cursor = std::env::var("TEST_GITHUB_STARGAZERS_CURSOR").ok();
-        let res = Component::list_stargazers(repo, cursor);
+        let res = Component::list_stargazers(repo, page_size, cursor);
         let res = res.unwrap();
         println!("{res:?}");
     }

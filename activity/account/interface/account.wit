@@ -16,5 +16,5 @@ interface account {
     ///
     /// To get the first page pass `None` as value of the `cursor` parameter.
     /// Returns `Ok(None)` if there are no more results.
-    list-stargazers: func(repo: string, cursor: option<string>) -> result<option<stargazers>, string>;
+    list-stargazers: func(repo: string, page-size: u8, cursor: option<string>) -> result<option<stargazers>, string>;
 }
