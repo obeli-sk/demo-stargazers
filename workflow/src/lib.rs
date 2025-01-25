@@ -1,9 +1,8 @@
 use crate::exports::stargazers::workflow::workflow::Guest;
+use obelisk::workflow::workflow_support::new_join_set;
 use stargazers::{
-    account::account::{self, list_stargazers},
-    db,
-    llm::llm,
-    workflow::workflow as imported_workflow,
+    account::account, db, llm::llm, workflow::workflow as imported_workflow,
+    workflow_obelisk_ext::workflow as imported_workflow_ext,
 };
 use wit_bindgen::generate;
 
@@ -35,8 +34,8 @@ impl Guest for Component {
         let description = db::user::link_get_description(&login, &repo)?;
         if description.is_none() {
             // Parallel fetch account_info and get_settings_json
-            let join_set_info = obelisk::workflow::workflow_support::new_join_set();
-            let join_set_settings = obelisk::workflow::workflow_support::new_join_set();
+            let join_set_info = new_join_set();
+            let join_set_settings = new_join_set();
 
             stargazers::account_obelisk_ext::account::account_info_submit(&join_set_info, &login);
             stargazers::db_obelisk_ext::llm::get_settings_json_submit(&join_set_settings);
@@ -67,12 +66,27 @@ impl Guest for Component {
 
     fn backfill(repo: String) -> Result<(), String> {
         let mut cursor = None;
-        while let Some(resp) = list_stargazers(&repo, cursor.as_deref())? {
+        while let Some(resp) = account::list_stargazers(&repo, cursor.as_deref())? {
             for login in resp.logins {
                 // Submit a child workflow
                 imported_workflow::star_added(&login, &repo)?;
             }
             cursor = Some(resp.cursor);
+            // FIXME: Break if logins.len() < page_size
+        }
+        Ok(())
+    }
+
+    fn backfill_parallel(repo: String) -> Result<(), String> {
+        let mut cursor = None;
+        while let Some(resp) = account::list_stargazers(&repo, cursor.as_deref())? {
+            for login in resp.logins {
+                // No need to await the result of the child workflow.
+                // When this execution completes, all join sets will be awaited.
+                imported_workflow_ext::star_added_parallel_submit(&new_join_set(), &login, &repo);
+            }
+            cursor = Some(resp.cursor);
+            // FIXME: Break if logins.len() < page_size
         }
         Ok(())
     }

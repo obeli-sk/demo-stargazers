@@ -8,4 +8,6 @@ interface workflow {
     star-removed: func(login: string, repo: string) -> result<_, string>;
 
     backfill: func(repo: string) -> result<_, string>;
+
+    backfill-parallel: func(repo: string) -> result<_, string>;
 }
