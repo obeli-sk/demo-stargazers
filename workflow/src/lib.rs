@@ -68,12 +68,14 @@ impl Guest for Component {
         let page_size = 5;
         let mut cursor = None;
         while let Some(resp) = account::list_stargazers(&repo, page_size, cursor.as_deref())? {
-            for login in resp.logins {
+            for login in &resp.logins {
                 // Submit a child workflow
-                imported_workflow::star_added(&login, &repo)?;
+                imported_workflow::star_added(login, &repo)?;
+            }
+            if resp.logins.len() < usize::from(page_size) {
+                break;
             }
             cursor = Some(resp.cursor);
-            // FIXME: Break if logins.len() < page_size
         }
         Ok(())
     }
@@ -82,13 +84,15 @@ impl Guest for Component {
         let page_size = 5;
         let mut cursor = None;
         while let Some(resp) = account::list_stargazers(&repo, page_size, cursor.as_deref())? {
-            for login in resp.logins {
+            for login in &resp.logins {
                 // No need to await the result of the child workflow.
                 // When this execution completes, all join sets will be awaited.
-                imported_workflow_ext::star_added_parallel_submit(&new_join_set(), &login, &repo);
+                imported_workflow_ext::star_added_parallel_submit(&new_join_set(), login, &repo);
+            }
+            if resp.logins.len() < usize::from(page_size) {
+                break;
             }
             cursor = Some(resp.cursor);
-            // FIXME: Break if logins.len() < page_size
         }
         Ok(())
     }
