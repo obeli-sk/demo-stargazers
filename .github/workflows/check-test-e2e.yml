@@ -16,7 +16,7 @@ on:
         type: string
 
 concurrency:
-  group: global-singleton
+  group: global-singleton-e2e
   cancel-in-progress: false
 
 defaults:
