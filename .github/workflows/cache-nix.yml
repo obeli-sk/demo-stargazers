@@ -26,9 +26,6 @@ jobs:
       - uses: nixbuild/nix-quick-install-action@v29
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-          nix_conf: |
-            extra-substituters = https://cache.garnix.io
-            extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g
 
       - run: nix show-config --json | jq
 
@@ -37,6 +34,13 @@ jobs:
         with:
           primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.lock') }}
 
-      - name: Populate the nix store
+      - name: Populate the nix store without Obelisk # Workaround for slow garnix cache
         if: steps.nix-cache.outputs.cache-hit != 'true'
-        run: nix develop --command echo
+        run: |
+          nix develop .#noObelisk --command echo
+
+      - name: Add garnix cache and populate the nix store with Obelisk
+        run: |
+          echo "extra-substituters = https://cache.garnix.io" >> ~/.config/nix/nix.conf
+          echo "extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g" >> ~/.config/nix/nix.conf
+          nix develop --command echo
