@@ -33,12 +33,13 @@ pub mod request {
         pub value: TursoValue,
     }
 }
+
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 #[serde(tag = "type", rename_all = "lowercase")]
 #[non_exhaustive]
 pub enum TursoValue {
     Text { value: String }, // TODO: Cow
-    Number { value: i128 },
+    Integer { value: String },
     Null,
 }
 
@@ -59,7 +60,7 @@ pub mod response {
                 .map(|res| match res {
                     ResponseResult::Ok { response } => Ok(response),
                     ResponseResult::Error { error } => {
-                        Err(format!("Got reponse result error {error:?}"))
+                        Err(format!("Got response result error {error:?}"))
                     }
                 })
                 .collect::<Result<_, _>>()
@@ -91,13 +92,15 @@ pub mod response {
     pub struct QueryResult {
         pub rows: Vec<QueryRow>,
         pub cols: Vec<QueryCol>,
+        #[expect(dead_code)]
+        pub affected_row_count: i64,
     }
 
-    #[expect(dead_code)]
     #[derive(Debug, Deserialize)]
     pub struct QueryCol {
         pub name: String,
-        pub decltype: String,
+        #[expect(dead_code)]
+        pub decltype: Option<String>, // None for null values.
     }
 
     #[derive(Debug, Deserialize)]
@@ -116,7 +119,7 @@ pub mod response {
         };
         let first_row = match query_result.rows.into_iter().next() {
             Some(row) => row,
-            None => return Err("No rows in the result".to_string()),
+            None => return Ok(TursoValue::Null), // rows: [] is a valid response when the select returns null.
         };
         let first_cell = match first_row.0.into_iter().next() {
             Some(cell) => cell,
@@ -174,5 +177,75 @@ impl TursoClient {
 
         // Make sure there are no errors
         resp.ok_responses()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use response::PipelineResponse;
+
+    const PIPELINE_RESPONSE_JSON: &str = r#"{
+      "base_url": null,
+      "baton": null,
+      "results": [
+        {
+          "response": {
+            "result": {
+              "affected_row_count": 0,
+              "cols": [{ "decltype": null, "name": "1" }],
+              "last_insert_rowid": null,
+              "query_duration_ms": 0.167,
+              "replication_index": null,
+              "rows": [],
+              "rows_read": 0,
+              "rows_written": 0
+            },
+            "type": "execute"
+          },
+          "type": "ok"
+        },
+        {
+          "response": {
+            "result": {
+              "affected_row_count": 0,
+              "cols": [{ "decltype": "TEXT", "name": "description" }],
+              "last_insert_rowid": null,
+              "query_duration_ms": 0.088,
+              "replication_index": null,
+              "rows": [[{ "type": "text", "value": "suqbjkasrl" }]],
+              "rows_read": 1,
+              "rows_written": 0
+            },
+            "type": "execute"
+          },
+          "type": "ok"
+        },
+        { "response": { "type": "close" }, "type": "ok" }
+      ]
+    }
+    "#;
+
+    #[test]
+    fn extract_first_value_from_nth_response_string_should_work() {
+        let response: PipelineResponse = serde_json::from_str(PIPELINE_RESPONSE_JSON).unwrap();
+        let response = response.ok_responses().unwrap();
+        assert_eq!(3, response.len());
+        let value = response::extract_first_value_from_nth_response(response, 1).unwrap();
+        assert_eq!(
+            TursoValue::Text {
+                value: "suqbjkasrl".to_string()
+            },
+            value
+        );
+    }
+
+    #[test]
+    fn extract_first_value_from_nth_response_empty_rows_should_mean_null() {
+        let response: PipelineResponse = serde_json::from_str(PIPELINE_RESPONSE_JSON).unwrap();
+        let response = response.ok_responses().unwrap();
+        assert_eq!(3, response.len());
+        let value = response::extract_first_value_from_nth_response(response, 0).unwrap();
+        assert_eq!(TursoValue::Null, value);
     }
 }
