@@ -13,7 +13,7 @@ export!(Component);
 impl Guest for Component {
     fn star_added(login: String, repo: String) -> Result<(), String> {
         // Persist the user giving a star to the project.
-        let description = db::user::link_get_description(&login, &repo)?;
+        let description = db::user::add_star_get_description(&login, &repo)?;
         if description.is_none() {
             // Fetch the account info from github.
             // account_info and get_settings_json should run in parallel. see branch `parallel`.
@@ -24,14 +24,14 @@ impl Guest for Component {
             // Generate the user's description.
             let description = llm::respond(&info, &settings_json)?;
             // Persist the generated description.
-            db::user::user_update(&login, &description)?;
+            db::user::update_user_description(&login, &description)?;
         }
         Ok(())
     }
 
     fn star_added_parallel(login: String, repo: String) -> Result<(), String> {
         // Persist the user giving a star to the project.
-        let description = db::user::link_get_description(&login, &repo)?;
+        let description = db::user::add_star_get_description(&login, &repo)?;
         if description.is_none() {
             // Parallel fetch account_info and get_settings_json
             let join_set_info = new_join_set();
@@ -55,13 +55,13 @@ impl Guest for Component {
             // Generate the user's description.
             let description = llm::respond(&info, &settings_json)?;
             // Persist the generated description.
-            db::user::user_update(&login, &description)?;
+            db::user::update_user_description(&login, &description)?;
         }
         Ok(())
     }
 
     fn star_removed(login: String, repo: String) -> Result<(), String> {
-        db::user::unlink(&login, &repo)
+        db::user::remove_star(&login, &repo)
     }
 
     fn backfill(repo: String) -> Result<(), String> {

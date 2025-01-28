@@ -5,31 +5,31 @@ interface user {
     use obelisk:types/execution.{execution-id, join-set-id};
     use obelisk:types/time.{schedule-at};
     use obelisk:types/execution.{execution-error};
-    use stargazers:db/user.{stargazer};
+    use stargazers:db/user.{stargazer, ordering};
 
-    link-get-description-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id;
+    add-star-get-description-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id;
 
-    link-get-description-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<option<string>, string>>, tuple<execution-id, execution-error>>;
+    add-star-get-description-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<option<string>, string>>, tuple<execution-id, execution-error>>;
 
-    link-get-description-schedule: func(schedule-at: schedule-at, login: string, repo: string) -> execution-id;
+    add-star-get-description-schedule: func(schedule-at: schedule-at, login: string, repo: string) -> execution-id;
 
-    unlink-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id;
+    remove-star-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id;
 
-    unlink-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<_, string>>, tuple<execution-id, execution-error>>;
+    remove-star-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<_, string>>, tuple<execution-id, execution-error>>;
 
-    unlink-schedule: func(schedule-at: schedule-at, login: string, repo: string) -> execution-id;
+    remove-star-schedule: func(schedule-at: schedule-at, login: string, repo: string) -> execution-id;
 
-    user-update-submit: func(join-set-id: borrow<join-set-id>, username: string, description: string) -> execution-id;
+    update-user-description-submit: func(join-set-id: borrow<join-set-id>, username: string, description: string) -> execution-id;
 
-    user-update-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<_, string>>, tuple<execution-id, execution-error>>;
+    update-user-description-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<_, string>>, tuple<execution-id, execution-error>>;
 
-    user-update-schedule: func(schedule-at: schedule-at, username: string, description: string) -> execution-id;
+    update-user-description-schedule: func(schedule-at: schedule-at, username: string, description: string) -> execution-id;
 
-    list-stargazers-submit: func(join-set-id: borrow<join-set-id>, last: u8) -> execution-id;
+    list-stargazers-submit: func(join-set-id: borrow<join-set-id>, last: u8, repo: option<string>, ordering: ordering) -> execution-id;
 
     list-stargazers-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<list<stargazer>, string>>, tuple<execution-id, execution-error>>;
 
-    list-stargazers-schedule: func(schedule-at: schedule-at, last: u8) -> execution-id;
+    list-stargazers-schedule: func(schedule-at: schedule-at, last: u8, repo: option<string>, ordering: ordering) -> execution-id;
 }
 
 interface llm {

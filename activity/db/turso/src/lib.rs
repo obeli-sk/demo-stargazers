@@ -43,7 +43,7 @@ impl LlmGuest for Component {
 }
 
 impl UserGuest for Component {
-    fn link_get_description(login: String, repo: String) -> Result<Option<String>, String> {
+    fn add_star_get_description(login: String, repo: String) -> Result<Option<String>, String> {
         const PARAM_LOGIN: &str = "login";
         const PARAM_REPO: &str = "repo";
         const PARAM_NOW: &str = "now";
@@ -139,7 +139,7 @@ impl UserGuest for Component {
         }
     }
 
-    fn unlink(login: String, repo: String) -> Result<(), String> {
+    fn remove_star(login: String, repo: String) -> Result<(), String> {
         const PARAM_LOGIN: &str = "login";
         const PARAM_REPO: &str = "repo";
 
@@ -189,7 +189,7 @@ impl UserGuest for Component {
         Ok(())
     }
 
-    fn user_update(username: String, description: String) -> Result<(), String> {
+    fn update_user_description(username: String, description: String) -> Result<(), String> {
         const PARAM_LOGIN: &str = "login";
         const PARAM_DESCRIPTION: &str = "description";
         const PARAM_NOW: &str = "now";
@@ -655,12 +655,12 @@ mod tests {
             let login = random_string();
             let description = random_string();
             println!("Creating user `{login}` with description `{description}`");
-            Component::user_update(login.clone(), description.clone()).unwrap();
+            Component::update_user_description(login.clone(), description.clone()).unwrap();
             // Check user
             assert_eq!(vec![login.clone()], select_name("users"));
 
             println!("Deleting the user");
-            Component::unlink(login, "any".to_string()).unwrap();
+            Component::remove_star(login, "any".to_string()).unwrap();
 
             assert_eq!(Vec::<String>::new(), select_name("users"));
         }
@@ -675,12 +675,13 @@ mod tests {
             let login = random_string();
             let repo = random_string();
             println!("Creating user `{login}` and repo `{repo}`");
-            let description = Component::link_get_description(login.clone(), repo.clone()).unwrap();
+            let description =
+                Component::add_star_get_description(login.clone(), repo.clone()).unwrap();
             assert!(description.is_none());
 
             let description = random_string();
             println!("Updating user `{login}` with description `{description}`");
-            Component::user_update(login.clone(), description.clone()).unwrap();
+            Component::update_user_description(login.clone(), description.clone()).unwrap();
             // Check the user and description directly in the database.
             assert_eq!(
                 vec![vec![Some(login), Some(description)]],
@@ -699,10 +700,14 @@ mod tests {
             let repo2 = random_string();
 
             let insert = |stargazer: &Stargazer| {
-                Component::link_get_description(stargazer.login.clone(), stargazer.repo.clone())
-                    .unwrap();
+                Component::add_star_get_description(
+                    stargazer.login.clone(),
+                    stargazer.repo.clone(),
+                )
+                .unwrap();
                 if let Some(description) = stargazer.description.clone() {
-                    Component::user_update(stargazer.login.clone(), description).unwrap();
+                    Component::update_user_description(stargazer.login.clone(), description)
+                        .unwrap();
                 }
             };
 
@@ -751,10 +756,14 @@ mod tests {
             delete_from("stars");
 
             let insert = |stargazer: &Stargazer| {
-                Component::link_get_description(stargazer.login.clone(), stargazer.repo.clone())
-                    .unwrap();
+                Component::add_star_get_description(
+                    stargazer.login.clone(),
+                    stargazer.repo.clone(),
+                )
+                .unwrap();
                 if let Some(description) = stargazer.description.clone() {
-                    Component::user_update(stargazer.login.clone(), description).unwrap();
+                    Component::update_user_description(stargazer.login.clone(), description)
+                        .unwrap();
                 }
             };
             let mut s_old = Stargazer {
@@ -773,7 +782,7 @@ mod tests {
             assert_eq!(vec![s_new.clone(), s_old.clone()], actual);
             // Update the description of s_old to change its `updated_at`
             s_old.description = Some(random_string());
-            Component::user_update(
+            Component::update_user_description(
                 s_old.login.clone(),
                 s_old.description.clone().expect("description was just set"),
             )
@@ -794,12 +803,12 @@ mod tests {
             let login = random_string();
             let description = random_string();
             println!("Creating user `{login}` with description `{description}`");
-            Component::user_update(login.clone(), description.clone()).unwrap();
+            Component::update_user_description(login.clone(), description.clone()).unwrap();
 
             let repo = random_string();
             println!("Starring repo `{repo}`");
             let actual_description =
-                Component::link_get_description(login.clone(), repo.clone()).unwrap();
+                Component::add_star_get_description(login.clone(), repo.clone()).unwrap();
 
             assert_eq!(Some(&description), actual_description.as_ref());
 
@@ -820,7 +829,7 @@ mod tests {
             let login = random_string();
             let repo = random_string();
             println!("Creating user `{login}` and repo `{repo}`");
-            Component::link_get_description(login.clone(), repo.clone()).unwrap();
+            Component::add_star_get_description(login.clone(), repo.clone()).unwrap();
             // Check that data is inserted into `users`, `repos`, `stars`.
             assert_eq!(vec![login.clone()], select_name("users"));
             assert_eq!(vec![repo.clone()], select_name("repos"));
@@ -829,7 +838,7 @@ mod tests {
                 select("stars", &["user_name", "repo_name"])
             );
             println!("Deleting the user");
-            Component::unlink(login, repo.clone()).unwrap();
+            Component::remove_star(login, repo.clone()).unwrap();
             // Check that only `repos` is not empty,
             assert_eq!(Vec::<String>::new(), select_name("users"));
             assert_eq!(vec![repo.clone()], select_name("repos"));
