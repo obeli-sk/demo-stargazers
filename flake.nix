@@ -26,26 +26,31 @@
             inherit system overlays;
           };
           rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+          commonDeps = with pkgs; [
+            cargo-binstall
+            cargo-edit
+            cargo-expand
+            cargo-generate
+            cargo-nextest
+            nixpkgs-fmt
+            pkg-config
+            rustToolchain
+            wasm-tools
+            wasmtime
+            # e2e tests
+            openssl
+            curlMinimal
+            # local tunnel
+            cloudflared
+          ];
         in
         {
           devShells.default = pkgs.mkShell {
-            nativeBuildInputs = with pkgs; [
-              cargo-binstall
-              cargo-edit
-              cargo-expand
-              cargo-generate
-              cargo-nextest
-              obelisk.packages.${system}.default
-              pkg-config
-              rustToolchain
-              wasm-tools
-              wasmtime
-              # e2e tests
-              openssl
-              curlMinimal
-              # local tunnel
-              cloudflared
-            ];
+            nativeBuildInputs = commonDeps ++ [ obelisk.packages.${system}.default ];
+          };
+
+          devShells.noObelisk = pkgs.mkShell {
+            nativeBuildInputs = commonDeps;
           };
         }
       );
