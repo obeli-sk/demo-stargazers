@@ -11,7 +11,7 @@ fn star_added(login: String, repo: String) -> Result<(), String> {
     let description = db::user::link_get_description(&login, &repo)?;
     if description.is_none() {
         // 2. Fetch the account info from GitHub.
-        let info = account::account_info(&login)?;
+        let info = github::account::account_info(&login)?;
         // 3. Fetch the prompt from Turso database.
         let settings_json = db::llm::get_settings_json()?;
         // 4. Generate the user's description.

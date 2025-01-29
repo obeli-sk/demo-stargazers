@@ -1,5 +1,5 @@
 package stargazers:account-github;
 
 world any {
-  export stargazers:account/account;
+  export stargazers:github/account;
 }

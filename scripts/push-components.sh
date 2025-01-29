@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 
 TAG="$1"
 TOML_FILE="obelisk-oci.toml"
-PREFIX="docker.io/getobelisk/demo_stargazers"
+PREFIX="docker.io/getobelisk/demo_stargazers_"
 
 push() {
     RELATIVE_PATH=$1
@@ -24,7 +24,7 @@ push() {
 cargo check --workspace
 
 push "target/wasm32-wasip2/release/activity_llm_chatgpt.wasm"
-push "target/wasm32-wasip2/release/activity_account_github.wasm"
+push "target/wasm32-wasip2/release/activity_github_impl.wasm"
 push "target/wasm32-wasip2/release/activity_db_turso.wasm"
 push "target/wasm32-unknown-unknown/release/workflow.wasm"
 push "target/wasm32-wasip2/release/webhook.wasm"

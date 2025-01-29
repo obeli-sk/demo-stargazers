@@ -1,7 +1,7 @@
 use crate::exports::stargazers::workflow::workflow::Guest;
 use obelisk::workflow::workflow_support::new_join_set;
 use stargazers::{
-    account::account, db, llm::llm, workflow::workflow as imported_workflow,
+    db, github, github_obelisk_ext, llm::llm, workflow::workflow as imported_workflow,
     workflow_obelisk_ext::workflow as imported_workflow_ext,
 };
 use wit_bindgen::generate;
@@ -17,7 +17,7 @@ impl Guest for Component {
         if description.is_none() {
             // Fetch the account info from github.
             // account_info and get_settings_json should run in parallel. see branch `parallel`.
-            let info = account::account_info(&login)?;
+            let info = github::account::account_info(&login)?;
             // Fetch the prompt from the database.
             // TODO: cache for 5 mins
             let settings_json = db::llm::get_settings_json()?;
@@ -37,11 +37,11 @@ impl Guest for Component {
             let join_set_info = new_join_set();
             let join_set_settings = new_join_set();
 
-            stargazers::account_obelisk_ext::account::account_info_submit(&join_set_info, &login);
+            github_obelisk_ext::account::account_info_submit(&join_set_info, &login);
             stargazers::db_obelisk_ext::llm::get_settings_json_submit(&join_set_settings);
 
             let (_, info_result) =
-                stargazers::account_obelisk_ext::account::account_info_await_next(&join_set_info)
+                github_obelisk_ext::account::account_info_await_next(&join_set_info)
                     .map_err(|(_, e)| format!("{:?}", e))?;
 
             let info = info_result?;
@@ -67,7 +67,9 @@ impl Guest for Component {
     fn backfill(repo: String) -> Result<(), String> {
         let page_size = 5;
         let mut cursor = None;
-        while let Some(resp) = account::list_stargazers(&repo, page_size, cursor.as_deref())? {
+        while let Some(resp) =
+            github::account::list_stargazers(&repo, page_size, cursor.as_deref())?
+        {
             for login in &resp.logins {
                 // Submit a child workflow
                 imported_workflow::star_added(login, &repo)?;
@@ -83,7 +85,9 @@ impl Guest for Component {
     fn backfill_parallel(repo: String) -> Result<(), String> {
         let page_size = 5;
         let mut cursor = None;
-        while let Some(resp) = account::list_stargazers(&repo, page_size, cursor.as_deref())? {
+        while let Some(resp) =
+            github::account::list_stargazers(&repo, page_size, cursor.as_deref())?
+        {
             for login in &resp.logins {
                 // No need to await the result of the child workflow.
                 // When this execution completes, all join sets will be awaited.

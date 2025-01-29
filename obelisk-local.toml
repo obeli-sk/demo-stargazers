@@ -11,8 +11,8 @@ exec.lock_expiry.secs = 10
 env_vars = ["OPENAI_API_KEY"]
 
 [[activity_wasm]]
-name = "activity_account_github"
-location.path = "target/wasm32-wasip2/release/activity_account_github.wasm"
+name = "activity_github_impl"
+location.path = "target/wasm32-wasip2/release/activity_github_impl.wasm"
 env_vars = ["GITHUB_TOKEN"]
 exec.lock_expiry.secs = 5
 

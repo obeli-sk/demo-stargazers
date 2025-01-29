@@ -11,7 +11,7 @@ exec.lock_expiry.secs = 10
 env_vars = ["OPENAI_API_KEY"]
 
 [[activity_wasm]]
-name = "activity_account_github"
+name = "activity_github_impl"
 location.oci = "docker.io/getobelisk/demo_stargazersactivity_account_github:2025-01-28@sha256:1987513a36b250cb5d9f029e5676031e4a027d97946065e596748112c32ee1d6"
 env_vars = ["GITHUB_TOKEN"]
 exec.lock_expiry.secs = 5

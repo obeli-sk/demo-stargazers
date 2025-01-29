@@ -7,8 +7,8 @@ world any {
     import stargazers:workflow/workflow;
     import stargazers:workflow-obelisk-ext/workflow;
     // activities
-    import stargazers:account/account;
-    import stargazers:account-obelisk-ext/account;
+    import stargazers:github/account;
+    import stargazers:github-obelisk-ext/account;
     import stargazers:db/llm;
     import stargazers:db-obelisk-ext/llm;
     import stargazers:db/user;

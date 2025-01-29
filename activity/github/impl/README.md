@@ -1,7 +1,8 @@
-# GitHub Account Activity
+# GitHub Activity
 
-Activity that fetches basic info like repositories, contributions etc. for a given account.
-It implements the [Account Activity WIT](../interface/account.wit) interface.
+Activity that queries GitHub.
+It implements the [`stargazers:github/account` WIT interface](../interface/github.wit).
+The `account` interface fetches basic info like repositories, contributions etc. for a given account.
 
 ## Prerequisites
 [Classic GitHub token](https://github.com/settings/tokens/) with `read:org` permission is required.
@@ -46,7 +47,6 @@ query QueryStargazers($repo: URI!, $page: Int!, $cursor: String) {
   }
 }
 '
-
 echo '
 {"query":"'$(echo $QUERY)'", "variables":{"repo":"obeli-sk/obelisk", "page":2}}
 ' | curl -X POST \

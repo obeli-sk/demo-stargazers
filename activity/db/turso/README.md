@@ -1,5 +1,5 @@
 # Turso Activity
-Implements the [db WIT interface](../interface/db.wit) using [Turso](https://turso.tech/).
+Implements the [`stargazers:db/user` and `stargazers:db/llm` WIT interface](../interface/db.wit) using [Turso](https://turso.tech/).
 
 ## Prerequisites
 Database domain and token with read and write permission is required.

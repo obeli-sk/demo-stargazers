@@ -1,4 +1,4 @@
-package stargazers:account;
+package stargazers:github;
 
 interface account {
 

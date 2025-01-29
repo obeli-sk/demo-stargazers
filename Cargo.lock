@@ -3,25 +3,6 @@
 version = 4
 
 [[package]]
-name = "activity-account-github"
-version = "0.1.0"
-dependencies = [
- "cynic",
- "cynic-codegen",
- "serde",
- "serde_json",
- "waki",
- "wit-bindgen 0.38.0",
-]
-
-[[package]]
-name = "activity-account-github-builder"
-version = "0.1.0"
-dependencies = [
- "obelisk-component-builder",
-]
-
-[[package]]
 name = "activity-db-turso"
 version = "0.1.0"
 dependencies = [
@@ -35,6 +16,25 @@ dependencies = [
 
 [[package]]
 name = "activity-db-turso-builder"
+version = "0.1.0"
+dependencies = [
+ "obelisk-component-builder",
+]
+
+[[package]]
+name = "activity-github-impl"
+version = "0.1.0"
+dependencies = [
+ "cynic",
+ "cynic-codegen",
+ "serde",
+ "serde_json",
+ "waki",
+ "wit-bindgen 0.38.0",
+]
+
+[[package]]
+name = "activity-github-impl-builder"
 version = "0.1.0"
 dependencies = [
  "obelisk-component-builder",
@@ -312,8 +312,8 @@ dependencies = [
 name = "dummy-lib"
 version = "0.1.0"
 dependencies = [
- "activity-account-github-builder",
  "activity-db-turso-builder",
+ "activity-github-impl-builder",
  "activity-llm-chatgpt-builder",
  "webhook-builder",
  "workflow-builder",

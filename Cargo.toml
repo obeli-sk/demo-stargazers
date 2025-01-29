@@ -10,7 +10,7 @@ rust-version.workspace = true
 version.workspace = true
 
 [dependencies]
-activity-account-github-builder.path = "activity/account/github/builder"
+activity-github-impl-builder.path = "activity/github/impl/builder"
 activity-db-turso-builder.path = "activity/db/turso/builder"
 activity-llm-chatgpt-builder.path = "activity/llm/chatgpt/builder"
 webhook-builder.path = "webhook/builder"
@@ -19,8 +19,8 @@ workflow-builder.path = "workflow/builder"
 [workspace]
 resolver = "2"
 members = [
-    "activity/account/github",
-    "activity/account/github/builder",
+    "activity/github/impl",
+    "activity/github/impl/builder",
     "activity/db/turso",
     "activity/db/turso/builder",
     "activity/llm/chatgpt",

@@ -1,6 +1,6 @@
-use crate::exports::stargazers::account::account::Guest;
+use crate::exports::stargazers::github::account::Guest;
 use cynic::GraphQlResponse;
-use exports::stargazers::account::account::Stargazers;
+use exports::stargazers::github::account::Stargazers;
 use serde::Serialize;
 use stargazers::{
     QueryStargazers, QueryStargazersVariables, Repository, StargazerConnection, StargazerEdge,
@@ -148,7 +148,7 @@ pub struct UserArguments {
 
 #[cfg(test)]
 mod tests {
-    use crate::exports::stargazers::account::account::Guest;
+    use crate::exports::stargazers::github::account::Guest;
     use crate::Component;
     use crate::{extract_stargazers, stargazers::QueryStargazers, ENV_GITHUB_TOKEN};
     use cynic::GraphQlResponse;

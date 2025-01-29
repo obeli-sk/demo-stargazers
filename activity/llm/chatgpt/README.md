@@ -2,7 +2,7 @@
 
 Activity that sends a JSON request to `https://api.openai.com/v1/chat/completions`
 and responds with the first generated response.
-It implements the [LLM Activity WIT](../interface/llm.wit) interface.
+It implements the [`stargazers:llm/llm` WIT interface](../interface/llm.wit).
 
 ## Prerequisites
 OpenAI token is required. Navigate to [API Tokens](https://platform.openai.com/api-keys) and

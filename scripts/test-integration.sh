@@ -4,7 +4,7 @@ set -exuo pipefail
 cd "$(dirname "$0")/.."
 
 (
-cd activity/account/github
+cd activity/github/impl
 cargo nextest run -- --ignored
 )
 (
