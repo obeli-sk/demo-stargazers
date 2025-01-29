@@ -46,8 +46,8 @@ derive_more = { version = "1.0", features = ["display"] }
 hex = "0.4.3"
 hmac = "0.12.1"
 humantime = "2.1.0"
-obelisk-component-builder = "0.13.1"
-rand = { version = "0.8", default-features = false, features = [
+obelisk-component-builder = "0.13.3"
+rand = { version = "0.9", default-features = false, features = [
     "small_rng",
     "std",
 ] }
