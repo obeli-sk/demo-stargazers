@@ -619,7 +619,7 @@ mod tests {
         let (description, already_starred) =
             super::parse_user_description_and_star_status(resp).unwrap();
         assert_eq!(None, description);
-        assert_eq!(true, already_starred);
+        assert!(already_starred);
     }
 
     const USER_WITH_DESCRIPTION_AND_WITHOUT_STAR_STATUS_JSON: &str = r#"{
@@ -671,7 +671,7 @@ mod tests {
         let (description, already_starred) =
             super::parse_user_description_and_star_status(resp).unwrap();
         assert_eq!(Some("suqbjkasrl".to_string()), description);
-        assert_eq!(false, already_starred);
+        assert!(!already_starred);
     }
 
     mod integration {
