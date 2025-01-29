@@ -6,24 +6,24 @@ enabled = true
 
 [[activity_wasm]]
 name = "activity_llm_chatgpt"
-location.oci = "docker.io/getobelisk/demo_stargazersactivity_llm_chatgpt:2025-01-28@sha256:713724352a51747c1565a58bf1dd8b834d1eb9677d999fe7d3e50886e69a2bf7"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_llm_chatgpt:2025-01-29@sha256:234afd72ca0102894f0e38afca34a6f7f959d215569c495c315776fb158d827c"
 exec.lock_expiry.secs = 10
 env_vars = ["OPENAI_API_KEY"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
-location.oci = "docker.io/getobelisk/demo_stargazersactivity_account_github:2025-01-28@sha256:1987513a36b250cb5d9f029e5676031e4a027d97946065e596748112c32ee1d6"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_github_impl:2025-01-29@sha256:659f009f2dababa1d1fb1b0a3c94fedb76b360a58ae3878b2fac651c60d55c44"
 env_vars = ["GITHUB_TOKEN"]
 exec.lock_expiry.secs = 5
 
 [[activity_wasm]]
 name = "activity_db_turso"
-location.oci = "docker.io/getobelisk/demo_stargazersactivity_db_turso:2025-01-28@sha256:c688903c3abddf2eb0c7b9676ca2dd8f29ba4d252afc66473454b15e94ee8266"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_db_turso:2025-01-29@sha256:c6159e4f12d118a3a1c07045c6d562dcfe0901b533b32872e7124924d2b23715"
 env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
 
 [[workflow]]
 name = "workflow"
-location.oci = "docker.io/getobelisk/demo_stargazersworkflow:2025-01-28@sha256:032ad31e9243895c279e39f9d9fb360ce8666d298d2ee184e045f2cf44a452c4"
+location.oci = "docker.io/getobelisk/demo_stargazers_workflow:2025-01-29@sha256:f484667cbcda6a4f61046455749ab55d3fe9328fa398c7e237106fdb99ffdaf2"
 
 [[http_server]]
 name = "webhook_server"
@@ -31,7 +31,7 @@ listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
 name = "webhook"
-location.oci = "docker.io/getobelisk/demo_stargazerswebhook:2025-01-28@sha256:7e5d7269cfefe458d2dd161ba0a839ce0a734f5093e32a27fb42c465bff0876c"
+location.oci = "docker.io/getobelisk/demo_stargazers_webhook:2025-01-29@sha256:7659d2f236c5135241da081cf3d3f9d5e7dfbdade1b3a759f3fce1c9e3904f20"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 forward_stdout = "stderr"
