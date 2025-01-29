@@ -26,7 +26,6 @@ defaults:
 jobs:
   integration-test:
     runs-on: ubuntu-24.04
-    needs: cache-nix-store
     steps:
       - uses: actions/checkout@v4
         with:
@@ -35,17 +34,15 @@ jobs:
       - uses: nixbuild/nix-quick-install-action@v29
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-          nix_conf: |
-            extra-substituters = https://cache.garnix.io
-            extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g
-
-      - name: Restore and cache Nix store
-        uses: nix-community/cache-nix-action@v5
-        with:
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.lock') }}
-
-      - name: Populate the nix store
-        run: nix develop --command echo
+      - name: Populate the nix store without Obelisk # Workaround for slow garnix cache
+        if: steps.nix-cache.outputs.cache-hit != 'true'
+        run: |
+          nix develop .#noObelisk --command echo
+      - name: Add garnix cache and populate the nix store with Obelisk
+        run: |
+          echo "extra-substituters = https://cache.garnix.io" >> ~/.config/nix/nix.conf
+          echo "extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g" >> ~/.config/nix/nix.conf
+          nix develop --command echo
 
       - name: Run integration tests
         env:
@@ -58,32 +55,3 @@ jobs:
           TEST_TURSO_LOCATION: ${{ secrets.TEST_TURSO_LOCATION }}
 
         run: nix develop --command ./scripts/test-integration.sh
-
-  cache-nix-store:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.ref }} # Use the ref if provided, otherwise defaults to the current branch/commit
-
-      - uses: nixbuild/nix-quick-install-action@v29
-        with:
-          github_access_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - run: nix show-config --json | jq
-
-      - name: Restore and cache Nix store
-        uses: nix-community/cache-nix-action@v5
-        with:
-          primary-key: nix-${{ runner.os }}-${{ hashFiles('flake.lock') }}
-
-      - name: Populate the nix store without Obelisk # Workaround for slow garnix cache
-        if: steps.nix-cache.outputs.cache-hit != 'true'
-        run: |
-          nix develop .#noObelisk --command echo
-
-      - name: Add garnix cache and populate the nix store with Obelisk
-        run: |
-          echo "extra-substituters = https://cache.garnix.io" >> ~/.config/nix/nix.conf
-          echo "extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g" >> ~/.config/nix/nix.conf
-          nix develop --command echo
