@@ -12,18 +12,16 @@ export!(Component);
 
 impl Guest for Component {
     fn star_added(login: String, repo: String) -> Result<(), String> {
-        // Persist the user giving a star to the project.
+        // 1. Persist the user giving a star to the project.
         let description = db::user::add_star_get_description(&login, &repo)?;
         if description.is_none() {
-            // Fetch the account info from github.
-            // account_info and get_settings_json should run in parallel. see branch `parallel`.
+            // 2. Fetch the account info from GitHub.
             let info = github::account::account_info(&login)?;
-            // Fetch the prompt from the database.
-            // TODO: cache for 5 mins
+            // 3. Fetch the prompt from the database.
             let settings_json = db::llm::get_settings_json()?;
-            // Generate the user's description.
+            // 4. Generate the user's description.
             let description = llm::respond(&info, &settings_json)?;
-            // Persist the generated description.
+            // 5. Persist the generated description.
             db::user::update_user_description(&login, &description)?;
         }
         Ok(())

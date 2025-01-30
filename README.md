@@ -8,16 +8,16 @@ that monitors GitHub repositories. Every step is persisted and replayed during c
 ```rust
 fn star_added(login: String, repo: String) -> Result<(), String> {
     // 1. Persist the user giving a star to the project.
-    let description = db::user::link_get_description(&login, &repo)?;
+    let description = db::user::add_star_get_description(&login, &repo)?;
     if description.is_none() {
         // 2. Fetch the account info from GitHub.
         let info = github::account::account_info(&login)?;
-        // 3. Fetch the prompt from Turso database.
+        // 3. Fetch the prompt from the database.
         let settings_json = db::llm::get_settings_json()?;
         // 4. Generate the user's description.
         let description = llm::respond(&info, &settings_json)?;
         // 5. Persist the generated description.
-        db::user::user_update(&login, &description)?;
+        db::user::update_user_description(&login, &description)?;
     }
     Ok(())
 }
