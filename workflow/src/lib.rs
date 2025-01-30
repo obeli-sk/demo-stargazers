@@ -1,7 +1,15 @@
 use crate::exports::stargazers::workflow::workflow::Guest;
-use obelisk::workflow::workflow_support::new_join_set;
+use obelisk::{
+    types::execution::{ExecutionError, ExecutionId},
+    workflow::workflow_support::new_join_set,
+};
 use stargazers::{
-    db, github, github_obelisk_ext, llm::llm, workflow::workflow as imported_workflow,
+    db,
+    db_obelisk_ext::llm::{get_settings_json_await_next, get_settings_json_submit},
+    github,
+    github_obelisk_ext::account::{account_info_await_next, account_info_submit},
+    llm::llm,
+    workflow::workflow as imported_workflow,
     workflow_obelisk_ext::workflow as imported_workflow_ext,
 };
 use wit_bindgen::generate;
@@ -31,25 +39,19 @@ impl Guest for Component {
         // Persist the user giving a star to the project.
         let description = db::user::add_star_get_description(&login, &repo)?;
         if description.is_none() {
-            // Parallel fetch account_info and get_settings_json
+            // Create two join sets for the two child workflows.
             let join_set_info = new_join_set();
             let join_set_settings = new_join_set();
-
-            github_obelisk_ext::account::account_info_submit(&join_set_info, &login);
-            stargazers::db_obelisk_ext::llm::get_settings_json_submit(&join_set_settings);
-
-            let (_, info_result) =
-                github_obelisk_ext::account::account_info_await_next(&join_set_info)
-                    .map_err(|(_, e)| format!("{:?}", e))?;
-
-            let info = info_result?;
-
-            let (_, settings_result) =
-                stargazers::db_obelisk_ext::llm::get_settings_json_await_next(&join_set_settings)
-                    .map_err(|(_, e)| format!("{:?}", e))?;
-
-            let settings_json = settings_result?;
-
+            // Submit the two child workflows asynchronously.
+            account_info_submit(&join_set_info, &login);
+            get_settings_json_submit(&join_set_settings);
+            // Await the results.
+            let info = account_info_await_next(&join_set_info)
+                .map_err(err_to_string)?
+                .1?;
+            let settings_json = get_settings_json_await_next(&join_set_settings)
+                .map_err(err_to_string)?
+                .1?;
             // Generate the user's description.
             let description = llm::respond(&info, &settings_json)?;
             // Persist the generated description.
@@ -98,4 +100,8 @@ impl Guest for Component {
         }
         Ok(())
     }
+}
+
+fn err_to_string((_, err): (ExecutionId, ExecutionError)) -> String {
+    format!("{err:?}")
 }
