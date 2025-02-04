@@ -2,9 +2,9 @@
 package stargazers:github-obelisk-ext;
 
 interface account {
-    use obelisk:types/execution.{execution-id, join-set-id};
-    use obelisk:types/time.{schedule-at};
-    use obelisk:types/execution.{execution-error};
+    use obelisk:types/execution@1.0.0.{execution-id, join-set-id};
+    use obelisk:types/time@1.0.0.{schedule-at};
+    use obelisk:types/execution@1.0.0.{execution-error};
     use stargazers:github/account.{stargazers};
 
     account-info-submit: func(join-set-id: borrow<join-set-id>, login: string) -> execution-id;

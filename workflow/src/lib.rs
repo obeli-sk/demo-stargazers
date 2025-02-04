@@ -40,8 +40,8 @@ impl Guest for Component {
         let description = db::user::add_star_get_description(&login, &repo)?;
         if description.is_none() {
             // Create two join sets for the two child workflows.
-            let join_set_info = new_join_set();
-            let join_set_settings = new_join_set();
+            let join_set_info = new_join_set(&format!("info_{login}"));
+            let join_set_settings = new_join_set(&format!("settings_{login}"));
             // Submit the two child workflows asynchronously.
             account_info_submit(&join_set_info, &login);
             get_settings_json_submit(&join_set_settings);
@@ -91,7 +91,11 @@ impl Guest for Component {
             for login in &resp.logins {
                 // No need to await the result of the child workflow.
                 // When this execution completes, all join sets will be awaited.
-                imported_workflow_ext::star_added_parallel_submit(&new_join_set(), login, &repo);
+                imported_workflow_ext::star_added_parallel_submit(
+                    &new_join_set(login),
+                    login,
+                    &repo,
+                );
             }
             if resp.logins.len() < usize::from(page_size) {
                 break;

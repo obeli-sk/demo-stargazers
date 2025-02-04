@@ -16,5 +16,5 @@ world any {
     import stargazers:llm/llm;
     import stargazers:llm-obelisk-ext/llm;
     // host provided activities for workflows
-    import obelisk:workflow/workflow-support;
+    import obelisk:workflow/workflow-support@1.0.0;
 }
