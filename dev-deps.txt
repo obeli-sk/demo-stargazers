@@ -3,7 +3,7 @@ cargo-edit-upgrade 0.13.1
 cargo-expand 1.0.100
 cargo-nextest 0.9.87
 cloudflared version 2024.12.2 (built unknown)
-obelisk 0.14.2 
+obelisk 0.15.0 
 pkg-config 0.29.2
 rustc 1.84.1 (e71f9a9a9 2025-01-27)
 wasm-tools 1.224.0
