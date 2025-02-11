@@ -1,6 +1,7 @@
 cargo-binstall 1.10.22
 cargo-edit-upgrade 0.13.1
 cargo-expand 1.0.100
+cargo generate 0.22.1
 cargo-nextest 0.9.87
 cloudflared version 2024.12.2 (built unknown)
 obelisk 0.15.0 
