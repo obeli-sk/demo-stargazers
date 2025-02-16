@@ -32,7 +32,6 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Populate the nix store without Obelisk # Workaround for slow garnix cache
-        if: steps.nix-cache.outputs.cache-hit != 'true'
         run: |
           nix develop .#noObelisk --command echo
       - name: Add garnix cache and populate the nix store with Obelisk
@@ -53,7 +52,6 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Populate the nix store without Obelisk # Workaround for slow garnix cache
-        if: steps.nix-cache.outputs.cache-hit != 'true'
         run: |
           nix develop .#noObelisk --command echo
       - name: Add garnix cache and populate the nix store with Obelisk
