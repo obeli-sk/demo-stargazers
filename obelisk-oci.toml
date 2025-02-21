@@ -7,14 +7,14 @@ enabled = true
 [[activity_wasm]]
 name = "activity_llm_chatgpt"
 location.oci = "docker.io/getobelisk/demo_stargazers_activity_llm_chatgpt:2025-02-10@sha256:148a01d929129cc96d13497591a24ebc577f1bb4e992128e6d1daed4ff8b9178"
-exec.lock_expiry.secs = 10
+exec.lock_expiry.seconds = 10
 env_vars = ["OPENAI_API_KEY"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
 location.oci = "docker.io/getobelisk/demo_stargazers_activity_github_impl:2025-02-10@sha256:32081c0ae2151121c88f8aa842834a183e6f06645e0f6f3a01f3f63b3c18c9e3"
 env_vars = ["GITHUB_TOKEN"]
-exec.lock_expiry.secs = 5
+exec.lock_expiry.seconds = 5
 
 [[activity_wasm]]
 name = "activity_db_turso"

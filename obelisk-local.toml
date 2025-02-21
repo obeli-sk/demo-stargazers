@@ -7,14 +7,14 @@ enabled = true
 [[activity_wasm]]
 name = "activity_llm_chatgpt"
 location.path = "target/wasm32-wasip2/release/activity_llm_chatgpt.wasm"
-exec.lock_expiry.secs = 10
+exec.lock_expiry.seconds = 10
 env_vars = ["OPENAI_API_KEY"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
 location.path = "target/wasm32-wasip2/release/activity_github_impl.wasm"
 env_vars = ["GITHUB_TOKEN"]
-exec.lock_expiry.secs = 5
+exec.lock_expiry.seconds = 5
 
 [[activity_wasm]]
 name = "activity_db_turso"
