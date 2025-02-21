@@ -40,13 +40,13 @@ edition = "2021"
 rust-version = "1.83.0"
 
 [workspace.dependencies]
-cynic = "3.9.1"
-cynic-codegen = "3.9.1"
-derive_more = { version = "1.0", features = ["display"] }
+cynic = "3.10.0"
+cynic-codegen = "3.10.0"
+derive_more = { version = "2.0", features = ["display"] }
 hex = "0.4.3"
 hmac = "0.12.1"
 humantime = "2.1.0"
-obelisk-component-builder = "0.13.3"
+obelisk-component-builder = "0.16.0"
 rand = { version = "0.9", default-features = false, features = [
     "small_rng",
     "os_rng",
@@ -57,7 +57,7 @@ serde_json = "1.0"
 sha2 = "0.10.8"
 waki = { version = "0.5.1", features = ["json"] }
 waki-macros = "0.5.1"
-wit-bindgen = "0.38.0"
+wit-bindgen = "0.39.0"
 
 [profile.release]
 opt-level = "s"
