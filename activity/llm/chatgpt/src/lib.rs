@@ -49,6 +49,7 @@ struct MessageResponse {
 #[derive(Serialize, Deserialize)]
 struct Settings {
     model: String,
+    #[serde(default)]
     messages: Vec<Message>,
     max_tokens: usize,
 }

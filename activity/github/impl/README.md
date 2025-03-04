@@ -11,6 +11,17 @@ The token must be accesible as `GITHUB_TOKEN` environment variable.
 export GITHUB_TOKEN="..."
 ```
 
+## Running the activity
+Build the activity and run Obelisk with `obelisk-local.toml` configuration in the root of the repository.
+```sh
+cargo build --package activity-github-impl-builder
+obelisk server run --config ./obelisk-local.toml
+```
+In another terminal run the activity.
+```sh
+obelisk client execution submit --follow stargazers:github/account.account-info '["your-github-login"]'
+```
+
 ## Testing
 
 ## Unit testing

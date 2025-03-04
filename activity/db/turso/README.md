@@ -89,6 +89,17 @@ echo '{
 --data @-
 ```
 
+## Running the activity
+Build the activity and run Obelisk with `obelisk-local.toml` configuration in the root of the repository.
+```sh
+cargo build --package activity-db-turso-builder
+obelisk server run --config ./obelisk-local.toml
+```
+In another terminal run the activity.
+```sh
+obelisk client execution submit --follow stargazers:db/llm.get-settings-json []
+```
+
 ## Testing
 
 ### Unit testing

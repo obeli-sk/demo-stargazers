@@ -21,6 +21,22 @@ send a system message and restrict the number of tokens returned by the service.
 Those settings could be encoded directly in [llm.wit](../interface/llm.wit),
 but were omitted for simplicity.
 
+## Running the activity
+Build the activity and run Obelisk with `obelisk-local.toml` configuration in the root of the repository.
+```sh
+cargo build --package activity-llm-chatgpt-builder
+obelisk server run --config ./obelisk-local.toml
+```
+In another terminal run the activity.
+
+Use the following parameters:
+* parameter `user-prompt`: `"Tell me about Rust programming."`
+* parameter `settings-json`: `"{\"model\": \"gpt-3.5-turbo\",\"max_tokens\": 50}"`
+
+```sh
+obelisk client execution submit --follow stargazers:llm/llm.respond '["Tell me about Rust programming", "{\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 50}"]'
+```
+
 ## Integration testing
 
 ```sh
@@ -28,11 +44,7 @@ export TEST_OPENAI_API_KEY=...
 cargo nextest run -- --ignored
 ```
 
-To execute the activity directly (e.g. using CLI or the Web UI):
-* parameter `user-prompt`: `"Tell me about Rust programming."`
-* parameter `settings-json`: `"{\"messages\": [{\"role\": \"system\",\"content\": \"You are a helpful assistant\"}],\"model\": \"gpt-3.5-turbo\",\"max_tokens\": 200}"`
-
-To execute an ad-hoc query using curl:
+To execute an ad-hoc query directly to api.openai.com using curl:
 ```sh
 curl -X POST https://api.openai.com/v1/chat/completions \
 -H "Authorization: Bearer ${OPENAI_API_KEY}" \
