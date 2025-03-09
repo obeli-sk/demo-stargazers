@@ -9,7 +9,6 @@ use stargazers::{
     github,
     github_obelisk_ext::account::{account_info_await_next, account_info_submit},
     llm::llm,
-    workflow::workflow as imported_workflow,
     workflow_obelisk_ext::workflow as imported_workflow_ext,
 };
 use wit_bindgen::generate;
@@ -72,11 +71,14 @@ impl Guest for Component {
         while let Some(resp) =
             github::account::list_stargazers(&repo, page_size, cursor.as_deref())?
         {
-            for login in &resp.logins {
-                // Submit a child workflow
-                imported_workflow::star_added(login, &repo)?;
+            let got_whole_page = resp.logins.len() == usize::from(page_size);
+            for login in resp.logins {
+                // This is a direct function call, and will not be intercepted by Obelisk.
+                Self::star_added(login, repo.clone())?;
+                // To submit a child workflow instead, use:
+                // stargazers::workflow::workflow::star_added(&login, &repo)?;
             }
-            if resp.logins.len() < usize::from(page_size) {
+            if !got_whole_page {
                 break;
             }
             cursor = Some(resp.cursor);
