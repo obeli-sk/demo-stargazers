@@ -24,6 +24,7 @@ env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
 [[workflow]]
 name = "workflow"
 location.oci = "docker.io/getobelisk/demo_stargazers_workflow:2025-03-12@sha256:8f59beb3062dfbff224f86bac0545020b038fcf4d9e35563afe49dafda519503"
+backtrace.sources = {"/home/runner/work/demo-stargazers/demo-stargazers/workflow/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/src/lib.rs"}
 
 [[http_server]]
 name = "webhook_server"

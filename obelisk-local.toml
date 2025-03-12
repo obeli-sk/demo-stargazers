@@ -30,6 +30,7 @@ forward_stderr = "stderr"
 [[workflow]]
 name = "workflow"
 location.path = "target/wasm32-unknown-unknown/release/workflow.wasm"
+backtrace.sources = {"${OBELISK_TOML_DIR}/workflow/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/src/lib.rs"}
 
 [[http_server]]
 name = "webhook_server"
