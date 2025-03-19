@@ -50,7 +50,7 @@ Follow the prerequisites section of the [activity-db-turso README](./activity/db
 Follow the prerequisites section of the [activity-llm-chatgpt README](./activity/llm/chatgpt/README.md).
 
 #### GitHub activity
-Follow the prerequisites section of the [activity-account-github README](./activity/account/github/README.md).
+Follow the prerequisites section of the [activity-github README](./activity/github/README.md).
 
 #### GitHub webhook endpoint
 Follow the prerequisites section of the [webhook README](./webhook//README.md).

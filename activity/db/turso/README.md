@@ -13,6 +13,7 @@ export TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"
 ```
 
 The activity needs an active database with the following [schema](ddl/schema.sql).
+The following shell script can be used to set up the schema for you:
 ```sh
 generate_json() {
   local file=$1
