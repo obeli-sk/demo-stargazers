@@ -4,12 +4,6 @@ on:
   schedule:
     - cron: '0 0 * * 0'  # Runs every Sunday at 00:00 UTC
   workflow_dispatch:
-    inputs:
-      branch_name:
-        description: "Branch name for the PR"
-        required: true
-        type: string
-        default: "bump-flake"
 
 permissions:
   contents: write
