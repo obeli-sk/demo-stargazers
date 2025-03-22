@@ -1,9 +1,13 @@
-name: Bump Cargo.lock and Create PR
+name: scheduled-bump-cargo-lock
 
 on:
   schedule:
     - cron: '0 0 * * 0'  # Runs every Sunday at 00:00 UTC
   workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash -xe {0}
 
 permissions:
   contents: write
@@ -29,10 +33,6 @@ jobs:
         run: |
           nix develop .#noObelisk --command echo
 
-      - name: Create Branch
-        run: |
-          git checkout -b ${{ steps.branch-name.outputs.branch_name }}
-
       - name: Bump Cargo.lock, Cargo.toml
         run: |
           nix develop .#noObelisk --command cargo upgrade --incompatible
@@ -45,15 +45,21 @@ jobs:
 
       - name: Commit Changes
         run: |
-          git status
+          git checkout -b ${{ steps.branch-name.outputs.branch_name }}
           git add Cargo.lock Cargo.toml
           git commit -m "chore: Bump Rust dependencies"
-          git push origin HEAD:${{ steps.branch-name.outputs.branch_name }}
+          git push origin ${{ steps.branch-name.outputs.branch_name }}
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          title: "chore: Bump Rust dependencies"
-          branch: ${{ steps.branch-name.outputs.branch_name }}
-          base: main
+          curl -v --fail -X POST \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            https://api.github.com/repos/obeli-sk/demo-stargazers/pulls \
+            -d '{
+              "title": "Bump Rust dependencies",
+              "head": "'${{ steps.branch-name.outputs.branch_name }}'",
+              "base": "main",
+              "body": ""
+            }'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
