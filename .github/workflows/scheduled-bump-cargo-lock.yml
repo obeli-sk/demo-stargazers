@@ -48,7 +48,7 @@ jobs:
           git status
           git add Cargo.lock Cargo.toml
           git commit -m "chore: Bump Rust dependencies"
-          git push origin ${{ steps.branch-name.outputs.branch_name }}
+          git push origin HEAD:${{ steps.branch-name.outputs.branch_name }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
