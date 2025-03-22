@@ -23,6 +23,10 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Generate Unique Branch Name
+        id: branch-name
+        run: echo "branch_name=bump-cargo-lock-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+
       - uses: nixbuild/nix-quick-install-action@v29
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
@@ -37,18 +41,18 @@ jobs:
 
       - name: Create Branch
         run: |
-          git checkout -b ${{ github.event.inputs.branch_name }}
+          git checkout -b ${{ steps.branch-name.outputs.branch_name }}
 
       - name: Commit Changes
         run: |
           git add flake.lock
           git commit -m "chore: Bump `flake.lock`"
-          git push origin ${{ github.event.inputs.branch_name }}
+          git push origin ${{ steps.branch-name.outputs.branch_name }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           title: "chore: Bump `flake.lock`"
-          branch: ${{ github.event.inputs.branch_name }}
+          branch: ${{ steps.branch-name.outputs.branch_name }}
           base: main
