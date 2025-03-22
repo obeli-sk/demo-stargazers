@@ -1,0 +1,54 @@
+name: Bump flake.lock and Create PR
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Runs every Sunday at 00:00 UTC
+  workflow_dispatch:
+    inputs:
+      branch_name:
+        description: "Branch name for the PR"
+        required: true
+        type: string
+        default: "bump-flake"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  bump-flake:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: nixbuild/nix-quick-install-action@v29
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Bump flake.lock
+        run: nix flake update
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create Branch
+        run: |
+          git checkout -b ${{ github.event.inputs.branch_name }}
+
+      - name: Commit Changes
+        run: |
+          git add flake.lock
+          git commit -m "chore: Bump `flake.lock`"
+          git push origin ${{ github.event.inputs.branch_name }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: "chore: Bump `flake.lock`"
+          branch: ${{ github.event.inputs.branch_name }}
+          base: main
