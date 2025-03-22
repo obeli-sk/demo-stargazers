@@ -30,7 +30,9 @@ jobs:
           nix develop .#noObelisk --command echo
 
       - name: Bump Cargo.lock
-        run: cargo update --incompatible
+        run: |
+          cargo upgrade --incompatible
+          cargo update
 
       - name: Configure Git
         run: |
