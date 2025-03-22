@@ -29,7 +29,11 @@ jobs:
         run: |
           nix develop .#noObelisk --command echo
 
-      - name: Bump Cargo.lock
+      - name: Create Branch
+        run: |
+          git checkout -b ${{ steps.branch-name.outputs.branch_name }}
+
+      - name: Bump Cargo.lock, Cargo.toml
         run: |
           cargo upgrade --incompatible
           cargo update
@@ -39,20 +43,17 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Create Branch
-        run: |
-          git checkout -b ${{ steps.branch-name.outputs.branch_name }}
-
       - name: Commit Changes
         run: |
-          git add Cargo.lock
-          git commit -m "chore: Bump Cargo.lock"
+          git status
+          git add Cargo.lock Cargo.toml
+          git commit -m "chore: Bump Rust dependencies"
           git push origin ${{ steps.branch-name.outputs.branch_name }}
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          title: "chore: Bump `Cargo.lock`"
+          title: "chore: Bump Rust dependencies"
           branch: ${{ steps.branch-name.outputs.branch_name }}
           base: main
