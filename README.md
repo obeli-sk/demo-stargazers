@@ -35,13 +35,17 @@ Executions can be submitted, inspected etc. using the Web UI.
 
 ![webui animation](assets/images/webui.gif)
 
-
-
-
 ## Setting up
 
 ### Setting up the external services
-The activities require tokens to be present.
+The activities require folowing tokens to be present as environment variables:
+```sh
+export GITHUB_TOKEN="..."
+export GITHUB_WEBHOOK_SECRET="..."
+export OPENAI_API_KEY="..."
+export TURSO_TOKEN="..."
+export TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"
+```
 
 #### Turso activity
 Follow the prerequisites section of the [activity-db-turso README](./activity/db/turso/README.md).
@@ -82,6 +86,7 @@ lines in the process output:
 HTTP server `webhook_server` is listening on http://127.0.0.1:9090
 HTTP server `webui` is listening on http://127.0.0.1:8080
 Serving gRPC requests at 127.0.0.1:5005
+Server is ready
 ```
 
 The workflow can be started using the Web UI.
