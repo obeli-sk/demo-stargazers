@@ -47,19 +47,23 @@ jobs:
         run: |
           git checkout -b ${{ steps.branch-name.outputs.branch_name }}
           git add Cargo.lock Cargo.toml
-          git commit -m "chore: Bump Rust dependencies"
-          git push origin ${{ steps.branch-name.outputs.branch_name }}
-
-          curl -v --fail -X POST \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
-            https://api.github.com/repos/obeli-sk/demo-stargazers/pulls \
-            -d '{
-              "title": "Bump Rust dependencies",
-              "head": "'${{ steps.branch-name.outputs.branch_name }}'",
-              "base": "main",
-              "body": ""
-            }'
+          if [ -n "$(git status --porcelain)" ]; then
+              git commit -m "chore: Bump Rust dependencies"
+              git push origin ${{ steps.branch-name.outputs.branch_name }}
+    
+              curl -v --fail -X POST \
+                -H "Content-Type: application/json" \
+                -H "Authorization: Bearer $GITHUB_TOKEN" \
+                https://api.github.com/repos/obeli-sk/demo-stargazers/pulls \
+                -d '{
+                  "title": "Bump Rust dependencies",
+                  "head": "'${{ steps.branch-name.outputs.branch_name }}'",
+                  "base": "main",
+                  "body": ""
+                }'
+          else
+              echo "No changes to commit."
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
