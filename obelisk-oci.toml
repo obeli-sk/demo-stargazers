@@ -20,6 +20,7 @@ exec.lock_expiry.seconds = 5
 name = "activity_db_turso"
 location.oci = "docker.io/getobelisk/demo_stargazers_activity_db_turso:2025-03-12@sha256:e5f1807dc6e169649d4dea522d50f73b7b18dd21ebbc8e9e5db708bb3017bf9b"
 env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
+exec.lock_expiry.seconds = 5
 
 [[workflow]]
 name = "workflow"

@@ -26,6 +26,7 @@ location.path = "target/wasm32-wasip2/release/activity_db_turso.wasm"
 env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
 forward_stdout = "stderr"
 forward_stderr = "stderr"
+exec.lock_expiry.seconds = 5
 
 [[workflow]]
 name = "workflow"
@@ -47,3 +48,4 @@ env_vars = [
     "GITHUB_WEBHOOK_SECRET",
     # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
 ]
+
