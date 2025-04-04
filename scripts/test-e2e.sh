@@ -47,11 +47,15 @@ delete_from() {
     }'
 }
 
-# If TRUNCATE is set to "truncate", delete data
-if [[ "$TRUNCATE" == "truncate" ]]; then
+delete_from_all() {
     delete_from "stars"
     delete_from "users"
     delete_from "repos"
+}
+
+# If TRUNCATE is set to "truncate", delete data
+if [[ "$TRUNCATE" == "truncate" ]]; then
+    delete_from_all()
 fi
 
 # Wait for obelisk to start responding
