@@ -40,18 +40,20 @@
             # e2e tests
             openssl
             curlMinimal
-            # local tunnel
-            cloudflared
           ];
+          withObelisk = commonDeps ++ [ obelisk.packages.${system}.default ];
         in
         {
-          devShells.default = pkgs.mkShell {
-            nativeBuildInputs = commonDeps ++ [ obelisk.packages.${system}.default ];
-          };
-
           devShells.noObelisk = pkgs.mkShell {
             nativeBuildInputs = commonDeps;
           };
+          devShells.default = pkgs.mkShell {
+            nativeBuildInputs = withObelisk;
+          };
+          devShells.cloudflared = pkgs.mkShell {
+            nativeBuildInputs = withObelisk ++ [ pkgs.cloudflared ];
+          };
+
         }
       );
 }
