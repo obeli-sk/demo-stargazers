@@ -26,14 +26,7 @@ fn star_added(login: String, repo: String) -> Result<(), String> {
 Here is the complete [workflow source](./workflow/src/lib.rs) and the
 [WIT file](./workflow/interface/workflow.wit) describing the interface.
 
-The following screenshot shows how the `star-added` workflow calls the activities
-with their respective numbers.
-
-![jaeger trace](assets/images/jaeger-workflow-serial-numbers.png "Jaeger trace of star-added workflow")
-
-Executions can be submitted, inspected etc. using the Web UI.
-
-![webui animation](assets/images/webui.gif)
+[![Watch the Demo Video](assets/images/screencast.gif)](https://obeli.sk/screencast.webm)
 
 ## Setting up
 
