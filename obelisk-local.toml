@@ -48,4 +48,5 @@ env_vars = [
     "GITHUB_WEBHOOK_SECRET",
     # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
 ]
+backtrace.sources = {"${OBELISK_TOML_DIR}/webhook/src/lib.rs" = "${OBELISK_TOML_DIR}/webhook/src/lib.rs"}
 
