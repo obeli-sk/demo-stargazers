@@ -38,12 +38,12 @@ impl Guest for Component {
         // Persist the user giving a star to the project.
         let description = db::user::add_star_get_description(&login, &repo)?;
         if description.is_none() {
-            // Create two join sets for the two child workflows.
+            // Create two join sets for the two child executions.
             let join_set_info =
                 new_join_set_named(&format!("info_{login}"), ClosingStrategy::Complete);
             let join_set_settings =
                 new_join_set_named(&format!("settings_{login}"), ClosingStrategy::Complete);
-            // Submit the two child workflows asynchronously.
+            // Submit the two child executions asynchronously.
             account_info_submit(&join_set_info, &login);
             get_settings_json_submit(&join_set_settings);
             // Await the results.
