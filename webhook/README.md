@@ -11,7 +11,7 @@ Set up the shared secret and export it as an environemnt variable:
 ```sh
 export GITHUB_WEBHOOK_SECRET="..."
 ```
-Then in your `obelisk.toml` verify that the variable is forwarded:
+Then in your `obelisk.toml` make sure that the variable is forwarded to the WASM instance:
 ```toml
 [[webhook_endpoint]]
 name = "webhook"
@@ -40,14 +40,13 @@ curl -v https://some-domain.trycloudflare.com
 ```
 
 ### Configuring GitHub
-Create a webhook under your repo settings. Go to Settings/Webhooks. The URL should match
-the following template: `https://github.com/[account]/[repo]/settings/hooks`.
+Navigate to your Github repository, then go to Settings/Webhooks.
 
 Add a new webhook, select individual events and make sure only Stars events are enabled.
-Don't forget to set up a secret as mentioned in the section above.
+Don't forget to set up a shared secret.
 
-When the GitHub configuration is saved and the HTTP server is up and running try starring the configured repository.
-Check the [Web UI](http://127.0.0.1:8080) of Obelisk for execution details.
+When the GitHub configuration is saved and Obelisk is up and running try starring the configured repository.
+Check the [Web UI](http://127.0.0.1:8080) for execution details.
 Your GitHub user should appear in the Turso database, together with a generated description.
 
 ## Testing
@@ -82,7 +81,10 @@ curl -X POST http://127.0.0.1:9090 -d '{
 Observe the execution log. After the workflow succeeds, the database should contain
 the user, repo, their relation, and the user should have a generated description.
 
-To list last updated stargazers, run
+To obtain a list of 5 last updated stargazers, run
 ```sh
 curl -v http://127.0.0.1:9090
 ```
+
+## Automated end-to-end testing
+Check out [test-e2e.sh](/scripts/test-e2e.sh) for details.
