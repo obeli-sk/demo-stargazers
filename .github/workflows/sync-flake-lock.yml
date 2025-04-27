@@ -1,4 +1,4 @@
-name: sync-flake-lock
+name: sync-flake-lock-and-rust-toolchain
 
 on:
   workflow_dispatch:
@@ -23,9 +23,10 @@ jobs:
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Sync flake.lock from upstream
+      - name: Sync flake.lock and rust-toolchain.toml from upstream
         run: |
           curl https://raw.githubusercontent.com/obeli-sk/obelisk/refs/heads/latest/flake.lock -o flake.lock
+          curl https://raw.githubusercontent.com/obeli-sk/obelisk/refs/heads/latest/rust-toolchain.toml -o rust-toolchain.toml
 
       - name: Populate the nix store without Obelisk # Workaround for slow garnix cache
         run: |
