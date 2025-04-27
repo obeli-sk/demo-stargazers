@@ -26,7 +26,6 @@ jobs:
       - name: Sync flake.lock from upstream
         run: |
           curl https://raw.githubusercontent.com/obeli-sk/obelisk/refs/heads/latest/flake.lock -o flake.lock
-          nix develop . --command ./scripts/dev-deps.sh
 
       - name: Populate the nix store without Obelisk # Workaround for slow garnix cache
         run: |
@@ -36,6 +35,10 @@ jobs:
           echo "extra-substituters = https://cache.garnix.io" >> ~/.config/nix/nix.conf
           echo "extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g" >> ~/.config/nix/nix.conf
           nix develop --command echo
+
+      - name: Update dev-deps.txt
+        run: |
+          nix develop . --command ./scripts/dev-deps.sh
 
       - name: Generate Unique Branch Name
         id: branch-name
@@ -51,7 +54,7 @@ jobs:
           git checkout -b ${{ steps.branch-name.outputs.branch_name }}
           git add .
           if [ -n "$(git status --porcelain)" ]; then
-              git commit -m "chore: Sync `flake.lock` from upstream"
+              git commit -m 'chore: Sync `flake.lock` from upstream'
               git push origin ${{ steps.branch-name.outputs.branch_name }}
 
               OWNER=$(echo "${{ github.repository }}" | cut -d'/' -f1)
