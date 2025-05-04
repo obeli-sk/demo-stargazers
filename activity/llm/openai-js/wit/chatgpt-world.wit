@@ -1,0 +1,8 @@
+package stargazers:llm-chatgpt;
+
+world any {
+    import wasi:cli/environment@0.2.3;
+    import obelisk:log/log@1.0.0;
+    
+    export stargazers:llm/llm;
+}

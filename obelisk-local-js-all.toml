@@ -5,12 +5,10 @@ webui.listening_addr = "127.0.0.1:8080" # Address and port on which the webui wi
 enabled = true
 
 [[activity_wasm]]
-name = "activity_llm_chatgpt"
-location.path = "target/wasm32-wasip2/release/activity_llm_chatgpt.wasm"
+name = "openai_js"
+location.path = "activity/llm/openai-js/dist/openai-js.wasm"
 exec.lock_expiry.seconds = 10
 env_vars = ["OPENAI_API_KEY"]
-forward_stdout = "stderr"
-forward_stderr = "stderr"
 
 [[activity_wasm]]
 name = "activity_github_impl"
@@ -29,9 +27,8 @@ forward_stderr = "stderr"
 exec.lock_expiry.seconds = 5
 
 [[workflow]]
-name = "workflow"
-location.path = "target/wasm32-unknown-unknown/release/workflow.wasm"
-backtrace.sources = { "${OBELISK_TOML_DIR}/workflow/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/src/lib.rs" }
+name = "workflow_js"
+location.path = "workflow-js/dist/workflow-js.wasm"
 
 [[http_server]]
 name = "webhook_server"

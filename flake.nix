@@ -40,6 +40,9 @@
             # e2e tests
             openssl
             curlMinimal
+            # javascript support
+            nodejs_22
+            wizer
           ];
           withObelisk = commonDeps ++ [ obelisk.packages.${system}.default ];
         in

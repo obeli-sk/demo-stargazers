@@ -47,11 +47,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1746650359,
-        "narHash": "sha256-1G6K58tyyDmdMtcOSh+hFngTdFiGVIzHGZ/kvSnCh2E=",
+        "lastModified": 1746686247,
+        "narHash": "sha256-iXtG+vXoZ07LswzGyyfa0NIKwp78ddE0L70wsiw+Mqw=",
         "owner": "obeli-sk",
         "repo": "obelisk",
-        "rev": "039610d8c4f0770e41942c78b45c4bafe5937d23",
+        "rev": "13cd5be000dad1c976ebd0068ae3cbb0b83c3daa",
         "type": "github"
       },
       "original": {

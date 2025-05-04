@@ -1,3 +1,4 @@
 /.direnv
 /.envrc
 target
+node_modules/

@@ -17,5 +17,8 @@ echo "pkg-config $(pkg-config --version)" >> dev-deps.txt
 rustc --version >> dev-deps.txt
 wasm-tools --version >> dev-deps.txt
 wasmtime --version >> dev-deps.txt
+# JavaScript
+echo "node.js $(node --version)" >> dev-deps.txt
+wizer --version >> dev-deps.txt
 # libc
 ldd --version | head -n 1 >> dev-deps.txt
