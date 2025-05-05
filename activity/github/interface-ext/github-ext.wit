@@ -13,9 +13,9 @@ interface account {
 
     account-info-schedule: func(schedule-at: schedule-at, login: string) -> execution-id;
 
-    list-stargazers-submit: func(join-set-id: borrow<join-set-id>, repo: string, cursor: option<string>) -> execution-id;
+    list-stargazers-submit: func(join-set-id: borrow<join-set-id>, repo: string, page-size: u8, cursor: option<string>) -> execution-id;
 
     list-stargazers-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<option<stargazers>, string>>, tuple<execution-id, execution-error>>;
 
-    list-stargazers-schedule: func(schedule-at: schedule-at, repo: string, cursor: option<string>) -> execution-id;
+    list-stargazers-schedule: func(schedule-at: schedule-at, repo: string, page-size: u8, cursor: option<string>) -> execution-id;
 }
