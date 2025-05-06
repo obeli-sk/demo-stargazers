@@ -20,5 +20,7 @@ wasmtime --version >> dev-deps.txt
 # JavaScript
 echo "node.js $(node --version)" >> dev-deps.txt
 wizer --version >> dev-deps.txt
+# Go
+tinygo version >> dev-deps.txt
 # libc
 ldd --version | head -n 1 >> dev-deps.txt
