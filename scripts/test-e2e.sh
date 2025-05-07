@@ -11,7 +11,7 @@ STAR_REPO="someghrepo"
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
 
 # Make sure all components are fresh
-cargo check --workspace
+cargo build
 
 obelisk server verify --config $OBELISK_TOML
 obelisk server run --config $OBELISK_TOML &
