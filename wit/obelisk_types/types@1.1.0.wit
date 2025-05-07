@@ -1,4 +1,4 @@
-package obelisk:types@1.0.0;
+package obelisk:types@1.1.0;
 
 interface time {
 
@@ -26,6 +26,9 @@ interface time {
 
 interface execution {
     resource join-set-id {
+        id: func() -> string;
+        // TODO: sleep-submit
+        // TODO: await-next
     }
     record execution-id {
         id: string,

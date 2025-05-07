@@ -2,9 +2,9 @@
 package stargazers:db-obelisk-ext;
 
 interface user {
-    use obelisk:types/execution@1.0.0.{execution-id, join-set-id};
-    use obelisk:types/time@1.0.0.{schedule-at};
-    use obelisk:types/execution@1.0.0.{execution-error};
+    use obelisk:types/execution@1.1.0.{execution-id, join-set-id};
+    use obelisk:types/time@1.1.0.{schedule-at};
+    use obelisk:types/execution@1.1.0.{execution-error};
     use stargazers:db/user.{stargazer, ordering};
 
     add-star-get-description-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id;
@@ -33,9 +33,9 @@ interface user {
 }
 
 interface llm {
-    use obelisk:types/execution@1.0.0.{execution-id, join-set-id};
-    use obelisk:types/time@1.0.0.{schedule-at};
-    use obelisk:types/execution@1.0.0.{execution-error};
+    use obelisk:types/execution@1.1.0.{execution-id, join-set-id};
+    use obelisk:types/time@1.1.0.{schedule-at};
+    use obelisk:types/execution@1.1.0.{execution-error};
 
     get-settings-json-submit: func(join-set-id: borrow<join-set-id>) -> execution-id;
 
