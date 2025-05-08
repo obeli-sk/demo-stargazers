@@ -5,6 +5,7 @@
     "@bytecodealliance/componentize-js": "*"
   },
   "scripts": {
-    "build": "node call-componentize.js"
+    "build": "node call-componentize.js",
+    "test:submit": "obelisk client execution submit --follow stargazers:workflow/workflow.star-added-parallel '[\"tomasol\",\"obeli-sk/obelisk\"]'"
   }
 }

@@ -1,5 +1,7 @@
 # openai-js Activity
 
+JavaScript reimplementation of [chatgpt](../chatgpt/) activity.
+
 ## Building
 ```sh
 npm install
