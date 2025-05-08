@@ -6,25 +6,25 @@ enabled = true
 
 [[activity_wasm]]
 name = "activity_llm_chatgpt"
-location.oci = "docker.io/getobelisk/demo_stargazers_activity_llm_chatgpt:2025-05-07@sha256:7bb4bafd3e8b4f95f612eee78f8aebbacef2e08e7142d7a1cd768c1013d98662"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_llm_chatgpt:2025-05-08@sha256:fd97501c834abdddf4ab0f9f28e5f2c8def8e67aa96beeef4bf499a93401fe59"
 exec.lock_expiry.seconds = 10
 env_vars = ["OPENAI_API_KEY"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
-location.oci = "docker.io/getobelisk/demo_stargazers_activity_github_impl:2025-05-07@sha256:ffcb12bd2330b442008d711541989e0720766358d3891527cf9735053104e324"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_github_impl:2025-05-08@sha256:4555a0120c3803a4c1319db89247f2594555f51d8266b600aee9f9803ace36fe"
 env_vars = ["GITHUB_TOKEN"]
 exec.lock_expiry.seconds = 5
 
 [[activity_wasm]]
 name = "activity_db_turso"
-location.oci = "docker.io/getobelisk/demo_stargazers_activity_db_turso:2025-05-07@sha256:706d1d8ec9262d792ac638d4e592fb1421fde7845e0a414de279e262c6a2c2e0"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_db_turso:2025-05-08@sha256:79a8254a94219457f05e616378084376011ea65856ab60e21801ebbcec8161ef"
 env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 
 [[workflow]]
 name = "workflow"
-location.oci = "docker.io/getobelisk/demo_stargazers_workflow:2025-05-07@sha256:a4dce7413f959fb7b4e99c2bd9e6c1c4f1bc44d8fe94c1768464c0f6871a8304"
+location.oci = "docker.io/getobelisk/demo_stargazers_workflow:2025-05-08@sha256:1bb28ccf4ae68ff601ed2b673265e7e25c3f6a792d9449e807c13ea56c0226f3"
 backtrace.sources = {"/home/runner/work/demo-stargazers/demo-stargazers/workflow/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/src/lib.rs"}
 
 [[http_server]]
@@ -33,7 +33,7 @@ listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
 name = "webhook"
-location.oci = "docker.io/getobelisk/demo_stargazers_webhook:2025-05-07@sha256:c2417b421e98585e0c21eb1cc18f22f176a512c69e45243e36e5067b5a66569d"
+location.oci = "docker.io/getobelisk/demo_stargazers_webhook:2025-05-08@sha256:2172e3551234cd2689559be43b10c1bd01bc1ae9715c05441e7c460c954ce4d6"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 forward_stdout = "stderr"
