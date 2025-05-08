@@ -60,7 +60,7 @@ export const workflow = {
   starAdded(login, repo) {
     try {
       // 1. Persist the user giving a star to the project. Check if description exists.
-      // WIT: func add-star-get-description(login: string, repo: string) -> result<option<string>, string>
+      // WIT: add-star-get-description: func(login: string, repo: string) -> result<option<string>, string>
       const existingDescription = addStarGetDescription(login, repo);
 
       if (existingDescription === null || existingDescription === undefined) {
@@ -68,19 +68,19 @@ export const workflow = {
         console.log(`No description for ${login} on ${repo}, generating...`);
 
         // 2. Fetch the account info from GitHub.
-        // WIT: func account-info(login: string) -> result<info, string> (assuming 'info' is an object type)
+        // WIT: account-info: func(login: string) -> result<string, string>
         const info = accountInfo(login);
 
         // 3. Fetch the prompt settings from the database.
-        // WIT: func get-settings-json() -> result<string, string>
+        // WIT: get-settings-json: func() -> result<string, string>
         const settingsJson = getSettingsJson();
 
         // 4. Generate the user's description using the LLM.
-        // WIT: func respond(info: info, settings-json: string) -> result<string, string>
+        // WIT: respond: func(user-prompt: string, settings-json: string) -> result<string, string>
         const description = llmRespond(info, settingsJson);
 
         // 5. Persist the generated description.
-        // WIT: func update-user-description(login: string, description: string) -> result<_, string>
+        // WIT: update-user-description: func(username: string, description: string) -> result<_, string>
         updateUserDescription(login, description);
         console.log(`Generated and saved description for ${login}`);
       } else {
@@ -108,19 +108,18 @@ export const workflow = {
         const joinSetSettings = newJoinSetNamed(`settings_${login}`, ClosingStrategy.Complete);
 
         // Submit the two child executions asynchronously using Obelisk extensions.
-        // WIT: func account-info-submit(join-set: join-set, login: string) -> result<_, string>
-        // JS: returns void, or throws string error
+        // WIT: account-info-submit: func(join-set-id: borrow<join-set-id>, login: string) -> execution-id
         accountInfoSubmit(joinSetInfo, login);
 
-        // WIT: func get-settings-json-submit(join-set: join-set) -> result<_, string>
+        // WIT: get-settings-json-submit: func(join-set-id: borrow<join-set-id>) -> execution-id
         getSettingsJsonSubmit(joinSetSettings);
 
-        // WIT: account-info-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<string, string>>, tuple<execution-id, execution-error>>;
+        // WIT: account-info-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<string, string>>, tuple<execution-id, execution-error>>
         let [_execId, info] = accountInfoAwaitNext(joinSetInfo);
         console.debug("Got info", JSON.stringify(info));
         info = unwrap(info);
 
-        // WIT: func get-settings-json-await-next(join-set: join-set) -> result<tuple<execution-id, result<string, execution-error>>, string>
+        // WIT: get-settings-json-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<string, string>>, tuple<execution-id, execution-error>>
         let [_execId2, settingsJson] = getSettingsJsonAwaitNext(joinSetSettings);
         console.debug("Got settingsJson", JSON.stringify(settingsJson));
         settingsJson = unwrap(settingsJson);
@@ -144,7 +143,7 @@ export const workflow = {
    */
   starRemoved(login, repo) {
     try {
-      // WIT: func remove-star(login: string, repo: string) -> result<_, string>
+      // WIT: remove-star: func(login: string, repo: string) -> result<_, string>
       removeStar(login, repo);
       console.log(`Removed star for ${login} on ${repo}.`);
     } catch (error) {
@@ -172,7 +171,7 @@ export const workflow = {
         const gotWholePage = resp.logins.length === pageSize;
         console.log(`Found ${resp.logins.length} stargazers (page size ${pageSize}).`);
         for (const login of resp.logins) {
-          // Direct *internal* call to this component's starAdded function.
+          // Direct call to this component's starAdded function.
           console.log(`Processing ${login}...`);
           workflow.starAdded(login, repo);
           // Note: To submit a child execution use
@@ -180,9 +179,9 @@ export const workflow = {
         }
         if (!gotWholePage) {
           console.log("Reached last page.");
-          break; // Didn't get a full page, so must be the end
+          break;
         }
-        cursor = resp.cursor; // Update cursor for the next iteration
+        cursor = resp.cursor;
         console.log(`Moving to next page with cursor ${cursor}`);
       }
       console.log(`Backfill for ${repo} completed.`);
@@ -218,8 +217,7 @@ export const workflow = {
           // Submit star_added_parallel as a child workflow using the Obelisk extension import.
           // No need to await; the engine handles join sets completion.
           console.log(`Submitting task for ${login}...`);
-          // WIT: func star-added-parallel-submit(join-set, login, repo) -> result<_, string>
-          // Outer Err(string) is caught below. Outer Ok(_) returns undefined.
+          // WIT: star-added-parallel-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id
           starAddedParallelSubmit(
             newJoinSetNamed(login, ClosingStrategy.Complete), // Create a join set per user
             login,
@@ -231,12 +229,11 @@ export const workflow = {
           console.debug('Reached last page.');
           break;
         }
-
-        // Update cursor for the next iteration
         cursor = resp.cursor;
         console.log(`Moving to next page with cursor ${cursor}`);
       }
-      // Log completion of the submission loop. Actual task completion happens asynchronously.
+      // Log completion of the submission loop. Actual task completion happens asynchronously, Obelisk runtime will wait until
+      // all join sets are completed.
       console.debug(`Completed submission of tasks.`);
     } catch (error) {
       throw stringify_error(error);
