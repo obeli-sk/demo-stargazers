@@ -63,8 +63,8 @@ direnv allow
 Otherwise install the following:
 * [Obelisk](https://github.com/obeli-sk/obelisk)
 * Optionally [Rust](https://rustup.rs/) for building the WASM components locally, version and other components are specified in [rust-toolchain.toml](./rust-toolchain.toml)
-* Optinally [Wasmtime](https://wasmtime.dev/) for integration testing of activities
-* Optinally [Cloudflared](https://github.com/cloudflare/cloudflared) for exposing the webhook endpoint
+* Optionally [Wasmtime](https://wasmtime.dev/) for integration testing of activities
+* Optionally [Cloudflared](https://github.com/cloudflare/cloudflared) for exposing the webhook endpoint
 
 The exact versions of dependencies used for development and testing are in [dev-deps.txt](./dev-deps.txt).
 
