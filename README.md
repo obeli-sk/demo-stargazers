@@ -31,12 +31,12 @@ Here is the complete [workflow source](./workflow/src/lib.rs) and the
 ## Setting up
 
 ### Setting up the external services
-The activities require folowing tokens to be present as environment variables:
+The activities require folowing values to be present as environment variables:
 ```sh
 export GITHUB_TOKEN="..."
-export GITHUB_WEBHOOK_SECRET="..."
 export OPENAI_API_KEY="..."
 export TURSO_TOKEN="..."
+export GITHUB_WEBHOOK_SECRET="some-secret"
 export TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"
 ```
 
