@@ -34,6 +34,9 @@ jobs:
       - uses: nixbuild/nix-quick-install-action@v30
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Populate the nix store without Obelisk # Workaround for slow garnix cache
+        run: |
+          nix develop .#noObelisk --command echo
       - name: Add garnix cache and populate the nix store with Obelisk
         run: |
           echo "extra-substituters = https://cache.garnix.io" >> ~/.config/nix/nix.conf
