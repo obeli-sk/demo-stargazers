@@ -2,7 +2,6 @@
   "type": "module",
   "devDependencies": {
     "@bytecodealliance/componentize-js": "*",
-    "@bytecodealliance/jco": "*",
     "esbuild": "^0.25.4"
   },
   "scripts": {

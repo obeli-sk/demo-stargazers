@@ -1,7 +1,6 @@
 {
   "type": "module",
   "devDependencies": {
-    "@bytecodealliance/jco": "*",
     "@bytecodealliance/componentize-js": "*"
   },
   "scripts": {
