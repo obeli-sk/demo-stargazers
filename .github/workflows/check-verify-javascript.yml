@@ -53,4 +53,5 @@ jobs:
         run: |
           nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-js-activity.toml
           nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-js-workflow.toml
+          nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-js-webhook.toml
           nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-js-all.toml
