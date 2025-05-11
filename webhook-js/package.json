@@ -1,0 +1,19 @@
+{
+  "name": "webhook-js",
+  "type": "module",
+  "scripts": {
+    "build:esbuild": "node esbuild.config.js",
+    "build:componentize": "node call-componentize.js",
+    "build": "npm run build:esbuild && npm run build:componentize"
+  },
+  "dependencies": {
+    "hono": "^4.7.9"
+  },
+  "devDependencies": {
+    "@bytecodealliance/componentize-js": "0.17.0",
+    "esbuild": "^0.25.4"
+  },
+  "componentMeta": {
+    "disableFeatures": []
+  }
+}
