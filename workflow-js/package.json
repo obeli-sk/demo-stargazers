@@ -1,10 +1,22 @@
 {
+  "name": "workflow-js",
   "type": "module",
   "devDependencies": {
-    "@bytecodealliance/componentize-js": "*"
+    "@bytecodealliance/componentize-js": "*",
+    "esbuild": "^0.25.4"
   },
   "scripts": {
-    "build": "node call-componentize.js",
+    "build:esbuild": "node esbuild.config.js",
+    "build:componentize": "node call-componentize.js",
+    "build": "npm run build:esbuild && npm run build:componentize",
     "test:submit": "obelisk client execution submit --follow stargazers:workflow/workflow.star-added-parallel '[\"tomasol\",\"obeli-sk/obelisk\"]'"
+  },
+  "componentMeta": {
+    "disableFeatures": [
+      "stdio",
+      "clocks",
+      "http",
+      "random"
+    ]
   }
 }
