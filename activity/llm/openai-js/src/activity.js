@@ -1,22 +1,9 @@
 import axios from 'axios';
 import { getEnvironment } from 'wasi:cli/environment@0.2.3';
-import { debug as log_debug, info as log_info, error as log_error } from 'obelisk:log/log@1.0.0'
-
-console.log = function (...args) {
-    const message = args.join(' ');
-    log_info(message);
-}
-console.debug = function (...args) {
-    const message = args.join(' ');
-    log_debug(message);
-}
-console.error = function (...args) {
-    const message = args.join(' ');
-    log_error(message);
-}
 
 export const llm = {
     async respond(userPrompt, settingsString) {
+        console.log("Responding to", userPrompt, settingsString);
         const ENV_OPENAI_API_KEY = "OPENAI_API_KEY";
         // TODO: Switch to `process.env[ENV_OPENAI_API_KEY]` after https://github.com/bytecodealliance/ComponentizeJS/issues/190
         const apiKey = new Map(getEnvironment()).get(ENV_OPENAI_API_KEY);

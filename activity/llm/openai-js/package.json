@@ -1,7 +1,7 @@
 {
   "type": "module",
   "devDependencies": {
-    "@bytecodealliance/componentize-js": "*",
+    "@bytecodealliance/componentize-js": "0.17.0",
     "esbuild": "^0.25.4"
   },
   "scripts": {

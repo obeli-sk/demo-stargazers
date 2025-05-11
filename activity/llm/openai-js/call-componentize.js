@@ -8,7 +8,7 @@ const { component } = await componentize(jsSource, {
   debugBindings: false,
   witPath: resolve('wit'),
   enableAot: false,
-  disableFeatures: ['stdio', 'clocks', 'random'],
+  disableFeatures: [],
   enableWizerLogging: true,
   wizerBin: '/nix/store/q3rv4iakgqsvy30jx2qj7mybkczsw2dx-wizer-8.0.0/bin/wizer' // FIXME
 });
