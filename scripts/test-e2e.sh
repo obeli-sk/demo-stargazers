@@ -36,7 +36,7 @@ trap cleanup EXIT
 
 delete_from() {
     TABLE="$1"
-    curl -X POST "https://${TURSO_LOCATION}/v2/pipeline" \
+    curl --fail -X POST "https://${TURSO_LOCATION}/v2/pipeline" \
     -H "Authorization: Bearer ${TURSO_TOKEN}" \
     -H "Content-Type: application/json" \
     -d '{
@@ -85,7 +85,7 @@ SIGNATURE=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$GITHUB_WEBHOOK_SEC
 SIGNATURE="sha256=$SIGNATURE"
 
 # Send the webhook event
-EXECUTION_ID=$(curl -X POST http://127.0.0.1:9090 \
+EXECUTION_ID=$(curl --fail -X POST http://127.0.0.1:9090 \
 -H "X-Hub-Signature-256:$SIGNATURE" \
 -d "$PAYLOAD" -i | grep -i "execution-id" | cut -d ' ' -f2- | tr -d '\r')
 
@@ -93,7 +93,7 @@ EXECUTION_ID=$(curl -X POST http://127.0.0.1:9090 \
 obelisk client execution get --follow $EXECUTION_ID
 
 # Get the first and only user back from the database.
-JSON=$(curl "localhost:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1")
+JSON=$(curl --fail "http://127.0.0.1:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1")
 LOGIN=$(echo $JSON | jq .[0].login -r)
 if [[ "$LOGIN" != ${TEST_GITHUB_LOGIN} ]]; then
     echo "Error: First stargazer should be '${TEST_GITHUB_LOGIN}', got '$LOGIN'" >&2
