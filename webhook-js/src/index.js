@@ -149,7 +149,7 @@ app.post('/', async (c) => {
         }
 
         log_info(`Workflow scheduled with execution ID: ${executionId.id}`);
-        c.header('execution-id', executionId.id.toString()); // Ensure it's a string
+        c.header('execution-id', executionId.id);
         return c.text('Webhook processed', 200);
 
     } catch (err) {
