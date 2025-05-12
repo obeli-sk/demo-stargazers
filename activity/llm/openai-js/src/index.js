@@ -38,9 +38,9 @@ export const llm = {
             max_tokens: settings.max_tokens,
         };
 
-
+        let response;
         try {
-            const response = await axios.post(
+            response = await axios.post(
                 "https://api.openai.com/v1/chat/completions",
                 requestBody,
                 {
@@ -50,28 +50,26 @@ export const llm = {
                     },
                 }
             );
-
-            if (response.status !== 200) {
-                throw `Unexpected status code: ${response.status}`;
-            }
-
-            const responseData = response.data;
-
-            if (responseData.choices && responseData.choices.length > 0 && responseData.choices[0].message) {
-                return responseData.choices[0].message.content;
-            } else {
-                throw "No response content from OpenAI or choices array is malformed.";
-            }
         } catch (error) {
-            let errorMessage = "Failed to get response from OpenAI.";
             if (error.response) {
-                errorMessage = `API Error: ${error.response.status} - ${error.response.statusText}. Details: ${JSON.stringify(error.response.data)}`;
+                throw `API Error: ${error.response.status} - ${error.response.statusText}. Details: ${JSON.stringify(error.response.data)}`;
             } else if (error.request) {
-                errorMessage = `Network Error: No response received from OpenAI. ${error.message}`;
+                throw `Network Error: No response received. ${error.message}`;
             } else {
-                errorMessage = `Request Setup Error: ${error.message}`;
+                throw `Axios Error: ${error.message}`;
             }
-            throw errorMessage;
         }
+
+        if (response.status !== 200) {
+            throw `Unexpected status code: ${response.status}`;
+        }
+
+        const responseData = response.data;
+
+        if (responseData.choices && responseData.choices.length > 0 && responseData.choices[0].message) {
+            return responseData.choices[0].message.content;
+        }
+
+        throw "No response content from OpenAI or choices array is malformed.";
     }
 }
