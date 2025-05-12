@@ -1,4 +1,4 @@
-name: check-verify-javascript
+name: check-verify-go
 permissions:
   contents: read
   issues: read
@@ -46,12 +46,9 @@ jobs:
       - name: Build Rust Components
         run: nix develop --command cargo build
       
-      - name: Build JavaScript Components
-        run: nix develop --command ./scripts/build-components-js.sh
+      - name: Build Go Components
+        run: nix develop --command ./scripts/build-components-go.sh
 
-      - name: Verify obelisk-local-js variants
+      - name: Verify obelisk-local-go variants
         run: |
-          nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-js-activity.toml
-          nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-js-workflow.toml
-          nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-js-webhook.toml
-          nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-js-all.toml
+          nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-go-activity.toml
