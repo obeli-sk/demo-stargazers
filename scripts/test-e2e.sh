@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# Usage: test-e2e.sh path-to-obelisk.toml <truncate>
+# If the second parameter is "truncate", database tables will be wiped.
+# This script starts Obelisk, 
+# sends a "star-added" HTTP request to the webhook endpoint,
+# waits for the scheduled execution to complete,
+# and verifies that the user is stored in the database along with the generated description.
+
+
 set -exuo pipefail
 cd "$(dirname "$0")/.."
 
@@ -9,9 +17,6 @@ STAR_ACCOUNT="someghaccount"
 STAR_REPO="someghrepo"
 
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
-
-# Make sure all components are fresh
-cargo build
 
 obelisk server verify --config $OBELISK_TOML
 obelisk server run --config $OBELISK_TOML &
