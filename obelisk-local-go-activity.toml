@@ -10,6 +10,7 @@ location.path = "activity/llm/openai-go/dist/openai-go.wasm"
 env_vars = ["OPENAI_API_KEY"]
 forward_stdout = "stderr"
 forward_stderr = "stderr"
+exec.lock_expiry.seconds = 5
 
 [[activity_wasm]]
 name = "activity_github_impl"

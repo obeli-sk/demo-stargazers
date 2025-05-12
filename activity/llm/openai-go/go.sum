@@ -1,6 +1,2 @@
-github.com/bytecodealliance/wasm-tools-go v0.3.0 h1:9aeDFYpbi3gtIW/nJCH+P+LhFMqezGoOfzqbUZLadho=
-github.com/bytecodealliance/wasm-tools-go v0.3.0/go.mod h1:VY+9FlpLi6jnhCrZLkyJjF9rjU4aEekgaRTk28MS2JE=
-github.com/rajatjindal/wasi-go-sdk v0.0.0-20241019020410-17b0b9ed651f h1:pniXEJZ2dWEk0f1DOQuDMWK/T5F9jTrLx5mOqE9Ou4Y=
-github.com/rajatjindal/wasi-go-sdk v0.0.0-20241019020410-17b0b9ed651f/go.mod h1:tg+nXWoYImzOB59GXC0+32C/kfs7ZtBZ+/sNOnFOaGc=
 go.bytecodealliance.org/cm v0.2.2 h1:M9iHS6qs884mbQbIjtLX1OifgyPG9DuMs2iwz8G4WQA=
 go.bytecodealliance.org/cm v0.2.2/go.mod h1:JD5vtVNZv7sBoQQkvBvAAVKJPhR/bqBH7yYXTItMfZI=
