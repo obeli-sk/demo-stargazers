@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+    
 # Usage: test-e2e.sh path-to-obelisk.toml <truncate>
 # If the second parameter is "truncate", database tables will be wiped.
 # This script starts Obelisk, 

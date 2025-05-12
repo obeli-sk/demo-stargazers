@@ -66,6 +66,9 @@ jobs:
         run: |
           nix develop --command ./scripts/test-e2e.sh obelisk-oci.toml truncate
 
+      - name: Build JavaScript WASM components
+        run: nix develop --command ./scripts/build-components-js.sh
+
       - name: Verify obelisk-local-js-all.toml
         env:
           OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
@@ -74,5 +77,4 @@ jobs:
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
         run: |
-          nix develop --command ./scripts/build-components-js.sh
           nix develop --command ./scripts/test-e2e.sh ./obelisk-local-js-all.toml truncate
