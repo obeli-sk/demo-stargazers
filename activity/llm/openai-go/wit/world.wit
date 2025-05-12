@@ -1,0 +1,11 @@
+package root:component;
+
+world root {
+
+    include wasi:cli/command@0.2.0; // tinygo requirement
+
+    import obelisk:log/log@1.0.0;
+
+    export stargazers:llm/llm;
+
+}

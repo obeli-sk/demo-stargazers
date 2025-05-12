@@ -1,0 +1,50 @@
+api.listening_addr = "127.0.0.1:5005"   # Address and port on which the API server will listen.
+webui.listening_addr = "127.0.0.1:8080" # Address and port on which the webui will listen.
+
+[log.stdout]
+enabled = true
+
+[[activity_wasm]]
+name = "activity_llm_openai_go"
+location.path = "activity/llm/openai-go/dist/openai-go.wasm"
+env_vars = ["OPENAI_API_KEY"]
+forward_stdout = "stderr"
+forward_stderr = "stderr"
+
+[[activity_wasm]]
+name = "activity_github_impl"
+location.path = "target/wasm32-wasip2/release/activity_github_impl.wasm"
+env_vars = ["GITHUB_TOKEN"]
+exec.lock_expiry.seconds = 5
+forward_stdout = "stderr"
+forward_stderr = "stderr"
+
+[[activity_wasm]]
+name = "activity_db_turso"
+location.path = "target/wasm32-wasip2/release/activity_db_turso.wasm"
+env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
+forward_stdout = "stderr"
+forward_stderr = "stderr"
+exec.lock_expiry.seconds = 5
+
+[[workflow]]
+name = "workflow"
+location.path = "target/wasm32-unknown-unknown/release/workflow.wasm"
+backtrace.sources = { "${OBELISK_TOML_DIR}/workflow/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/src/lib.rs" }
+
+[[http_server]]
+name = "webhook_server"
+listening_addr = "0.0.0.0:9090"
+
+[[webhook_endpoint]]
+name = "webhook"
+location.path = "target/wasm32-wasip2/release/webhook.wasm"
+http_server = "webhook_server"
+routes = [{ methods = ["POST", "GET"], route = "" }]
+forward_stdout = "stderr"
+forward_stderr = "stderr"
+env_vars = [
+    "GITHUB_WEBHOOK_SECRET",
+    # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
+]
+backtrace.sources = { "${OBELISK_TOML_DIR}/webhook/src/lib.rs" = "${OBELISK_TOML_DIR}/webhook/src/lib.rs" }

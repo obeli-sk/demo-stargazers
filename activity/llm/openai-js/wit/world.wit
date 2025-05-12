@@ -1,4 +1,4 @@
-package stargazers:llm-chatgpt;
+package any:any;
 
 world any {
     import wasi:cli/environment@0.2.3;
