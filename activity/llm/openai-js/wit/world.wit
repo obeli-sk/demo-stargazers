@@ -4,5 +4,9 @@ world any {
     import wasi:cli/environment@0.2.3;
     import obelisk:log/log@1.0.0;
     
+    // HTTP client imports are added automatically.
+    // import wasi:http/types@0.2.3;
+    // import wasi:http/outgoing-handler@0.2.3;
+
     export stargazers:llm/llm;
 }

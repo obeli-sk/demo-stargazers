@@ -1,9 +1,12 @@
 package root:component;
 
 world root {
-
-    include wasi:cli/command@0.2.0; // tinygo requirement
-
+    // TinyGo limitation, not used.
+    include wasi:cli/command@0.2.0; 
+    // HTTP Client
+    import wasi:http/types@0.2.0;
+    import wasi:http/outgoing-handler@0.2.0;
+    // Logging
     import obelisk:log/log@1.0.0;
 
     export stargazers:llm/llm;

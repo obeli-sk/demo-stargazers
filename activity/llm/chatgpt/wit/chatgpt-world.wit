@@ -1,5 +1,7 @@
 package stargazers:llm-chatgpt;
 
 world any {
+    // wasi:http/outgoing-handler imports are added automatically by `waki` crate.
+
     export stargazers:llm/llm;
 }
