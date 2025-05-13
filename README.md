@@ -46,11 +46,15 @@ Follow the prerequisites section of the [activity-db-turso README](./activity/db
 #### OpenAI activity
 Follow the prerequisites section of the [activity-llm-openai README](./activity/llm/openai/README.md).
 
+Reimplementation in [JavaScript](./activity/llm/openai-js/) and [Go](./activity/llm/openai-go/) is available for comparison.
+
 #### GitHub activity
 Follow the prerequisites section of the [activity-github README](./activity/github/README.md).
 
 #### GitHub webhook endpoint
 Follow the prerequisites section of the [webhook README](./webhook//README.md).
+
+Reimplementation in [JavaScript](./activity/llm/openai-js/) is available for comparison.
 
 ### Running
 
@@ -89,8 +93,20 @@ on how to set up GitHub and a https tunnel to the local instance.
 
 ### Building the WASM components locally
 The configuration above downloads the WASM Components from the Docker Hub.
-To build all the components locally run
+To build all the Rust components locally run
 ```sh
 cargo build
 obelisk server run --config ./obelisk-local.toml
 ```
+
+To build JavaScript components use
+```sh
+scripts/build-components-js.sh
+```
+
+To build Go components use
+```sh
+scripts/build-components-go.sh
+```
+
+Make sure to use tools and versions as specified in [dev-deps.txt](./dev-deps.txt).

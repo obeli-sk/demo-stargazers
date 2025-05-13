@@ -28,7 +28,7 @@
           rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
           wit-bindgen-go-cli = pkgs.buildGoModule (rec {
             pname = "wit-bindgen-go-cli";
-            version = "0.6.2";
+            version = "0.6.2"; # NB: Update version in dev-deps.sh
             src = pkgs.fetchFromGitHub {
               owner = "bytecodealliance";
               repo = "go-modules";
