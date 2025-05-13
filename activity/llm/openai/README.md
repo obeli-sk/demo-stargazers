@@ -1,4 +1,4 @@
-# ChatGPT Activity
+# OpenAI Activity
 
 Activity that sends a JSON request to `https://api.openai.com/v1/chat/completions`
 and responds with the first generated response.
@@ -24,7 +24,7 @@ but were omitted for simplicity.
 ## Running the activity
 Build the activity and run Obelisk with `obelisk-local.toml` configuration in the root of the repository.
 ```sh
-cargo build --package activity-llm-chatgpt-builder
+cargo build --package activity-llm-openai-builder
 obelisk server run --config ./obelisk-local.toml
 ```
 In another terminal run the activity.

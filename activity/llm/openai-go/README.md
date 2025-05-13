@@ -1,5 +1,7 @@
 # openai-go Activity
 
+Go reimplementation of [openai](../openai/) activity.
+
 ## Setting up
 ```sh
 go mod init ...

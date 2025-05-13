@@ -1,5 +1,5 @@
 [package]
-name = "activity-llm-chatgpt-builder"
+name = "activity-llm-openai-builder"
 description = "Runs cargo build for the parent package"
 
 authors.workspace = true

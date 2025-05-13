@@ -43,8 +43,8 @@ export TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"
 #### Turso activity
 Follow the prerequisites section of the [activity-db-turso README](./activity/db/turso/README.md).
 
-#### ChatGPT activity
-Follow the prerequisites section of the [activity-llm-chatgpt README](./activity/llm/chatgpt/README.md).
+#### OpenAI activity
+Follow the prerequisites section of the [activity-llm-openai README](./activity/llm/openai/README.md).
 
 #### GitHub activity
 Follow the prerequisites section of the [activity-github README](./activity/github/README.md).

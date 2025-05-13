@@ -23,7 +23,7 @@ push() {
 # Make sure all components are fresh
 cargo check --workspace
 
-push "target/wasm32-wasip2/release/activity_llm_chatgpt.wasm"
+push "target/wasm32-wasip2/release/activity_llm_openai.wasm"
 push "target/wasm32-wasip2/release/activity_github_impl.wasm"
 push "target/wasm32-wasip2/release/activity_db_turso.wasm"
 push "target/wasm32-unknown-unknown/release/workflow.wasm"

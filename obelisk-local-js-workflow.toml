@@ -5,8 +5,8 @@ webui.listening_addr = "127.0.0.1:8080" # Address and port on which the webui wi
 enabled = true
 
 [[activity_wasm]]
-name = "activity_llm_chatgpt"
-location.path = "target/wasm32-wasip2/release/activity_llm_chatgpt.wasm"
+name = "activity_llm_openai"
+location.path = "target/wasm32-wasip2/release/activity_llm_openai.wasm"
 exec.lock_expiry.seconds = 10
 env_vars = ["OPENAI_API_KEY"]
 forward_stdout = "stderr"

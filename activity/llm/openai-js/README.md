@@ -1,6 +1,6 @@
 # openai-js Activity
 
-JavaScript reimplementation of [chatgpt](../chatgpt/) activity.
+JavaScript reimplementation of [openai](../openai/) activity.
 
 ## Building
 ```sh

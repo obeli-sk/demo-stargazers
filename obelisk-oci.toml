@@ -5,27 +5,27 @@ webui.listening_addr = "127.0.0.1:8080" # Address and port on which the webui wi
 enabled = true
 
 [[activity_wasm]]
-name = "activity_llm_chatgpt"
-location.oci = "docker.io/getobelisk/demo_stargazers_activity_llm_chatgpt:2025-05-08@sha256:fd97501c834abdddf4ab0f9f28e5f2c8def8e67aa96beeef4bf499a93401fe59"
+name = "activity_llm_openai"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_llm_openai:2025-05-13@sha256:b34fa584d3f59297b010d254ac56f055c5b272de54454011f667dbb732bc630b"
 exec.lock_expiry.seconds = 10
 env_vars = ["OPENAI_API_KEY"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
-location.oci = "docker.io/getobelisk/demo_stargazers_activity_github_impl:2025-05-08@sha256:4555a0120c3803a4c1319db89247f2594555f51d8266b600aee9f9803ace36fe"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_github_impl:2025-05-13@sha256:61ab1e1476251ddd77ca1715330788d5c5c5c76789ee86f37cebf5813c1e377c"
 env_vars = ["GITHUB_TOKEN"]
 exec.lock_expiry.seconds = 5
 
 [[activity_wasm]]
 name = "activity_db_turso"
-location.oci = "docker.io/getobelisk/demo_stargazers_activity_db_turso:2025-05-08@sha256:79a8254a94219457f05e616378084376011ea65856ab60e21801ebbcec8161ef"
+location.oci = "docker.io/getobelisk/demo_stargazers_activity_db_turso:2025-05-13@sha256:eb0118398f13c3e0553f908d55d2290d2ea74eed599974d59805d9ca4ef8a031"
 env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 
 [[workflow]]
 name = "workflow"
-location.oci = "docker.io/getobelisk/demo_stargazers_workflow:2025-05-08@sha256:1bb28ccf4ae68ff601ed2b673265e7e25c3f6a792d9449e807c13ea56c0226f3"
-backtrace.sources = {"/home/runner/work/demo-stargazers/demo-stargazers/workflow/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/src/lib.rs"}
+location.oci = "docker.io/getobelisk/demo_stargazers_workflow:2025-05-13@sha256:e7ef7d03fc7179fcfb251b4f82d4600fa9910ce46e8cd38247b8fddc3292bc43"
+backtrace.sources = { "/home/runner/work/demo-stargazers/demo-stargazers/workflow/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/src/lib.rs" }
 
 [[http_server]]
 name = "webhook_server"
@@ -33,7 +33,7 @@ listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
 name = "webhook"
-location.oci = "docker.io/getobelisk/demo_stargazers_webhook:2025-05-08@sha256:2172e3551234cd2689559be43b10c1bd01bc1ae9715c05441e7c460c954ce4d6"
+location.oci = "docker.io/getobelisk/demo_stargazers_webhook:2025-05-13@sha256:2b3e423157ba4edb6a4be1127369405e13f7d83f05be394bc214c66e3872403e"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 forward_stdout = "stderr"
@@ -42,4 +42,4 @@ env_vars = [
     "GITHUB_WEBHOOK_SECRET",
     # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
 ]
-backtrace.sources = {"/home/runner/work/demo-stargazers/demo-stargazers/webhook/src/lib.rs" = "${OBELISK_TOML_DIR}/webhook/src/lib.rs"}
+backtrace.sources = { "/home/runner/work/demo-stargazers/demo-stargazers/webhook/src/lib.rs" = "${OBELISK_TOML_DIR}/webhook/src/lib.rs" }

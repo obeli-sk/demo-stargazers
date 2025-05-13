@@ -41,7 +41,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "activity-llm-chatgpt"
+name = "activity-llm-openai"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -51,7 +51,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "activity-llm-chatgpt-builder"
+name = "activity-llm-openai-builder"
 version = "0.1.0"
 dependencies = [
  "obelisk-component-builder",
@@ -297,7 +297,7 @@ version = "0.1.0"
 dependencies = [
  "activity-db-turso-builder",
  "activity-github-impl-builder",
- "activity-llm-chatgpt-builder",
+ "activity-llm-openai-builder",
  "webhook-builder",
  "workflow-builder",
 ]

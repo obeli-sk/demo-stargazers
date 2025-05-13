@@ -11,7 +11,7 @@ pub(crate) struct Component;
 export!(Component);
 
 #[derive(Serialize)]
-struct ChatGPTRequest {
+struct OpenAIRequest {
     model: String,
     messages: Vec<Message>,
     max_tokens: usize,
@@ -32,7 +32,7 @@ struct Message {
 }
 
 #[derive(Deserialize)]
-struct ChatGPTResponse {
+struct OpenAIResponse {
     choices: Vec<Choice>,
 }
 
@@ -68,7 +68,7 @@ impl Guest for Component {
             content: user_prompt,
         });
 
-        let request_body = ChatGPTRequest {
+        let request_body = OpenAIRequest {
             model: settings.model,
             messages,
             max_tokens: settings.max_tokens,
@@ -86,12 +86,12 @@ impl Guest for Component {
             return Err(format!("Unexpected status code: {}", resp.status_code()));
         }
 
-        let response: ChatGPTResponse = resp.json().map_err(|err| format!("{:?}", err))?;
+        let response: OpenAIResponse = resp.json().map_err(|err| format!("{:?}", err))?;
 
         if let Some(choice) = response.choices.first() {
             Ok(choice.message.content.clone())
         } else {
-            Err("No response from ChatGPT".to_string())
+            Err("No response from OpenAI".to_string())
         }
     }
 }
@@ -115,9 +115,9 @@ mod tests {
     fn request_should_succeed() {
         set_up();
 
-        let user_prompt = std::env::var("TEST_CHATGPT_USER_PROMPT")
+        let user_prompt = std::env::var("TEST_OPENAI_USER_PROMPT")
             .unwrap_or_else(|_| "Tell me about Rust programming.".to_string());
-        let settings_json = std::env::var("TEST_CHATGPT_SETTINGS_JSON").unwrap_or_else(|_| {
+        let settings_json = std::env::var("TEST_OPENAI_SETTINGS_JSON").unwrap_or_else(|_| {
             serde_json::to_string(&Settings {
                 messages: vec![Message {
                     role: Role::System,

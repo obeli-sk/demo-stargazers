@@ -17,7 +17,6 @@ import (
 const openAIEnv = "OPENAI_API_KEY"
 
 
-// Role represents a ChatGPT message role.
 type Role string
 
 const (
@@ -32,8 +31,8 @@ type Message struct {
 	Content string `json:"content"`
 }
 
-// ChatGPTRequest is the payload for the OpenAI API.
-type ChatGPTRequest struct {
+// Payload for the OpenAI API.
+type OpenAIRequest struct {
 	Model     string    `json:"model"`
 	Messages  []Message `json:"messages"`
 	MaxTokens int       `json:"max_tokens"`
@@ -45,7 +44,7 @@ type choice struct {
 		Content string `json:"content"`
 	} `json:"message"`
 }
-type ChatGPTResponse struct {
+type OpenAIResponse struct {
 	Choices []choice `json:"choices"`
 }
 
@@ -87,7 +86,7 @@ func respond(userPrompt string, settingsJSON string) (result cm.Result[string, s
 	})
 
 	// 4. Build request body
-	reqBody := ChatGPTRequest{
+	reqBody := OpenAIRequest{
 		Model:     settings.Model,
 		Messages:  settings.Messages,
 		MaxTokens: settings.MaxTokens,
@@ -129,7 +128,7 @@ func respond(userPrompt string, settingsJSON string) (result cm.Result[string, s
 	}
 
 	// 7. Read & parse response
-	var apiResp ChatGPTResponse
+	var apiResp OpenAIResponse
 	if err := json.Unmarshal(rawResp, &apiResp); err != nil {
 		return cm.Err[cm.Result[string, string, string]](
 			fmt.Sprintf("failed to parse response JSON: %v", err),

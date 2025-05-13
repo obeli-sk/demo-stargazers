@@ -12,7 +12,7 @@ version.workspace = true
 [dependencies]
 activity-github-impl-builder.path = "activity/github/impl/builder"
 activity-db-turso-builder.path = "activity/db/turso/builder"
-activity-llm-chatgpt-builder.path = "activity/llm/chatgpt/builder"
+activity-llm-openai-builder.path = "activity/llm/openai/builder"
 webhook-builder.path = "webhook/builder"
 workflow-builder.path = "workflow/builder"
 
@@ -23,8 +23,8 @@ members = [
     "activity/github/impl/builder",
     "activity/db/turso",
     "activity/db/turso/builder",
-    "activity/llm/chatgpt",
-    "activity/llm/chatgpt/builder",
+    "activity/llm/openai",
+    "activity/llm/openai/builder",
     "webhook",
     "webhook/builder",
     "workflow",
