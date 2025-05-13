@@ -15,7 +15,7 @@ npm run build # produces dist/workflow-js.wasm
 obelisk server run --config $reporoot/obelisk-local-js-workflow.toml
 ```
 
-## Executing activity
+## Executing `star-added-parallel` workflow
 ```sh
 npm run test:submit
 ```
