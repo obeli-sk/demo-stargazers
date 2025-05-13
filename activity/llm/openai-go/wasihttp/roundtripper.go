@@ -76,22 +76,12 @@ func (r *Transport) RoundTrip(incomingRequest *http.Request) (*http.Response, er
 	default:
 		outRequest.SetScheme(cm.Some(types.SchemeOther(incomingRequest.URL.Scheme)))
 	}
-	
-	var adaptedBody io.WriteCloser
-	var body *types.OutgoingBody
 
 	bodyRes := outRequest.Body()
 	if bodyRes.IsErr() {
 		return nil, fmt.Errorf("failed to acquire resource handle to request body: %s", bodyRes.Err())
 	}
-	body = bodyRes.OK()
-
-	if incomingRequest.Body != nil {
-		adaptedBody, err = NewOutgoingBody(body)
-		if err != nil {
-			return nil, fmt.Errorf("failed to adapt body: %s", err)
-		}
-	}
+	body := bodyRes.OK()
 
 	handleResp := outgoinghandler.Handle(outRequest, cm.Some(r.requestOptions()))
 	if handleResp.Err() != nil {
@@ -109,6 +99,10 @@ func (r *Transport) RoundTrip(incomingRequest *http.Request) (*http.Response, er
 
 	// NOTE(lxf): If request includes a body, copy it to the adapted wasi body
 	if incomingRequest.Body != nil {
+		adaptedBody, err := NewOutgoingBody(body)
+		if err != nil {
+			return nil, fmt.Errorf("failed to adapt body: %s", err)
+		}
 		if _, err := io.Copy(adaptedBody, incomingRequest.Body); err != nil {
 			return nil, fmt.Errorf("failed to copy body: %v", err)
 		}
@@ -118,6 +112,9 @@ func (r *Transport) RoundTrip(incomingRequest *http.Request) (*http.Response, er
 		}
 	} 
 
+	// From `outgoing-body` documentation:
+	// Finalize an outgoing body, optionally providing trailers. This must be
+    // called to signal that the response is complete.
 	outFinish := types.OutgoingBodyFinish(*body, maybeTrailers)
 	if outFinish.IsErr() {
 		return nil, fmt.Errorf("failed to finish body: %v", outFinish.Err())
@@ -166,6 +163,6 @@ func (r *Transport) RoundTrip(incomingRequest *http.Request) (*http.Response, er
 		Body:       incomingBody,
 		Trailer:    incomingTrailers,
 	}
-	
+
 	return resp, nil
 }
