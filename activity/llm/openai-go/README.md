@@ -16,10 +16,10 @@ go mod tidy
 ./build.sh
 ```
 
-## Deployment
+## Deplying and running with Obelisk
 ```sh
 # in repo root
-obelisk server run --config obelisk-go-activity.toml
+obelisk server run --config obelisk-local-go-activity.toml
 ```
 
 ## Testing
