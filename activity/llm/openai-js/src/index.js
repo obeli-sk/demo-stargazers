@@ -5,7 +5,7 @@ export const llm = {
     async respond(userPrompt, settingsString) {
         console.log("Responding to", userPrompt, settingsString);
         const ENV_OPENAI_API_KEY = "OPENAI_API_KEY";
-        // TODO: Switch to `process.env[ENV_OPENAI_API_KEY]` after https://github.com/bytecodealliance/ComponentizeJS/issues/190
+        // TODO: Switch to `process.env[ENV_OPENAI_API_KEY]` when https://github.com/bytecodealliance/ComponentizeJS/issues/190 is resolved.
         const apiKey = new Map(getEnvironment()).get(ENV_OPENAI_API_KEY);
 
         if (!apiKey) {

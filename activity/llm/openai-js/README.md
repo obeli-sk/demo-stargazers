@@ -9,12 +9,12 @@ npm run build # produces dist/openai-js.wasm
 ```
 
 ## Deplying and running with Obelisk
-
 ```sh
-obelisk server run --config $reporoot/obelisk-local-js-activity.toml
+# in repo root
+obelisk server run --config obelisk-local-js-activity.toml
 ```
 
-## Executing activity
+## Testing
 ```sh
 npm run test:submit
 ```
@@ -22,4 +22,4 @@ npm run test:submit
 ## TODOs, quirks
 
 * TODO: Automatically add  WIT imports to `external` section of `esbuild.config.js`.
-* `console.log` does not directly print to stdout, fixed by polyfilling it.
+* TODO: Switch to `process.env[ENV_OPENAI_API_KEY]` when https://github.com/bytecodealliance/ComponentizeJS/issues/190 is resolved.

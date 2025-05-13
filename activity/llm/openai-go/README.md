@@ -3,15 +3,15 @@
 ## Setting up
 ```sh
 go mod init ...
-go mod tidy # after first codegen
+rm -rf gen
+# Regenerate bindings after modifying `wit` folder
+wit-bindgen-go generate --world root --out gen wit/
+go mod tidy
 ```
 
 ## Building
-
 ```sh
-rm -rf gen
-wit-bindgen-go generate --world root --out gen wit/
-tinygo build -target=wasip2 -o dist/openai-go.wasm --wit-package wit/ --wit-world root main.go
+./build.sh
 ```
 
 ## Deployment
