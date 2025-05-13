@@ -21,5 +21,4 @@ npm run test:submit
 
 ## TODOs, quirks
 
-* TODO: Automatically add  WIT imports to `external` section of `esbuild.config.js`.
 * TODO: Switch to `process.env[ENV_OPENAI_API_KEY]` when https://github.com/bytecodealliance/ComponentizeJS/issues/190 is resolved.

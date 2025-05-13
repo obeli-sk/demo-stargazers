@@ -1,6 +1,6 @@
-package any:any;
+package root:component;
 
-world any {
+world root {
     import wasi:cli/environment@0.2.3;
     import obelisk:log/log@1.0.0;
     

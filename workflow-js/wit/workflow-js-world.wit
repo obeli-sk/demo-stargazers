@@ -1,6 +1,6 @@
-package stargazers:workflow-impl;
+package root:component;
 
-world any {
+world root {
     export stargazers:workflow/workflow;
 
     // Import the implemented interface for `backfill`

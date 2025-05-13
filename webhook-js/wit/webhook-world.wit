@@ -1,6 +1,6 @@
-package stargazers:webhook;
+package root:component;
 
-world any {
+world root {
     export wasi:http/incoming-handler@0.2.3;
 
     // Import the workflow -ext interface for scheduling `star_added`, `star_removed` executions.
