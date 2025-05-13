@@ -52,3 +52,5 @@ jobs:
       - name: Verify obelisk-local-go variants
         run: |
           nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-go-activity.toml
+          nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-go-webhook.toml
+          # obelisk-local-go-all.toml is verified by e2e workflow

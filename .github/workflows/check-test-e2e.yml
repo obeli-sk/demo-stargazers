@@ -82,7 +82,7 @@ jobs:
       - name: Build Go WASM components
         run: nix develop --command ./scripts/build-components-go.sh
 
-      - name: Verify obelisk-local-go-activity.toml
+      - name: Verify obelisk-local-go-all.toml
         env:
           OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
@@ -90,4 +90,4 @@ jobs:
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
         run: |
-          nix develop --command ./scripts/test-e2e.sh ./obelisk-local-go-activity.toml truncate
+          nix develop --command ./scripts/test-e2e.sh ./obelisk-local-go-all.toml truncate
