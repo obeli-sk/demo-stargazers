@@ -58,13 +58,13 @@ cargo test --target=x86_64-unknown-linux-gnu
 ```
 
 ## Manual end-to-end testing
-Disable the request verification as mentioned above.
+Disable the request verification using `GITHUB_WEBHOOK_INSECURE` as mentioned above.
 Start the `obelisk` server according to the root [README](../README.md).
 Execute a request locally:
 ```sh
 export TEST_GITHUB_LOGIN="..."
 
-curl -X POST http://127.0.0.1:9090 -d '{
+curl -v -X POST http://127.0.0.1:9090 -d '{
     "action": "created",
     "sender": {
         "login": "'$TEST_GITHUB_LOGIN'"
@@ -85,6 +85,8 @@ To obtain a list of 5 last updated stargazers, run
 ```sh
 curl -v http://127.0.0.1:9090
 ```
+
+For testing the hash signature see the script in the next section.
 
 ## Automated end-to-end testing
 Check out [test-e2e.sh](/scripts/test-e2e.sh) for details.

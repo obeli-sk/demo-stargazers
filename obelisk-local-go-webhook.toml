@@ -5,8 +5,8 @@ webui.listening_addr = "127.0.0.1:8080" # Address and port on which the webui wi
 enabled = true
 
 [[activity_wasm]]
-name = "activity_llm_openai_go"
-location.path = "activity/llm/openai-go/dist/openai-go.wasm"
+name = "activity_llm_openai"
+location.path = "target/wasm32-wasip2/release/activity_llm_openai.wasm"
 exec.lock_expiry.seconds = 10
 env_vars = ["OPENAI_API_KEY"]
 forward_stdout = "stderr"
@@ -38,14 +38,13 @@ name = "webhook_server"
 listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
-name = "webhook"
-location.path = "target/wasm32-wasip2/release/webhook.wasm"
+name = "webhook_go"
+location.path = "webhook-go/dist/webhook-go.wasm"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
-forward_stdout = "stderr"
-forward_stderr = "stderr"
 env_vars = [
     "GITHUB_WEBHOOK_SECRET",
-    # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
+    # "GITHUB_WEBHOOK_INSECURE=true", # to disable signature verification
 ]
-backtrace.sources = { "${OBELISK_TOML_DIR}/webhook/src/lib.rs" = "${OBELISK_TOML_DIR}/webhook/src/lib.rs" }
+forward_stdout = "stderr"
+forward_stderr = "stderr"

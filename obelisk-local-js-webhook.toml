@@ -38,7 +38,7 @@ name = "webhook_server"
 listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
-name = "webhook"
+name = "webhook_js"
 location.path = "webhook-js/dist/webhook-js.wasm"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
