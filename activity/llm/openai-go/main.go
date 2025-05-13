@@ -9,7 +9,7 @@ import (
 	"os"
 
 	"go.bytecodealliance.org/cm"
-	"github.com/obeli-sk/demo-stargazers/openai-go/wasihttp"
+	"go.wasmcloud.dev/component/net/wasihttp"
 	logbindings "github.com/obeli-sk/demo-stargazers/openai-go/gen/obelisk/log/log"
 	llmbindings "github.com/obeli-sk/demo-stargazers/openai-go/gen/stargazers/llm/llm"
 )
