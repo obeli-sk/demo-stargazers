@@ -30,33 +30,27 @@ func (c *Component) StarAdded(login string, repo string) cm.Result[string, struc
 	// .Some() on cm.Option[string] returns *string (or nil if the option was None)
 	descriptionPtr := resDescWrapped.OK().Some()
 
-	if descriptionPtr == nil { // If description was None from the database
+	if descriptionPtr == nil { // If description was not yet set, generate it.
 		// Imported WIT: stargazers:github/account.account-info: func(login: string) -> result<string, string>
 		resInfoWrapped := stargazersGithubAccount.AccountInfo(login)
 		if resInfoWrapped.IsErr() {
 			return cm.Err[cm.Result[string, struct{}, string]](*resInfoWrapped.Err())
 		}
-		// resInfoWrapped.OK() returns *string 
-		infoPtr := resInfoWrapped.OK()
-		info := *infoPtr
+		info := *resInfoWrapped.OK()
 
 		// Imported WIT: stargazers:db/llm.get-settings-json: func() -> result<string, string>
 		resSettingsWrapped := stargazersDbLlm.GetSettingsJSON() // Assuming GetSettingsJSON based on previous fix
 		if resSettingsWrapped.IsErr() {
 			return cm.Err[cm.Result[string, struct{}, string]](*resSettingsWrapped.Err())
 		}
-		// resSettingsWrapped.OK() returns *string.
-		settingsPtr := resSettingsWrapped.OK()
-		settingsJson := *settingsPtr
+		settingsJson := *resSettingsWrapped.OK()
 
 		// Imported WIT: stargazers:llm/llm.respond: func(user-prompt: string, settings-json: string) -> result<string, string>
 		resLlmDescWrapped := stargazersLlmLlm.Respond(info, settingsJson)
 		if resLlmDescWrapped.IsErr() {
 			return cm.Err[cm.Result[string, struct{}, string]](*resLlmDescWrapped.Err())
 		}
-		// resLlmDescWrapped.OK() returns *string. If llmDescriptionPtr is nil, next line will panic.
-		llmDescriptionPtr := resLlmDescWrapped.OK()
-		llmDescription := *llmDescriptionPtr
+		llmDescription := *resLlmDescWrapped.OK()
 
 		// Imported WIT: stargazers:db/user.update-user-description: func(username: string, description: string) -> result<_, string>
 		resUpdateWrapped := stargazersDbUser.UpdateUserDescription(login, llmDescription)
@@ -95,14 +89,13 @@ func (c *Component) StarAddedParallel(login string, repo string) cm.Result[strin
 			errTuplePtr := awaitInfoWrapped.Err()
 			return cm.Err[cm.Result[string, struct{}, string]](errTuplePtr.F1.String())
 		}
-		infoTuplePtr := awaitInfoWrapped.OK() // .OK() is *TupleOKType. If nil, next line (infoTuplePtr.F1) will panic.
+		infoTuplePtr := awaitInfoWrapped.OK() // Tuple of (execution-id, function result)
 		innerInfoResult := infoTuplePtr.F1    // This is cm.Result[string, string]
 
 		if innerInfoResult.IsErr() {
 			return cm.Err[cm.Result[string, struct{}, string]](*innerInfoResult.Err())
 		}
-		infoPtr := innerInfoResult.OK() // .OK() is *string. If nil, next line (*infoPtr) will panic.
-		info := *infoPtr
+		info := *innerInfoResult.OK()
 
 		// Imported WIT: stargazers:db-obelisk-ext/llm.get-settings-json-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<string, string>>, tuple<execution-id, execution-error>>
 		awaitSettingsWrapped := stargazersDbObeliskExtLlm.GetSettingsJSONAwaitNext(joinSetSettings)
@@ -110,22 +103,20 @@ func (c *Component) StarAddedParallel(login string, repo string) cm.Result[strin
 			errTuplePtr := awaitSettingsWrapped.Err()
 			return cm.Err[cm.Result[string, struct{}, string]](errTuplePtr.F1.String())
 		}
-		settingsTuplePtr := awaitSettingsWrapped.OK() // If nil, next line (settingsTuplePtr.F1) will panic.
+		settingsTuplePtr := awaitSettingsWrapped.OK() // Tuple of (execution-id, function result)
 		innerSettingsResult := settingsTuplePtr.F1    // This is cm.Result[string, string]
 
 		if innerSettingsResult.IsErr() {
 			return cm.Err[cm.Result[string, struct{}, string]](*innerSettingsResult.Err())
 		}
-		settingsPtr := innerSettingsResult.OK() // If nil, next line (*settingsPtr) will panic.
-		settingsJson := *settingsPtr
+		settingsJson := *innerSettingsResult.OK()
 
 		// Imported WIT: stargazers:llm/llm.respond: func(user-prompt: string, settings-json: string) -> result<string, string>
 		resLlmDescWrapped := stargazersLlmLlm.Respond(info, settingsJson)
 		if resLlmDescWrapped.IsErr() {
 			return cm.Err[cm.Result[string, struct{}, string]](*resLlmDescWrapped.Err())
 		}
-		llmDescriptionPtr := resLlmDescWrapped.OK() // If nil, next line (*llmDescriptionPtr) will panic.
-		llmDescription := *llmDescriptionPtr
+		llmDescription := *resLlmDescWrapped.OK()
 
 		// Imported WIT: stargazers:db/user.update-user-description: func(username: string, description: string) -> result<_, string>
 		resUpdateWrapped := stargazersDbUser.UpdateUserDescription(login, llmDescription)
@@ -162,9 +153,7 @@ func (c *Component) Backfill(repo string) (result cm.Result[string, struct{}, st
 		if stargazersCMOption.None() {
 			break // No more stargazers
 		}
-		// .Some() on cm.Option[Stargazers] returns *stargazersGithubAccount.Stargazers
-		respPtr := stargazersCMOption.Some()
-		resp := *respPtr
+		resp := *stargazersCMOption.Some()
 
 		gotWholePage := uint(resp.Logins.Len()) == uint(pageSize)
 		loginsSlice := resp.Logins.Slice()
@@ -202,9 +191,7 @@ func (c *Component) BackfillParallel(repo string) (result cm.Result[string, stru
 		if stargazersCMOption.None() {
 			break // No more stargazers
 		}
-		// .Some() on cm.Option[Stargazers] returns *stargazersGithubAccount.Stargazers
-		respPtr := stargazersCMOption.Some()
-		resp := *respPtr
+		resp := *stargazersCMOption.Some()
 
 		gotWholePage := uint(resp.Logins.Len()) == uint(pageSize)
 		loginsSlice := resp.Logins.Slice()
