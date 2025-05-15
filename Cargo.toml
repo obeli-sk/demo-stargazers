@@ -40,7 +40,7 @@ edition = "2021"
 rust-version = "1.83.0"
 
 [workspace.dependencies]
-cynic = "3.10.0"
+cynic = "3.11.0"
 cynic-codegen = "3.10.0"
 derive_more = { version = "2.0", features = ["display"] }
 hex = "0.4.3"
