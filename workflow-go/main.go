@@ -39,7 +39,7 @@ func (c *Component) StarAdded(login string, repo string) cm.Result[string, struc
 		info := *resInfoWrapped.OK()
 
 		// Imported WIT: stargazers:db/llm.get-settings-json: func() -> result<string, string>
-		resSettingsWrapped := stargazersDbLlm.GetSettingsJSON() // Assuming GetSettingsJSON based on previous fix
+		resSettingsWrapped := stargazersDbLlm.GetSettingsJSON()
 		if resSettingsWrapped.IsErr() {
 			return cm.Err[cm.Result[string, struct{}, string]](*resSettingsWrapped.Err())
 		}

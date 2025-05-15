@@ -64,7 +64,6 @@ export const workflow = {
       const existingDescription = addStarGetDescription(login, repo);
 
       if (existingDescription === null || existingDescription === undefined) {
-        // Description doesn't exist, fetch info and generate it.
         console.log(`No description for ${login} on ${repo}, generating...`);
 
         // 2. Fetch the account info from GitHub.
@@ -83,8 +82,6 @@ export const workflow = {
         // WIT: update-user-description: func(username: string, description: string) -> result<_, string>
         updateUserDescription(login, description);
         console.log(`Generated and saved description for ${login}`);
-      } else {
-        console.log(`Description already exists for ${login} on ${repo}.`);
       }
     } catch (error) {
       throw stringify_error(error);
