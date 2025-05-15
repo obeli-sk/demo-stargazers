@@ -88,8 +88,8 @@ impl Guest for Component {
 
         let response: OpenAIResponse = resp.json().map_err(|err| format!("{:?}", err))?;
 
-        if let Some(choice) = response.choices.first() {
-            Ok(choice.message.content.clone())
+        if let Some(choice) = response.choices.into_iter().next() {
+            Ok(choice.message.content)
         } else {
             Err("No response from OpenAI".to_string())
         }
