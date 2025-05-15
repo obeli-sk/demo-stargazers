@@ -3,6 +3,9 @@
 Go reimplementation of [webhook](../webhook/).
 
 ## Setting up
+Required versions of `tinygo`, `wit-bindgen-go-cli`, `wasm-tools` can be found in [dev-deps.txt](../dev-deps.txt).
+See [Go tooling](https://component-model.bytecodealliance.org/language-support/go.html) for more information.
+
 ```sh
 go mod init ...
 rm -rf gen
