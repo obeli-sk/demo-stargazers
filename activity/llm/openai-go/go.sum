@@ -1,4 +1,4 @@
-github.com/tomasol/wasmcloud-go/component v0.0.0-20250513152208-f958b95ffbfa h1:9vN7nhO70ItnBhUEo+/ns/th7zUZUWd4ycI5yyZ/pLo=
-github.com/tomasol/wasmcloud-go/component v0.0.0-20250513152208-f958b95ffbfa/go.mod h1:Ww1oCrzFXk/QSlE7X/vJRI7rF3bmhCc/Usp7Isf8Atw=
+github.com/wasmCloud/go/component v0.0.7-0.20250514232943-294cdb5b7777 h1:EkiL6kOj9zaqTQStB4NbiidnntESukQMtL67QWN0cqM=
+github.com/wasmCloud/go/component v0.0.7-0.20250514232943-294cdb5b7777/go.mod h1:Ww1oCrzFXk/QSlE7X/vJRI7rF3bmhCc/Usp7Isf8Atw=
 go.bytecodealliance.org/cm v0.2.2 h1:M9iHS6qs884mbQbIjtLX1OifgyPG9DuMs2iwz8G4WQA=
 go.bytecodealliance.org/cm v0.2.2/go.mod h1:JD5vtVNZv7sBoQQkvBvAAVKJPhR/bqBH7yYXTItMfZI=
