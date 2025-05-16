@@ -2,7 +2,7 @@
   "name": "workflow-js",
   "type": "module",
   "devDependencies": {
-    "@bytecodealliance/componentize-js": "^0.18.2",
+    "@bytecodealliance/componentize-js": "*",
     "esbuild": "^0.25.4"
   },
   "scripts": {
