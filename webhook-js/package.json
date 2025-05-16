@@ -10,7 +10,7 @@
     "hono": "^4.7.9"
   },
   "devDependencies": {
-    "@bytecodealliance/componentize-js": "0.17.0",
+    "@bytecodealliance/componentize-js": "^0.18.2",
     "esbuild": "^0.25.4"
   },
   "componentMeta": {
