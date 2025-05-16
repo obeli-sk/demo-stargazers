@@ -1,4 +1,4 @@
-github.com/wasmCloud/go/component v0.0.7-0.20250514232943-294cdb5b7777 h1:EkiL6kOj9zaqTQStB4NbiidnntESukQMtL67QWN0cqM=
-github.com/wasmCloud/go/component v0.0.7-0.20250514232943-294cdb5b7777/go.mod h1:Ww1oCrzFXk/QSlE7X/vJRI7rF3bmhCc/Usp7Isf8Atw=
 go.bytecodealliance.org/cm v0.2.2 h1:M9iHS6qs884mbQbIjtLX1OifgyPG9DuMs2iwz8G4WQA=
 go.bytecodealliance.org/cm v0.2.2/go.mod h1:JD5vtVNZv7sBoQQkvBvAAVKJPhR/bqBH7yYXTItMfZI=
+go.wasmcloud.dev/component v0.0.7 h1:0yVg0hLqejQgj5mBu+mBDIGE4QPvZ16ALhhUSDkEbxY=
+go.wasmcloud.dev/component v0.0.7/go.mod h1:Ww1oCrzFXk/QSlE7X/vJRI7rF3bmhCc/Usp7Isf8Atw=
