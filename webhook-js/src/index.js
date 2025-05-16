@@ -9,12 +9,13 @@ import { listStargazers } from 'stargazers:db/user';
 const HTTP_HEADER_SIGNATURE = "X-Hub-Signature-256";
 const ENV_GITHUB_WEBHOOK_INSECURE = "GITHUB_WEBHOOK_INSECURE";
 const ENV_GITHUB_WEBHOOK_SECRET = "GITHUB_WEBHOOK_SECRET";
-// Enums are strings.
+
 // WIT: package stargazers:db/user enum ordering { ascending, descending, }
+// Note: WIT enum variants are not exposed by the binding generator.
 const OrderingAscending = 'ascending';
 const OrderingDescending = 'descending';
-// Variants are encoded with 'tag'.
 // WIT: obelisk:types/time@1.1.0 variant schedule-at { now,.. }
+// Note: WIT Variants are encoded with 'tag'.
 const Now = { "tag": "now" };
 
 // Helper function to convert ArrayBuffer to hex string
@@ -168,9 +169,7 @@ app.get('/', async (c) => {
             limit = MAX_LIMIT;
         }
         limit = Math.min(limit, MAX_LIMIT);
-
-        const repo = c.req.query('repo') || undefined; // Pass undefined if not present
-
+        const repo = c.req.query('repo');
         let orderingParam = c.req.query('ordering');
         let ordering;
         if (orderingParam === "asc") {
@@ -178,14 +177,10 @@ app.get('/', async (c) => {
         } else {
             ordering = OrderingDescending;
         }
-
         log_info(`Listing stargazers: limit=${limit}, repo=${repo}, ordering=${JSON.stringify(ordering)}`);
-
         // WIT: list-stargazers: func(last: u8, repo: option<string>, ordering: ordering) -> result<list<stargazer>, string>;
         const list = listStargazers(limit, repo, ordering);
-
         return c.json(list);
-
     } catch (err) {
         log_error(`Error handling GET request: ${err.message} ${err.stack}`);
         return c.text('Internal Server Error', 500);

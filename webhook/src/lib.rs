@@ -115,7 +115,7 @@ fn verify_signature(secret: &str, payload: &[u8], sha256_signature: &str) {
         .expect("verification must succeed");
 }
 
-/// Render a table with last few stargazers.
+/// Render a JSON array with last few stargazers.
 fn handle_get(req: Request) -> Result<Response, ErrorCode> {
     const MAX_LIMIT: u8 = 5;
     let query = req.query();
