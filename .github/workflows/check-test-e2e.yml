@@ -44,7 +44,7 @@ jobs:
           nix develop --command echo
 
       - name: Build Rust WASM components
-        run: nix develop --command cargo build
+        run: nix develop --command just rust
 
       - name: Verify obelisk-local.toml
         env:

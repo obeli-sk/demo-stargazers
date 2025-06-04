@@ -1,34 +1,11 @@
-[package]
-name = "dummy-lib"
-readme = "README.md"
-
-authors.workspace = true
-edition.workspace = true
-license.workspace = true
-repository.workspace = true
-rust-version.workspace = true
-version.workspace = true
-
-[dependencies]
-activity-github-impl-builder.path = "activity/github/impl/builder"
-activity-db-turso-builder.path = "activity/db/turso/builder"
-activity-llm-openai-builder.path = "activity/llm/openai/builder"
-webhook-builder.path = "webhook/builder"
-workflow-builder.path = "workflow/builder"
-
 [workspace]
 resolver = "2"
 members = [
     "activity/github/impl",
-    "activity/github/impl/builder",
     "activity/db/turso",
-    "activity/db/turso/builder",
     "activity/llm/openai",
-    "activity/llm/openai/builder",
     "webhook",
-    "webhook/builder",
     "workflow",
-    "workflow/builder",
 ]
 
 [workspace.package]
@@ -37,7 +14,7 @@ license = "MIT"
 repository = "https://github.com/obeli-sk/stargazers"
 authors = ["Project Developers"]
 edition = "2021"
-rust-version = "1.83.0"
+rust-version = "1.87.0"
 
 [workspace.dependencies]
 cynic = "3.11.0"
@@ -46,7 +23,6 @@ derive_more = { version = "2.0", features = ["display"] }
 hex = "0.4.3"
 hmac = "0.12.1"
 humantime = "2.2.0"
-obelisk-component-builder = "0.16.0"
 rand = { version = "0.9", default-features = false, features = [
     "small_rng",
     "os_rng",
@@ -61,3 +37,4 @@ wit-bindgen = "0.42.1"
 
 [profile.release]
 opt-level = "s"
+debug = 1

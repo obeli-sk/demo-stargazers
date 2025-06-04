@@ -14,7 +14,7 @@ export GITHUB_TOKEN="..."
 ## Running the activity
 Build the activity and run Obelisk with `obelisk-local.toml` configuration in the root of the repository.
 ```sh
-cargo build --package activity-github-impl-builder
+cargo build --release
 obelisk server run --config ./obelisk-local.toml
 ```
 In another terminal run the activity.
