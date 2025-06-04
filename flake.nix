@@ -46,6 +46,7 @@
             cargo-expand
             cargo-generate
             cargo-nextest
+            just
             nixpkgs-fmt
             pkg-config
             rustToolchain

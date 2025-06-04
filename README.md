@@ -95,18 +95,18 @@ on how to set up GitHub and a https tunnel to the local instance.
 The configuration above downloads the WASM Components from the Docker Hub.
 To build all the Rust components locally run
 ```sh
-cargo build
+just rust
 obelisk server run --config ./obelisk-local.toml
 ```
 
 To build JavaScript components use
 ```sh
-scripts/build-components-js.sh
+just js
 ```
 
 To build Go components use
 ```sh
-scripts/build-components-go.sh
+just go
 ```
 
 Make sure to use tools and versions as specified in [dev-deps.txt](./dev-deps.txt).

@@ -15,13 +15,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "activity-db-turso-builder"
-version = "0.1.0"
-dependencies = [
- "obelisk-component-builder",
-]
-
-[[package]]
 name = "activity-github-impl"
 version = "0.1.0"
 dependencies = [
@@ -34,13 +27,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "activity-github-impl-builder"
-version = "0.1.0"
-dependencies = [
- "obelisk-component-builder",
-]
-
-[[package]]
 name = "activity-llm-openai"
 version = "0.1.0"
 dependencies = [
@@ -48,13 +34,6 @@ dependencies = [
  "serde_json",
  "waki",
  "wit-bindgen 0.42.1",
-]
-
-[[package]]
-name = "activity-llm-openai-builder"
-version = "0.1.0"
-dependencies = [
- "obelisk-component-builder",
 ]
 
 [[package]]
@@ -115,38 +94,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
 
 [[package]]
-name = "camino"
-version = "1.1.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b96ec4966b5813e2c0507c1f86115c8c5abaadc3980879c3424042a02fd1ad3"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "cargo-platform"
-version = "0.1.9"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e35af189006b9c0f00a064685c727031e3ed2d8020f7ba284d78cc2671bd36ea"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "cargo_metadata"
-version = "0.19.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dd5eb614ed4c27c5d706420e4320fbe3216ab31fa1c33cd8246ac36dae4479ba"
-dependencies = [
- "camino",
- "cargo-platform",
- "semver",
- "serde",
- "serde_json",
- "thiserror 2.0.12",
-]
-
-[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -181,7 +128,7 @@ dependencies = [
  "ref-cast",
  "serde",
  "static_assertions",
- "thiserror 1.0.69",
+ "thiserror",
 ]
 
 [[package]]
@@ -198,7 +145,7 @@ dependencies = [
  "quote",
  "strsim 0.10.0",
  "syn",
- "thiserror 1.0.69",
+ "thiserror",
 ]
 
 [[package]]
@@ -289,17 +236,6 @@ dependencies = [
  "block-buffer",
  "crypto-common",
  "subtle",
-]
-
-[[package]]
-name = "dummy-lib"
-version = "0.1.0"
-dependencies = [
- "activity-db-turso-builder",
- "activity-github-impl-builder",
- "activity-llm-openai-builder",
- "webhook-builder",
- "workflow-builder",
 ]
 
 [[package]]
@@ -610,15 +546,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
 
 [[package]]
-name = "obelisk-component-builder"
-version = "0.16.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8381af4cf4fe5b542520a92a69b987b19955ea215644b1111fe93f2a4bf03144"
-dependencies = [
- "cargo_metadata",
-]
-
-[[package]]
 name = "once_cell"
 version = "1.21.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -794,9 +721,6 @@ name = "semver"
 version = "1.0.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56e6fa9c48d24d85fb3de5ad847117517440f6beceb7798af16b4a87d616b8d0"
-dependencies = [
- "serde",
-]
 
 [[package]]
 name = "serde"
@@ -906,16 +830,7 @@ version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b6aaf5339b578ea85b50e080feb250a3e8ae8cfcdff9a461c9ec2904bc923f52"
 dependencies = [
- "thiserror-impl 1.0.69",
-]
-
-[[package]]
-name = "thiserror"
-version = "2.0.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "567b8a2dae586314f7be2a752ec7474332959c6460e02bde30d702a66d488708"
-dependencies = [
- "thiserror-impl 2.0.12",
+ "thiserror-impl",
 ]
 
 [[package]]
@@ -923,17 +838,6 @@ name = "thiserror-impl"
 version = "1.0.69"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4fee6c4efc90059e10f81e6d42c60a18f76588c3d74cb83a0b242a2b6c7504c1"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
-
-[[package]]
-name = "thiserror-impl"
-version = "2.0.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f7cf42b4507d8ea322120659672cf1b9dbb93f8f2d4ecfd6e51350ff5b17a1d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1085,13 +989,6 @@ dependencies = [
  "waki",
  "waki-macros",
  "wit-bindgen 0.42.1",
-]
-
-[[package]]
-name = "webhook-builder"
-version = "0.1.0"
-dependencies = [
- "obelisk-component-builder",
 ]
 
 [[package]]
@@ -1306,13 +1203,6 @@ name = "workflow"
 version = "0.1.0"
 dependencies = [
  "wit-bindgen 0.42.1",
-]
-
-[[package]]
-name = "workflow-builder"
-version = "0.1.0"
-dependencies = [
- "obelisk-component-builder",
 ]
 
 [[package]]
