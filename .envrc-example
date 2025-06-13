@@ -5,7 +5,7 @@ export GITHUB_TOKEN="..."
 export GITHUB_WEBHOOK_SECRET="..."
 export OPENAI_API_KEY="..."
 export TURSO_TOKEN="..."
-export TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"
+export TURSO_LOCATION="[yourdb].turso.io"
 
 export TEST_OPENAI_API_KEY="..."
 export TEST_TURSO_TOKEN="..."

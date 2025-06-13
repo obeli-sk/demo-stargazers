@@ -37,7 +37,7 @@ export GITHUB_TOKEN="..."
 export OPENAI_API_KEY="..."
 export TURSO_TOKEN="..."
 export GITHUB_WEBHOOK_SECRET="some-secret"
-export TURSO_LOCATION="[databaseName]-[organizationSlug].turso.io"
+export TURSO_LOCATION="[yourdb].turso.io"
 ```
 
 #### Turso activity
