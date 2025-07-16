@@ -13,10 +13,11 @@
   },
   "componentMeta": {
     "disableFeatures": [
-      "stdio",
       "clocks",
+      "fetch-event",
       "http",
-      "random"
+      "random",
+      "stdio"
     ]
   }
 }
