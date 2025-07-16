@@ -4,7 +4,8 @@ JavaScript reimplementation of [webhook](../webhook/)
 
 ## Building
 ```sh
-npm run build
+npm install
+npm run build # produces dist/webhook-js.wasm
 ```
 
 ## Deplying and running with Obelisk

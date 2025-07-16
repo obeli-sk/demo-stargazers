@@ -37,9 +37,7 @@ function hexToUint8Array(hexString) {
     return byteArray;
 }
 
-/**
- * Verify a message using a shared secret and X-Hub-Signature-256 formatted hash.
- */
+// Verify a message using a shared secret and X-Hub-Signature-256 formatted hash.
 async function verifySignature(secret, payloadBody, sha256SignatureHeader) {
     if (!sha256SignatureHeader) {
         log_error("Missing X-Hub-Signature-256 header");
