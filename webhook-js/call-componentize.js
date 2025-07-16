@@ -6,7 +6,6 @@ import { delimiter } from 'path';
 import { env, platform } from 'process';
 import { readFileSync } from 'fs';
 
-
 const jsSource = await readFile('bundle/index.bundled.js', 'utf8');
 
 let wizerBin;
