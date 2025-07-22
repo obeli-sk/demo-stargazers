@@ -32,7 +32,7 @@ const { component } = await componentize(jsSource, {
   witPath: resolve('wit'),
   enableAot: false,
   disableFeatures: packageJson.componentMeta.disableFeatures,
-  enableWizerLogging: true,
+  enableWizerLogging: false,
   wizerBin,
 });
 const pkgName = packageJson.name;
