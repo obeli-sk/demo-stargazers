@@ -76,17 +76,17 @@ impl Guest for Component {
 
         let resp = Client::new()
             .post("https://api.openai.com/v1/chat/completions")
-            .header("Authorization", format!("Bearer {}", api_key))
+            .header("Authorization", format!("Bearer {api_key}"))
             .header("Content-Type", "application/json")
             .json(&request_body)
             .send()
-            .map_err(|err| format!("{:?}", err))?;
+            .map_err(|err| format!("{err:?}"))?;
 
         if resp.status_code() != 200 {
             return Err(format!("Unexpected status code: {}", resp.status_code()));
         }
 
-        let response: OpenAIResponse = resp.json().map_err(|err| format!("{:?}", err))?;
+        let response: OpenAIResponse = resp.json().map_err(|err| format!("{err:?}"))?;
 
         if let Some(choice) = response.choices.into_iter().next() {
             Ok(choice.message.content)

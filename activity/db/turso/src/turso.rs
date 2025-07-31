@@ -167,7 +167,7 @@ impl TursoClient {
             .post()
             .json(request)
             .send()
-            .map_err(|err| format!("Failed to send request: {:?}", err))?;
+            .map_err(|err| format!("Failed to send request: {err:?}"))?;
         if resp.status_code() != 200 {
             return Err(format!("Unexpected status code: {}", resp.status_code()));
         }
