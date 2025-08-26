@@ -31,7 +31,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.ref }} # Use the ref if provided, otherwise defaults to the current branch/commit
 
-      - uses: nixbuild/nix-quick-install-action@v32
+      - uses: nixbuild/nix-quick-install-action@v33
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Populate the nix store without Obelisk # Workaround for slow garnix cache
