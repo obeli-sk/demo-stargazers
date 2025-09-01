@@ -20,8 +20,8 @@ push() {
     sed -i -E "/name = \"${FILE_NAME_WITHOUT_EXT}\"/{n;s|location\.oci = \".*\"|location.oci = \"${OUTPUT}\"|}" "$TOML_FILE"
 }
 
-# Make sure all components are fresh
-cargo check --workspace
+# Rebuild rust components
+just rust
 
 push "target/wasm32-wasip2/release/activity_llm_openai.wasm"
 push "target/wasm32-wasip2/release/activity_github_impl.wasm"
