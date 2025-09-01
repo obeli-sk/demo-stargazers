@@ -1,0 +1,17 @@
+package root:component;
+
+world root {
+    export wasi:http/incoming-handler@0.2.0;
+
+    // Import the workflow -schedule interface for scheduling `star_added`, `star_removed` executions.
+    import stargazers:workflow-obelisk-schedule/workflow;
+    // Import the database action for running `list-stargazers`.
+    import stargazers:db/user;
+    
+    import obelisk:log/log@1.0.0;
+
+    import wasi:cli/environment@0.2.0;
+    
+    // TinyGo limitation, not used.
+    include wasi:cli/command@0.2.0; 
+}

@@ -30,7 +30,7 @@ exec.lock_expiry.seconds = 5
 
 [[workflow]]
 name = "workflow_js"
-location.path = "workflow-js/dist/workflow-js.wasm"
+location.path = "workflow/workflow-js/dist/workflow-js.wasm"
 
 [[http_server]]
 name = "webhook_server"
@@ -38,7 +38,7 @@ listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
 name = "webhook"
-location.path = "webhook-js/dist/webhook-js.wasm"
+location.path = "webhook/webhook-js/dist/webhook-js.wasm"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 env_vars = [

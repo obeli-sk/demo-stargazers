@@ -8,8 +8,8 @@ rust:
 	(cd activity/github/impl && cargo build --release)
 	(cd activity/db/turso && cargo build --release)
 	(cd activity/llm/openai && cargo build --release)
-	(cd webhook && cargo build --release)
-	(cd workflow && cargo build --release)
+	(cd webhook/webhook-rs && cargo build --release)
+	(cd workflow/workflow-rs && cargo build --release)
 
 # Build JavaScript components
 js:

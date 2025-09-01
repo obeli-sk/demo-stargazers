@@ -30,13 +30,13 @@ exec.lock_expiry.seconds = 5
 
 [[workflow]]
 name = "workflow_go"
-location.path = "workflow-go/dist/workflow-go.wasm"
+location.path = "workflow/workflow-go/dist/workflow-go.wasm"
 stub_wasi = true
 [workflow.backtrace.sources]
-"${OBELISK_TOML_DIR}/workflow-go/main.go" = "${OBELISK_TOML_DIR}/workflow-go/main.go"
-"${OBELISK_TOML_DIR}/workflow-go/gen/stargazers/workflow/workflow/workflow.wasm.go" = "${OBELISK_TOML_DIR}/workflow-go/gen/stargazers/workflow/workflow/workflow.wasm.go"
-"${OBELISK_TOML_DIR}/workflow-go/gen/stargazers/github-obelisk-ext/account/account.wit.go" = "${OBELISK_TOML_DIR}/workflow-go/gen/stargazers/github-obelisk-ext/account/account.wit.go"
-"${OBELISK_TOML_DIR}/workflow-go/gen/stargazers/db-obelisk-ext/llm/llm.wit.go" = "${OBELISK_TOML_DIR}/workflow-go/gen/stargazers/db-obelisk-ext/llm/llm.wit.go"
+"${OBELISK_TOML_DIR}/workflow/workflow-go/main.go" =                                                    "${OBELISK_TOML_DIR}/workflow/workflow-go/main.go"
+"${OBELISK_TOML_DIR}/workflow/workflow-go/gen/stargazers/workflow/workflow/workflow.wasm.go" =          "${OBELISK_TOML_DIR}/workflow/workflow-go/gen/stargazers/workflow/workflow/workflow.wasm.go"
+"${OBELISK_TOML_DIR}/workflow/workflow-go/gen/stargazers/github-obelisk-ext/account/account.wit.go" =   "${OBELISK_TOML_DIR}/workflow/workflow-go/gen/stargazers/github-obelisk-ext/account/account.wit.go"
+"${OBELISK_TOML_DIR}/workflow/workflow-go/gen/stargazers/db-obelisk-ext/llm/llm.wit.go" =               "${OBELISK_TOML_DIR}/workflow/workflow-go/gen/stargazers/db-obelisk-ext/llm/llm.wit.go"
 
 [[http_server]]
 name = "webhook_server"
@@ -53,4 +53,4 @@ env_vars = [
   "GITHUB_WEBHOOK_SECRET",
   # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
 ]
-backtrace.sources = { "${OBELISK_TOML_DIR}/webhook/src/lib.rs" = "${OBELISK_TOML_DIR}/webhook/src/lib.rs" }
+backtrace.sources = { "${OBELISK_TOML_DIR}/webhook/webhook-rs/src/lib.rs" = "${OBELISK_TOML_DIR}/webhook/webhook-rs/src/lib.rs" }

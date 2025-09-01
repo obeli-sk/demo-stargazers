@@ -1,0 +1,9 @@
+package stargazers:llm;
+
+interface llm {
+    respond: func(user-prompt: string, settings-json: string) -> result<string, string>;
+}
+
+world exports {
+    export llm;
+}

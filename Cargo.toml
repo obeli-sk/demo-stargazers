@@ -4,8 +4,8 @@ members = [
     "activity/github/impl",
     "activity/db/turso",
     "activity/llm/openai",
-    "webhook",
-    "workflow",
+    "webhook/webhook-rs",
+    "workflow/workflow-rs",
 ]
 
 [workspace.package]

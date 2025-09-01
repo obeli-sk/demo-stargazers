@@ -1,0 +1,6 @@
+// Only here for generating the WITT files.
+package any:any;
+
+world dummy {
+  include stargazers:github/exports;
+}

@@ -31,7 +31,7 @@ exec.lock_expiry.seconds = 5
 [[workflow]]
 name = "workflow"
 location.path = "target/wasm32-unknown-unknown/release/workflow.wasm"
-backtrace.sources = { "${OBELISK_TOML_DIR}/workflow/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/src/lib.rs" }
+backtrace.sources = { "${OBELISK_TOML_DIR}/workflow/workflow-rs/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/workflow-release/src/lib.rs" }
 
 [[http_server]]
 name = "webhook_server"
@@ -39,7 +39,7 @@ listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
 name = "webhook_js"
-location.path = "webhook-js/dist/webhook-js.wasm"
+location.path = "webhook/webhook-js/dist/webhook-js.wasm"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 env_vars = [
