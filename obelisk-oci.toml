@@ -25,7 +25,7 @@ exec.lock_expiry.seconds = 5
 [[workflow]]
 name = "workflow"
 location.oci = "docker.io/getobelisk/demo_stargazers_workflow:2025-05-13@sha256:509e4679d395791515972a7624ee900bfbce8ac391109daa3fbf66220fcf10ee"
-backtrace.sources = { "/home/runner/work/demo-stargazers/demo-stargazers/workflow/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/src/lib.rs" }
+backtrace.sources = { "/home/runner/work/demo-stargazers/demo-stargazers/workflow/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/workflow-rs/src/lib.rs" }
 
 [[http_server]]
 name = "webhook_server"
@@ -42,4 +42,4 @@ env_vars = [
     "GITHUB_WEBHOOK_SECRET",
     # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
 ]
-backtrace.sources = { "/home/runner/work/demo-stargazers/demo-stargazers/webhook/src/lib.rs" = "${OBELISK_TOML_DIR}/webhook/src/lib.rs" }
+backtrace.sources = { "/home/runner/work/demo-stargazers/demo-stargazers/webhook/src/lib.rs" = "${OBELISK_TOML_DIR}/webhook/webhook-rs/src/lib.rs" }

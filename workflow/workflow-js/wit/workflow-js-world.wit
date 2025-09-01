@@ -1,0 +1,21 @@
+package root:component;
+
+world root {
+    include stargazers:workflow/exports;
+
+    // Import the implemented interface for `backfill`
+    import stargazers:workflow/workflow;
+    import stargazers:workflow-obelisk-ext/workflow;
+    // activities
+    import stargazers:github/account;
+    import stargazers:github-obelisk-ext/account;
+    import stargazers:db/llm;
+    import stargazers:db-obelisk-ext/llm;
+    import stargazers:db/user;
+    import stargazers:db-obelisk-ext/user;
+    import stargazers:llm/llm;
+    import stargazers:llm-obelisk-ext/llm;
+    // host provided support for workflows
+    import obelisk:workflow/workflow-support@2.0.0;
+    import obelisk:log/log@1.0.0;
+}

@@ -2,7 +2,5 @@ package stargazers:db-turso;
 
 world any {
     // wasi:http/outgoing-handler imports are added automatically by `waki` crate.
-    
-    export stargazers:db/user;
-    export stargazers:db/llm;
+    include stargazers:db/exports;
 }

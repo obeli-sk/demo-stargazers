@@ -2,7 +2,7 @@ package root:component;
 
 world root {
 
-    export stargazers:llm/llm;
+    include stargazers:llm/exports;
     
     // HTTP Client
     import wasi:http/types@0.2.0;

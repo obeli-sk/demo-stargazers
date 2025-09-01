@@ -1,0 +1,24 @@
+package stargazers:github;
+
+interface account {
+
+    record stargazers {
+        logins: list<string>,
+        cursor: string,
+    }
+
+    /// Return a JSON representing the user.
+    ///
+    /// The structure of the response is not important as it
+    /// is only consumed by a LLM agent.
+    account-info: func(login: string) -> result<string, string>;
+    /// Return a paginated list of stargazers of a repo.
+    ///
+    /// To get the first page pass `None` as value of the `cursor` parameter.
+    /// Returns `Ok(None)` if there are no more results.
+    list-stargazers: func(repo: string, page-size: u8, cursor: option<string>) -> result<option<stargazers>, string>;
+}
+
+world exports {
+    export account;
+}
