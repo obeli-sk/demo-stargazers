@@ -28,7 +28,6 @@ jobs:
       - uses: nixbuild/nix-quick-install-action@v33
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Populate the nix store without Obelisk
         run: |
           nix develop .#noObelisk --command echo

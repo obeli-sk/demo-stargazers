@@ -28,13 +28,14 @@ jobs:
           curl https://raw.githubusercontent.com/obeli-sk/obelisk/refs/heads/latest/flake.lock -o flake.lock
           curl https://raw.githubusercontent.com/obeli-sk/obelisk/refs/heads/latest/rust-toolchain.toml -o rust-toolchain.toml
 
-      - name: Populate the nix store without Obelisk # Workaround for slow garnix cache
+      - uses: nixbuild/nix-quick-install-action@v33
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_conf: |
+            extra-substituters = https://cache.garnix.io
+            extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g
+      - name: Populate the nix store
         run: |
-          nix develop .#noObelisk --command echo
-      - name: Add garnix cache and populate the nix store with Obelisk
-        run: |
-          echo "extra-substituters = https://cache.garnix.io" >> ~/.config/nix/nix.conf
-          echo "extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g" >> ~/.config/nix/nix.conf
           nix develop --command echo
 
       - name: Update dev-deps.txt
@@ -44,7 +45,7 @@ jobs:
       - name: Generate Unique Branch Name
         id: branch-name
         run: echo "branch_name=sync-flake-lock-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
-        
+
       - name: Configure Git
         run: |
           git config user.name "github-actions[bot]"
