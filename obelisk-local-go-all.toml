@@ -53,3 +53,5 @@ env_vars = [
 ]
 forward_stdout = "stderr"
 forward_stderr = "stderr"
+[webhook_endpoint.backtrace.sources]
+"${OBELISK_TOML_DIR}/webhook/webhook-go/main.go" = "${OBELISK_TOML_DIR}/webhook/webhook-go/main.go"
