@@ -6,7 +6,7 @@ enabled = true
 
 [[activity_wasm]]
 name = "openai_js"
-location.path = "activity/llm/openai-js/dist/openai-js.wasm"
+location.path = "${OBELISK_TOML_DIR}/activity/llm/openai-js/dist/openai-js.wasm"
 exec.lock_expiry.seconds = 10
 env_vars = ["OPENAI_API_KEY"]
 forward_stdout = "stderr"
@@ -14,7 +14,7 @@ forward_stderr = "stderr"
 
 [[activity_wasm]]
 name = "activity_github_impl"
-location.path = "target/wasm32-wasip2/release/activity_github_impl.wasm"
+location.path = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/activity_github_impl.wasm"
 env_vars = ["GITHUB_TOKEN"]
 exec.lock_expiry.seconds = 5
 forward_stdout = "stderr"
@@ -22,7 +22,7 @@ forward_stderr = "stderr"
 
 [[activity_wasm]]
 name = "activity_db_turso"
-location.path = "target/wasm32-wasip2/release/activity_db_turso.wasm"
+location.path = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/activity_db_turso.wasm"
 env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
 forward_stdout = "stderr"
 forward_stderr = "stderr"
@@ -30,7 +30,7 @@ exec.lock_expiry.seconds = 5
 
 [[workflow]]
 name = "workflow_js"
-location.path = "workflow/workflow-js/dist/workflow-js.wasm"
+location.path = "${OBELISK_TOML_DIR}/workflow/workflow-js/dist/workflow-js.wasm"
 
 [[http_server]]
 name = "webhook_server"
@@ -38,7 +38,7 @@ listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
 name = "webhook"
-location.path = "webhook/webhook-js/dist/webhook-js.wasm"
+location.path = "${OBELISK_TOML_DIR}/webhook/webhook-js/dist/webhook-js.wasm"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 env_vars = [

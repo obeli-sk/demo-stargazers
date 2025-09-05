@@ -4,6 +4,10 @@ webui.listening_addr = "127.0.0.1:8080" # Address and port on which the webui wi
 [log.stdout]
 enabled = true
 
+[[http_server]]
+name = "webhook_server"
+listening_addr = "0.0.0.0:9090"
+
 [[activity_wasm]]
 name = "activity_llm_openai"
 location.oci = "docker.io/getobelisk/demo_stargazers_activity_llm_openai:2025-09-01@sha256:9cde0e4feb0ad69f476eeeb274628ea230314f557e1aa1a3bfa3ee05ecc584ae"
@@ -26,10 +30,6 @@ exec.lock_expiry.seconds = 5
 name = "workflow"
 location.oci = "docker.io/getobelisk/demo_stargazers_workflow:2025-09-01@sha256:11c662196dd579f3f19e61caf565017a61f944140fa8c92993c742e69a3d8da9"
 backtrace.sources = { "/home/runner/work/demo-stargazers/demo-stargazers/workflow/workflow-rs/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/workflow-rs/src/lib.rs" }
-
-[[http_server]]
-name = "webhook_server"
-listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
 name = "webhook"
