@@ -1,7 +1,7 @@
 use crate::exports::stargazers::workflow::workflow::Guest;
 use obelisk::{
     types::execution::AwaitNextExtensionError,
-    workflow::workflow_support::{new_join_set_named, ClosingStrategy},
+    workflow::workflow_support::{ClosingStrategy, new_join_set_named},
 };
 use stargazers::{
     db,

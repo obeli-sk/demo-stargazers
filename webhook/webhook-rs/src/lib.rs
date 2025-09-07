@@ -3,7 +3,7 @@ use stargazers::{
     db::{self, user::Ordering},
     workflow_obelisk_schedule::workflow::{star_added_schedule, star_removed_schedule},
 };
-use waki::{handler, ErrorCode, Method, Request, Response};
+use waki::{ErrorCode, Method, Request, Response, handler};
 use wit_bindgen::generate;
 
 generate!({
@@ -61,8 +61,8 @@ fn handle_webhook(req: Request) -> Result<Response, ErrorCode> {
         Ok("true")
     ) {
         println!(
-        "WARN: Not verifying the request because {ENV_GITHUB_WEBHOOK_INSECURE} is set to `true`!"
-    );
+            "WARN: Not verifying the request because {ENV_GITHUB_WEBHOOK_INSECURE} is set to `true`!"
+        );
     } else {
         let secret = std::env::var(ENV_GITHUB_WEBHOOK_SECRET).unwrap_or_else(|_| {
             panic!("{ENV_GITHUB_WEBHOOK_SECRET} must be passed as environment variable")
