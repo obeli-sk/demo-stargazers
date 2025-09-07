@@ -23,8 +23,8 @@ fn star_added(login: String, repo: String) -> Result<(), String> {
 }
 ```
 
-Here is the complete [workflow source](./workflow/src/lib.rs) and the
-[WIT file](./workflow/interface/workflow.wit) describing the interface.
+Here is the complete [workflow source](./workflow/workflow-rs/src/lib.rs) and the
+[WIT file](./workflow/wit/deps/stargazers_workflow/workflow.wit) describing the interface.
 
 [![Watch the Demo Video](assets/images/screencast.gif)](https://obeli.sk/screencast.webm)
 
@@ -41,20 +41,32 @@ export TURSO_LOCATION="[yourdb].turso.io"
 ```
 
 #### Turso activity
+This activity is responsible for persistence of users and their generated descriptions.
+
 Follow the prerequisites section of the [activity-db-turso README](./activity/db/turso/README.md).
 
+#### GitHub activity
+This activity is used to find more information about the GitHub user who starred a configured repository.
+
+Follow the prerequisites section of the [activity-github README](./activity/github/impl/README.md).
+
 #### OpenAI activity
+Generates description based on user's repositories and organizations.
+
 Follow the prerequisites section of the [activity-llm-openai README](./activity/llm/openai/README.md).
 
 Reimplementation in [JavaScript](./activity/llm/openai-js/) and [Go](./activity/llm/openai-go/) is available for comparison.
 
-#### GitHub activity
-Follow the prerequisites section of the [activity-github README](./activity/github/README.md).
-
 #### GitHub webhook endpoint
-Follow the prerequisites section of the [webhook README](./webhook//README.md).
+The webhook collects events sent by GitHub when a user stars one of the configured repositories, then triggers the workflow execution.
 
-Reimplementation in [JavaScript](./activity/llm/openai-js/) is available for comparison.
+Follow the prerequisites section of the [webhook README](./webhook/webhook-rs/README.md).
+Reimplementation in [JavaScript](./webhook/webhook-js/) and [Go](./webhook/webhook-go/) is available for comparison.
+
+#### Workflow
+[Workflow](./workflow/workflow-rs/) orchestrates all the activities, is triggered by the webhook.
+
+Reimplementation in [JavaScript](./workflow/workflow-js/) and [Go](./workflow/workflow-go/) is available for comparison.
 
 ### Running
 
