@@ -6,7 +6,7 @@ use crate::exports::stargazers::db::user::Guest as UserGuest;
 use exports::stargazers::db::user::{Ordering, Stargazer};
 use humantime::format_rfc3339_millis;
 use turso::request::{NamedArg, PipelineAction, PipelineRequest, Stmt};
-use turso::response::{extract_first_value_from_nth_response, QueryResult, Response};
+use turso::response::{QueryResult, Response, extract_first_value_from_nth_response};
 use turso::{TursoClient, TursoValue};
 use wit_bindgen::generate;
 
@@ -54,7 +54,9 @@ fn get_user_description_and_star_status(
             // Check if the user already starred the repo
             PipelineAction::Execute {
                 stmt: Stmt {
-                    sql: format!("SELECT 1 FROM stars WHERE user_name = :{PARAM_LOGIN} AND repo_name = :{PARAM_REPO}"),
+                    sql: format!(
+                        "SELECT 1 FROM stars WHERE user_name = :{PARAM_LOGIN} AND repo_name = :{PARAM_REPO}"
+                    ),
                     named_args: vec![
                         NamedArg {
                             name: PARAM_LOGIN,
@@ -75,14 +77,12 @@ fn get_user_description_and_star_status(
             PipelineAction::Execute {
                 stmt: Stmt {
                     sql: format!("SELECT description FROM users WHERE name = :{PARAM_LOGIN}"),
-                    named_args: vec![
-                        NamedArg {
-                            name: PARAM_LOGIN,
-                            value: TursoValue::Text {
-                                value: login.to_string(),
-                            },
+                    named_args: vec![NamedArg {
+                        name: PARAM_LOGIN,
+                        value: TursoValue::Text {
+                            value: login.to_string(),
                         },
-                    ]
+                    }],
                 },
             },
             PipelineAction::Close,
@@ -104,14 +104,14 @@ fn parse_user_description_and_star_status(
     }
     resp.pop().unwrap(); // Close
     let description = resp.pop().unwrap(); // Select user's description
-                                           // Check if the user already starred the repo
+    // Check if the user already starred the repo
     let already_starred = match extract_first_value_from_nth_response(resp, 0)? {
         TursoValue::Integer { .. } => true,
         TursoValue::Null => false,
         other => {
             return Err(format!(
                 "unexpected data type, expected Integer or Null, got {other:?}"
-            ))
+            ));
         }
     };
     // Get the user's description
@@ -121,7 +121,7 @@ fn parse_user_description_and_star_status(
         other => {
             return Err(format!(
                 "unexpected data type, expected Text or Null, got {other:?}"
-            ))
+            ));
         }
     };
     Ok((description, already_starred))
@@ -144,10 +144,12 @@ impl UserGuest for Component {
                     // Add user: if the user already exists and did not have a star relation to the repo, update the `updated_at` field.
                     PipelineAction::Execute {
                         stmt: Stmt {
-                            sql: format!("INSERT INTO users (name, updated_at) VALUES
+                            sql: format!(
+                                "INSERT INTO users (name, updated_at) VALUES
                                 (:{PARAM_LOGIN}, :{PARAM_NOW}) \
                                 ON CONFLICT(name) DO UPDATE \
-                                SET updated_at = :{PARAM_NOW}"),
+                                SET updated_at = :{PARAM_NOW}"
+                            ),
                             named_args: vec![
                                 NamedArg {
                                     name: PARAM_LOGIN,
@@ -157,32 +159,32 @@ impl UserGuest for Component {
                                 },
                                 NamedArg {
                                     name: PARAM_NOW,
-                                    value: TursoValue::Text {
-                                        value: now.clone()
-                                    }
-                                }
+                                    value: TursoValue::Text { value: now.clone() },
+                                },
                             ],
                         },
                     },
                     // Add repo if it does not exist.
                     PipelineAction::Execute {
                         stmt: Stmt {
-                            sql: format!("INSERT INTO repos (name) VALUES (:{PARAM_REPO}) ON CONFLICT DO NOTHING;"),
-                            named_args: vec![
-                                NamedArg {
-                                    name: PARAM_REPO,
-                                    value: TursoValue::Text {
-                                        value: repo.clone(),
-                                    },
+                            sql: format!(
+                                "INSERT INTO repos (name) VALUES (:{PARAM_REPO}) ON CONFLICT DO NOTHING;"
+                            ),
+                            named_args: vec![NamedArg {
+                                name: PARAM_REPO,
+                                value: TursoValue::Text {
+                                    value: repo.clone(),
                                 },
-                            ],
+                            }],
                         },
                     },
                     // Add the star relation
                     PipelineAction::Execute {
                         stmt: Stmt {
-                            sql: format!("INSERT INTO stars (user_name, repo_name) VALUES \
-                                (:{PARAM_LOGIN}, :{PARAM_REPO}) ON CONFLICT DO NOTHING;"),
+                            sql: format!(
+                                "INSERT INTO stars (user_name, repo_name) VALUES \
+                                (:{PARAM_LOGIN}, :{PARAM_REPO}) ON CONFLICT DO NOTHING;"
+                            ),
                             named_args: vec![
                                 NamedArg {
                                     name: PARAM_LOGIN,
@@ -196,7 +198,6 @@ impl UserGuest for Component {
                                         value: repo.clone(),
                                     },
                                 },
-
                             ],
                         },
                     },
@@ -405,8 +406,8 @@ mod tests {
         exports::stargazers::db::user::Stargazer,
         process_resp_list_stargazers,
         turso::{
-            response::{extract_first_value_from_nth_response, PipelineResponse},
             TursoValue,
+            response::{PipelineResponse, extract_first_value_from_nth_response},
         },
     };
 
@@ -676,16 +677,16 @@ mod tests {
 
     mod integration {
         use crate::{
+            Component, ENV_TURSO_LOCATION, ENV_TURSO_TOKEN,
             exports::stargazers::db::{
                 llm::Guest as _,
                 user::{Guest as _, Ordering, Stargazer},
             },
             turso::{
+                TursoClient, TursoValue,
                 request::{NamedArg, PipelineAction, PipelineRequest, Stmt},
                 response::{QueryResult, Response},
-                TursoClient, TursoValue,
             },
-            Component, ENV_TURSO_LOCATION, ENV_TURSO_TOKEN,
         };
 
         fn set_up() {
@@ -693,13 +694,13 @@ mod tests {
                 std::env::var(format!("TEST_{ENV_TURSO_TOKEN}")).unwrap_or_else(|_| {
                     panic!("TEST_{ENV_TURSO_TOKEN} must be set as an environment variable")
                 });
-            std::env::set_var(ENV_TURSO_TOKEN, test_token);
+            unsafe { std::env::set_var(ENV_TURSO_TOKEN, test_token) };
 
             let test_location =
                 std::env::var(format!("TEST_{ENV_TURSO_LOCATION}")).unwrap_or_else(|_| {
                     panic!("TEST_{ENV_TURSO_LOCATION} must be set as an environment variable")
                 });
-            std::env::set_var(ENV_TURSO_LOCATION, test_location);
+            unsafe { std::env::set_var(ENV_TURSO_LOCATION, test_location) };
         }
 
         fn random_string() -> String {

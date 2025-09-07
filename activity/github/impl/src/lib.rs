@@ -148,16 +148,16 @@ pub struct UserArguments {
 
 #[cfg(test)]
 mod tests {
-    use crate::exports::stargazers::github::account::Guest;
     use crate::Component;
-    use crate::{extract_stargazers, stargazers::QueryStargazers, ENV_GITHUB_TOKEN};
+    use crate::exports::stargazers::github::account::Guest;
+    use crate::{ENV_GITHUB_TOKEN, extract_stargazers, stargazers::QueryStargazers};
     use cynic::GraphQlResponse;
 
     fn set_up() {
         let test_token = std::env::var(format!("TEST_{ENV_GITHUB_TOKEN}")).unwrap_or_else(|_| {
             panic!("TEST_{ENV_GITHUB_TOKEN} must be set as an environment variable")
         });
-        std::env::set_var(ENV_GITHUB_TOKEN, test_token);
+        unsafe { std::env::set_var(ENV_GITHUB_TOKEN, test_token) };
     }
 
     #[test]
