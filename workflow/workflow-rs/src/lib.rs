@@ -93,21 +93,22 @@ impl Guest for Component {
         let mut cursor = None;
         while let Some(resp) =
             github::account::list_stargazers(&repo, page_size, cursor.as_deref())?
+        // direct call to an activity
         {
+            let mut join_set_batch = Vec::new();
             for login in &resp.logins {
-                // No need to await the result of the child workflow.
-                // When this execution completes, all join sets will be awaited.
-                imported_workflow_ext::star_added_parallel_submit(
-                    &new_join_set_named(login, ClosingStrategy::Complete)
-                        .expect("github login does not contain illegal characters"),
-                    login,
-                    &repo,
-                );
+                let join_set = new_join_set_named(login, ClosingStrategy::Complete)
+                    .expect("github login does not contain illegal characters");
+                // `-submit`-ting child executions without `-await`-ing results
+                imported_workflow_ext::star_added_parallel_submit(&join_set, login, &repo);
+                join_set_batch.push(join_set);
             }
             if resp.logins.len() < usize::from(page_size) {
+                // last batch gets closed here.
                 break;
             }
             cursor = Some(resp.cursor);
+            // join_set_batch get closed blocking until child executions are completed.
         }
         Ok(())
     }
