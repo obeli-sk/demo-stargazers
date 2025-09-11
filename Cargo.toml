@@ -33,7 +33,7 @@ serde_json = "1.0"
 sha2 = "0.10.9"
 waki = { version = "0.5.1", features = ["json"] }
 waki-macros = "0.5.1"
-wit-bindgen = "0.45.1"
+wit-bindgen = "0.46.0"
 
 [profile.release]
 opt-level = "s"
