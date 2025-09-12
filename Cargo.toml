@@ -22,7 +22,7 @@ cynic-codegen = "3.12.0"
 derive_more = { version = "2.0", features = ["display"] }
 hex = "0.4.3"
 hmac = "0.12.1"
-humantime = "2.2.0"
+humantime = "2.3.0"
 rand = { version = "0.9", default-features = false, features = [
     "small_rng",
     "os_rng",
