@@ -51,7 +51,7 @@
             pkg-config
             rustToolchain
             wasm-tools
-            wasmtime
+            wasmtime.out
             # e2e tests
             openssl
             curlMinimal
