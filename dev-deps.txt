@@ -1,16 +1,16 @@
-cargo-binstall 1.14.3
+cargo-binstall 1.15.3
 cargo-edit-upgrade 0.13.7
-cargo-expand 1.0.115
-cargo generate 0.22.1
-cargo-nextest 0.9.102
+cargo-expand 1.0.116
+cargo generate 0.23.5
+cargo-nextest 0.9.103
 just 1.42.4
-obelisk 0.24.1
+obelisk 0.24.2
 pkg-config 0.29.2
 rustc 1.89.0 (29483883e 2025-08-04)
-wasm-tools 1.238.1
-wasmtime 33.0.0
-node.js v22.18.0
+wasm-tools 1.239.0
+wasmtime 36.0.2
+node.js v22.19.0
 wizer 10.0.0
-tinygo version 0.39.0 linux/amd64 (using go version go1.24.6 and LLVM version 20.1.8)
+tinygo version 0.39.0 linux/amd64 (using go version go1.25.0 and LLVM version 20.1.8)
 wit-bindgen-go-cli 0.6.2
 ldd (GNU libc) 2.40
