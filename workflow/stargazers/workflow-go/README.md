@@ -1,6 +1,6 @@
 # Workflow-go
 
-Go reimplementation of the [Stargazers workflow](../workflow/).
+Go reimplementation of the [Stargazers workflow](../workflow-rs/).
 
 ## CLI world workaround
 TinyGo is used to create the WASI 0.2 component. Unfortunately, it is not currently possible to create a component without including the `wasi:cli/command` world.
@@ -16,7 +16,7 @@ stub_wasi = true
 ```
 
 ## Setting up
-Required versions of `tinygo`, `wit-bindgen-go-cli`, `wasm-tools` can be found in [dev-deps.txt](../dev-deps.txt).
+Required versions of `tinygo`, `wit-bindgen-go-cli`, `wasm-tools` can be found in [dev-deps.txt](../../../dev-deps.txt).
 See [Go tooling](https://component-model.bytecodealliance.org/language-support/go.html) for more information.
 
 ```sh
@@ -36,4 +36,4 @@ obelisk server run --config obelisk-local-go-workflow.toml
 ```
 
 ## Testing
-See [workflow readme](../workflow/README.md).
+See [workflow readme](../workflow-rs/README.md).

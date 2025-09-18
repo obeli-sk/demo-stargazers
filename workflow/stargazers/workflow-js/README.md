@@ -1,6 +1,6 @@
 # Workflow-js
 
-Go reimplementation of the [Stargazers workflow](../workflow/).
+Go reimplementation of the [Stargazers workflow](../worflow-rs/).
 
 
 ## Building
@@ -20,3 +20,6 @@ obelisk server run --config obelisk-local-js-workflow.toml
 ```sh
 npm run test:submit
 ```
+
+## Testing
+See [workflow readme](../workflow-rs/README.md).

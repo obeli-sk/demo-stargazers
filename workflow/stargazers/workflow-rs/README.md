@@ -1,6 +1,6 @@
 # Stargazers workflow
 
-This workflow implements the following [WIT interface](interface/workflow.wit).
+This workflow implements the following [WIT interface](../wit/stargazers_workflow/workflow.wit).
 
 
 ## Running the workflow

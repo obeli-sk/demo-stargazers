@@ -24,7 +24,7 @@ fn star_added(login: String, repo: String) -> Result<(), String> {
 ```
 
 Here is the complete [workflow source](./workflow/stargazers/workflow-rs/src/lib.rs) and the
-[WIT file](./workflow/stargazers/wit/deps/stargazers_workflow/workflow.wit) describing the interface.
+[WIT file](./workflow/stargazers/wit/stargazers_workflow/workflow.wit) describing the interface.
 
 [![Watch the Demo Video](assets/images/screencast.gif)](https://obeli.sk/screencast.webm)
 
