@@ -23,8 +23,8 @@ fn star_added(login: String, repo: String) -> Result<(), String> {
 }
 ```
 
-Here is the complete [workflow source](./workflow/workflow-rs/src/lib.rs) and the
-[WIT file](./workflow/wit/deps/stargazers_workflow/workflow.wit) describing the interface.
+Here is the complete [workflow source](./workflow/stargazers/workflow-rs/src/lib.rs) and the
+[WIT file](./workflow/stargazers/wit/deps/stargazers_workflow/workflow.wit) describing the interface.
 
 [![Watch the Demo Video](assets/images/screencast.gif)](https://obeli.sk/screencast.webm)
 
@@ -64,9 +64,9 @@ Follow the prerequisites section of the [webhook README](./webhook/webhook-rs/RE
 Reimplementation in [JavaScript](./webhook/webhook-js/) and [Go](./webhook/webhook-go/) is available for comparison.
 
 #### Workflow
-[Workflow](./workflow/workflow-rs/) orchestrates all the activities, is triggered by the webhook.
+[Workflow](./workflow/stargazers/workflow-rs/) orchestrates all the activities, is triggered by the webhook.
 
-Reimplementation in [JavaScript](./workflow/workflow-js/) and [Go](./workflow/workflow-go/) is available for comparison.
+Reimplementation in [JavaScript](./workflow/stargazers/workflow-js/) and [Go](./workflow/stargazers/workflow-go/) is available for comparison.
 
 ### Running
 

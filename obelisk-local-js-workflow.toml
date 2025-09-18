@@ -30,7 +30,7 @@ exec.lock_expiry.seconds = 5
 
 [[workflow]]
 name = "workflow_js"
-location.path = "${OBELISK_TOML_DIR}/workflow/workflow-js/dist/workflow-js.wasm"
+location.path = "${OBELISK_TOML_DIR}/workflow/stargazers/workflow-js/dist/workflow-js.wasm"
 
 [[http_server]]
 name = "webhook_server"

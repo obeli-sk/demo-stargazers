@@ -31,7 +31,7 @@ exec.lock_expiry.seconds = 5
 [[workflow]]
 name = "workflow"
 location.path = "${OBELISK_TOML_DIR}/target/wasm32-unknown-unknown/release/workflow.wasm"
-backtrace.sources = { "${OBELISK_TOML_DIR}/workflow/workflow-rs/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/workflow-rs/src/lib.rs" }
+backtrace.sources = { "${OBELISK_TOML_DIR}/workflow/stargazers/workflow-rs/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/stargazers/workflow-rs/src/lib.rs" }
 
 [[http_server]]
 name = "webhook_server"

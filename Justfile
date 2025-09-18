@@ -9,7 +9,7 @@ rust:
 	(cd activity/db/turso && cargo build --release)
 	(cd activity/llm/openai && cargo build --release)
 	(cd webhook/webhook-rs && cargo build --release)
-	(cd workflow/workflow-rs && cargo build --release)
+	(cd workflow/stargazers/workflow-rs && cargo build --release)
 
 # Build JavaScript components
 js:

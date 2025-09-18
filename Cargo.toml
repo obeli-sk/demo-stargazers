@@ -5,7 +5,7 @@ members = [
     "activity/db/turso",
     "activity/llm/openai",
     "webhook/webhook-rs",
-    "workflow/workflow-rs",
+    "workflow/stargazers/workflow-rs",
 ]
 
 [workspace.package]
