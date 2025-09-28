@@ -10,12 +10,16 @@ import (
 
 //go:wasmimport stargazers:llm-obelisk-ext/llm respond-submit
 //go:noescape
-func wasmimport_RespondSubmit(joinSetId0 uint32, userPrompt0 *uint8, userPrompt1 uint32, settingsJson0 *uint8, settingsJson1 uint32, result *ExecutionID)
+func wasmimport_RespondSubmit(joinSet0 uint32, userPrompt0 *uint8, userPrompt1 uint32, settingsJson0 *uint8, settingsJson1 uint32, result *ExecutionID)
 
 //go:wasmimport stargazers:llm-obelisk-ext/llm respond-await-next
 //go:noescape
-func wasmimport_RespondAwaitNext(joinSetId0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError])
+func wasmimport_RespondAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:llm-obelisk-ext/llm respond-get
 //go:noescape
 func wasmimport_RespondGet(executionId0 *uint8, executionId1 uint32, result *cm.Result[GetExtensionErrorShape, cm.Result[string, string, string], GetExtensionError])
+
+//go:wasmimport stargazers:llm-obelisk-ext/llm respond-invoke
+//go:noescape
+func wasmimport_RespondInvoke(label0 *uint8, label1 uint32, userPrompt0 *uint8, userPrompt1 uint32, settingsJson0 *uint8, settingsJson1 uint32, result *cm.Result[ResultStringStringShape, cm.Result[string, string, string], InvokeExtensionError])

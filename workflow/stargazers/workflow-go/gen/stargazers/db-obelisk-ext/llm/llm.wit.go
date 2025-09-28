@@ -13,10 +13,10 @@ import (
 // See [execution.ExecutionID] for more information.
 type ExecutionID = execution.ExecutionID
 
-// JoinSetID represents the imported type alias "stargazers:db-obelisk-ext/llm#join-set-id".
+// JoinSet represents the imported type alias "stargazers:db-obelisk-ext/llm#join-set".
 //
-// See [execution.JoinSetID] for more information.
-type JoinSetID = execution.JoinSetID
+// See [execution.JoinSet] for more information.
+type JoinSet = execution.JoinSet
 
 // AwaitNextExtensionError represents the type alias "stargazers:db-obelisk-ext/llm#await-next-extension-error".
 //
@@ -28,26 +28,31 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
+// InvokeExtensionError represents the type alias "stargazers:db-obelisk-ext/llm#invoke-extension-error".
+//
+// See [execution.InvokeExtensionError] for more information.
+type InvokeExtensionError = execution.InvokeExtensionError
+
 // GetSettingsJSONSubmit represents the imported function "get-settings-json-submit".
 //
-//	get-settings-json-submit: func(join-set-id: borrow<join-set-id>) -> execution-id
+//	get-settings-json-submit: func(join-set: borrow<join-set>) -> execution-id
 //
 //go:nosplit
-func GetSettingsJSONSubmit(joinSetID JoinSetID) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_GetSettingsJSONSubmit((uint32)(joinSetId0), &result)
+func GetSettingsJSONSubmit(joinSet JoinSet) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_GetSettingsJSONSubmit((uint32)(joinSet0), &result)
 	return
 }
 
 // GetSettingsJSONAwaitNext represents the imported function "get-settings-json-await-next".
 //
-//	get-settings-json-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	get-settings-json-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<string, string>>, await-next-extension-error>
 //
 //go:nosplit
-func GetSettingsJSONAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_GetSettingsJSONAwaitNext((uint32)(joinSetId0), &result)
+func GetSettingsJSONAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_GetSettingsJSONAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -60,5 +65,17 @@ func GetSettingsJSONAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextEx
 func GetSettingsJSONGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[string, string, string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_GetSettingsJSONGet((*uint8)(executionId0), (uint32)(executionId1), &result)
+	return
+}
+
+// GetSettingsJSONInvoke represents the imported function "get-settings-json-invoke".
+//
+//	get-settings-json-invoke: func(label: string) -> result<result<string, string>,
+//	invoke-extension-error>
+//
+//go:nosplit
+func GetSettingsJSONInvoke(label string) (result cm.Result[ResultStringStringShape, cm.Result[string, string, string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
+	wasmimport_GetSettingsJSONInvoke((*uint8)(label0), (uint32)(label1), &result)
 	return
 }

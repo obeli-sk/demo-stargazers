@@ -24,3 +24,9 @@ func lower_ExecutionID(v execution.ExecutionID) (f0 *uint8, f1 uint32) {
 	f0, f1 = cm.LowerString(v.ID)
 	return
 }
+
+// ResultStringStringShape is used for storage in variant or result types.
+type ResultStringStringShape struct {
+	_     cm.HostLayout
+	shape [unsafe.Sizeof(cm.Result[string, string, string]{})]byte
+}

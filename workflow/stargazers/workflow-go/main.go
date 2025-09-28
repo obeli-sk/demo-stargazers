@@ -199,6 +199,8 @@ func (c *Component) BackfillParallel(repo string) (result cm.Result[string, stru
 		gotWholePage := uint(resp.Logins.Len()) == uint(pageSize)
 		loginsSlice := resp.Logins.Slice()
 
+		joinSetList := []obeliskWorkflowSupport.JoinSet{}
+
 		for _, stargazeLogin := range loginsSlice {
 			joinSetName := stargazeLogin
 			// Imported WIT: obelisk:workflow/workflow-support.new-join-set-named: func(name: string, closing-strategy: closing-strategy) -> join-set-id
@@ -207,6 +209,10 @@ func (c *Component) BackfillParallel(repo string) (result cm.Result[string, stru
 
 			// Imported WIT: stargazers:workflow-obelisk-ext/workflow.star-added-parallel-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id
 			_ = stargazersWorkflowObeliskExtWorkflow.StarAddedParallelSubmit(joinSetForChild, stargazeLogin, repo)
+			joinSetList = append(joinSetList, joinSetForChild)
+		}
+		for _, joinSet := range joinSetList {
+			obeliskWorkflowSupport.Close(joinSet)
 		}
 		if !gotWholePage {
 			break

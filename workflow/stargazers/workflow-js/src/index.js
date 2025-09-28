@@ -8,7 +8,7 @@ import { getSettingsJsonSubmit, getSettingsJsonAwaitNext } from 'stargazers:db-o
 import { addStarGetDescription, updateUserDescription, removeStar } from 'stargazers:db/user';
 import { respond as llmRespond } from 'stargazers:llm/llm';
 // Obelisk host utilities for workflows
-import { newJoinSetNamed } from 'obelisk:workflow/workflow-support@2.0.0';
+import { newJoinSetNamed, close } from 'obelisk:workflow/workflow-support@3.0.0';
 import { debug as log_debug, info as log_info, error as log_error } from 'obelisk:log/log@1.0.0'
 
 console.log = function (...args) {
@@ -209,17 +209,24 @@ export const workflow = {
         // If resp exists, it's the stargazers object: { logins: [...], cursor: "..." }
         const gotWholePage = resp.logins.length === pageSize;
         console.log(`Found ${resp.logins.length} stargazers.`);
+        let joinSetList = [];
 
         for (const login of resp.logins) {
           // Submit star_added_parallel as a child workflow using the Obelisk extension import.
           // No need to await; the engine handles join sets completion.
           console.log(`Submitting task for ${login}...`);
           // WIT: star-added-parallel-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id
+          let joinSet = newJoinSetNamed(login, ClosingStrategy.Complete);
           starAddedParallelSubmit(
-            newJoinSetNamed(login, ClosingStrategy.Complete), // Create a join set per user
+            joinSet, // Create a join set per user
             login,
             repo
           );
+          joinSetList.push(joinSet);
+        }
+        // Close all join sets of this batch for back-pressure.
+        for (let joinSet of joinSetList) {
+          close(joinSet);
         }
 
         if (!gotWholePage) {

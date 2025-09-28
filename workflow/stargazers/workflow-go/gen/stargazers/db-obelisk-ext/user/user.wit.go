@@ -9,15 +9,25 @@ import (
 	"go.bytecodealliance.org/cm"
 )
 
+// Stargazer represents the type alias "stargazers:db-obelisk-ext/user#stargazer".
+//
+// See [user.Stargazer] for more information.
+type Stargazer = user.Stargazer
+
+// Ordering represents the type alias "stargazers:db-obelisk-ext/user#ordering".
+//
+// See [user.Ordering] for more information.
+type Ordering = user.Ordering
+
 // ExecutionID represents the type alias "stargazers:db-obelisk-ext/user#execution-id".
 //
 // See [execution.ExecutionID] for more information.
 type ExecutionID = execution.ExecutionID
 
-// JoinSetID represents the imported type alias "stargazers:db-obelisk-ext/user#join-set-id".
+// JoinSet represents the imported type alias "stargazers:db-obelisk-ext/user#join-set".
 //
-// See [execution.JoinSetID] for more information.
-type JoinSetID = execution.JoinSetID
+// See [execution.JoinSet] for more information.
+type JoinSet = execution.JoinSet
 
 // AwaitNextExtensionError represents the type alias "stargazers:db-obelisk-ext/user#await-next-extension-error".
 //
@@ -29,39 +39,34 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
-// Stargazer represents the type alias "stargazers:db-obelisk-ext/user#stargazer".
+// InvokeExtensionError represents the type alias "stargazers:db-obelisk-ext/user#invoke-extension-error".
 //
-// See [user.Stargazer] for more information.
-type Stargazer = user.Stargazer
-
-// Ordering represents the type alias "stargazers:db-obelisk-ext/user#ordering".
-//
-// See [user.Ordering] for more information.
-type Ordering = user.Ordering
+// See [execution.InvokeExtensionError] for more information.
+type InvokeExtensionError = execution.InvokeExtensionError
 
 // AddStarGetDescriptionSubmit represents the imported function "add-star-get-description-submit".
 //
-//	add-star-get-description-submit: func(join-set-id: borrow<join-set-id>, login:
-//	string, repo: string) -> execution-id
+//	add-star-get-description-submit: func(join-set: borrow<join-set>, login: string,
+//	repo: string) -> execution-id
 //
 //go:nosplit
-func AddStarGetDescriptionSubmit(joinSetID JoinSetID, login string, repo string) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func AddStarGetDescriptionSubmit(joinSet JoinSet, login string, repo string) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
-	wasmimport_AddStarGetDescriptionSubmit((uint32)(joinSetId0), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
+	wasmimport_AddStarGetDescriptionSubmit((uint32)(joinSet0), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
 	return
 }
 
 // AddStarGetDescriptionAwaitNext represents the imported function "add-star-get-description-await-next".
 //
-//	add-star-get-description-await-next: func(join-set-id: borrow<join-set-id>) ->
-//	result<tuple<execution-id, result<option<string>, string>>, await-next-extension-error>
+//	add-star-get-description-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
+//	result<option<string>, string>>, await-next-extension-error>
 //
 //go:nosplit
-func AddStarGetDescriptionAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[OptionStringShape, cm.Option[string], string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_AddStarGetDescriptionAwaitNext((uint32)(joinSetId0), &result)
+func AddStarGetDescriptionAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[OptionStringShape, cm.Option[string], string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_AddStarGetDescriptionAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -77,29 +82,43 @@ func AddStarGetDescriptionGet(executionID ExecutionID) (result cm.Result[GetExte
 	return
 }
 
-// RemoveStarSubmit represents the imported function "remove-star-submit".
+// AddStarGetDescriptionInvoke represents the imported function "add-star-get-description-invoke".
 //
-//	remove-star-submit: func(join-set-id: borrow<join-set-id>, login: string, repo:
-//	string) -> execution-id
+//	add-star-get-description-invoke: func(label: string, login: string, repo: string)
+//	-> result<result<option<string>, string>, invoke-extension-error>
 //
 //go:nosplit
-func RemoveStarSubmit(joinSetID JoinSetID, login string, repo string) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func AddStarGetDescriptionInvoke(label string, login string, repo string) (result cm.Result[ResultOptionStringStringShape, cm.Result[OptionStringShape, cm.Option[string], string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
-	wasmimport_RemoveStarSubmit((uint32)(joinSetId0), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
+	wasmimport_AddStarGetDescriptionInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
+	return
+}
+
+// RemoveStarSubmit represents the imported function "remove-star-submit".
+//
+//	remove-star-submit: func(join-set: borrow<join-set>, login: string, repo: string)
+//	-> execution-id
+//
+//go:nosplit
+func RemoveStarSubmit(joinSet JoinSet, login string, repo string) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	login0, login1 := cm.LowerString(login)
+	repo0, repo1 := cm.LowerString(repo)
+	wasmimport_RemoveStarSubmit((uint32)(joinSet0), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
 	return
 }
 
 // RemoveStarAwaitNext represents the imported function "remove-star-await-next".
 //
-//	remove-star-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	remove-star-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<_, string>>, await-next-extension-error>
 //
 //go:nosplit
-func RemoveStarAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_RemoveStarAwaitNext((uint32)(joinSetId0), &result)
+func RemoveStarAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_RemoveStarAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -115,29 +134,43 @@ func RemoveStarGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorS
 	return
 }
 
-// UpdateUserDescriptionSubmit represents the imported function "update-user-description-submit".
+// RemoveStarInvoke represents the imported function "remove-star-invoke".
 //
-//	update-user-description-submit: func(join-set-id: borrow<join-set-id>, username:
-//	string, description: string) -> execution-id
+//	remove-star-invoke: func(label: string, login: string, repo: string) -> result<result<_,
+//	string>, invoke-extension-error>
 //
 //go:nosplit
-func UpdateUserDescriptionSubmit(joinSetID JoinSetID, username string, description string) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func RemoveStarInvoke(label string, login string, repo string) (result cm.Result[ResultStringShape, cm.Result[string, struct{}, string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
+	login0, login1 := cm.LowerString(login)
+	repo0, repo1 := cm.LowerString(repo)
+	wasmimport_RemoveStarInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
+	return
+}
+
+// UpdateUserDescriptionSubmit represents the imported function "update-user-description-submit".
+//
+//	update-user-description-submit: func(join-set: borrow<join-set>, username: string,
+//	description: string) -> execution-id
+//
+//go:nosplit
+func UpdateUserDescriptionSubmit(joinSet JoinSet, username string, description string) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	username0, username1 := cm.LowerString(username)
 	description0, description1 := cm.LowerString(description)
-	wasmimport_UpdateUserDescriptionSubmit((uint32)(joinSetId0), (*uint8)(username0), (uint32)(username1), (*uint8)(description0), (uint32)(description1), &result)
+	wasmimport_UpdateUserDescriptionSubmit((uint32)(joinSet0), (*uint8)(username0), (uint32)(username1), (*uint8)(description0), (uint32)(description1), &result)
 	return
 }
 
 // UpdateUserDescriptionAwaitNext represents the imported function "update-user-description-await-next".
 //
-//	update-user-description-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	update-user-description-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<_, string>>, await-next-extension-error>
 //
 //go:nosplit
-func UpdateUserDescriptionAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_UpdateUserDescriptionAwaitNext((uint32)(joinSetId0), &result)
+func UpdateUserDescriptionAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_UpdateUserDescriptionAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -153,30 +186,44 @@ func UpdateUserDescriptionGet(executionID ExecutionID) (result cm.Result[GetExte
 	return
 }
 
-// ListStargazersSubmit represents the imported function "list-stargazers-submit".
+// UpdateUserDescriptionInvoke represents the imported function "update-user-description-invoke".
 //
-//	list-stargazers-submit: func(join-set-id: borrow<join-set-id>, last: u8, repo:
-//	option<string>, ordering: ordering) -> execution-id
+//	update-user-description-invoke: func(label: string, username: string, description:
+//	string) -> result<result<_, string>, invoke-extension-error>
 //
 //go:nosplit
-func ListStargazersSubmit(joinSetID JoinSetID, last uint8, repo cm.Option[string], ordering Ordering) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func UpdateUserDescriptionInvoke(label string, username string, description string) (result cm.Result[ResultStringShape, cm.Result[string, struct{}, string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
+	username0, username1 := cm.LowerString(username)
+	description0, description1 := cm.LowerString(description)
+	wasmimport_UpdateUserDescriptionInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(username0), (uint32)(username1), (*uint8)(description0), (uint32)(description1), &result)
+	return
+}
+
+// ListStargazersSubmit represents the imported function "list-stargazers-submit".
+//
+//	list-stargazers-submit: func(join-set: borrow<join-set>, last: u8, repo: option<string>,
+//	ordering: ordering) -> execution-id
+//
+//go:nosplit
+func ListStargazersSubmit(joinSet JoinSet, last uint8, repo cm.Option[string], ordering Ordering) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	last0 := (uint32)(last)
 	repo0, repo1, repo2 := lower_OptionString(repo)
 	ordering0 := (uint32)(ordering)
-	wasmimport_ListStargazersSubmit((uint32)(joinSetId0), (uint32)(last0), (uint32)(repo0), (*uint8)(repo1), (uint32)(repo2), (uint32)(ordering0), &result)
+	wasmimport_ListStargazersSubmit((uint32)(joinSet0), (uint32)(last0), (uint32)(repo0), (*uint8)(repo1), (uint32)(repo2), (uint32)(ordering0), &result)
 	return
 }
 
 // ListStargazersAwaitNext represents the imported function "list-stargazers-await-next".
 //
-//	list-stargazers-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	list-stargazers-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<list<stargazer>, string>>, await-next-extension-error>
 //
 //go:nosplit
-func ListStargazersAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[cm.List[Stargazer], cm.List[Stargazer], string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_ListStargazersAwaitNext((uint32)(joinSetId0), &result)
+func ListStargazersAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[cm.List[Stargazer], cm.List[Stargazer], string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_ListStargazersAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -189,5 +236,20 @@ func ListStargazersAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExt
 func ListStargazersGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[cm.List[Stargazer], cm.List[Stargazer], string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_ListStargazersGet((*uint8)(executionId0), (uint32)(executionId1), &result)
+	return
+}
+
+// ListStargazersInvoke represents the imported function "list-stargazers-invoke".
+//
+//	list-stargazers-invoke: func(label: string, last: u8, repo: option<string>, ordering:
+//	ordering) -> result<result<list<stargazer>, string>, invoke-extension-error>
+//
+//go:nosplit
+func ListStargazersInvoke(label string, last uint8, repo cm.Option[string], ordering Ordering) (result cm.Result[ResultListStargazerStringShape, cm.Result[cm.List[Stargazer], cm.List[Stargazer], string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
+	last0 := (uint32)(last)
+	repo0, repo1, repo2 := lower_OptionString(repo)
+	ordering0 := (uint32)(ordering)
+	wasmimport_ListStargazersInvoke((*uint8)(label0), (uint32)(label1), (uint32)(last0), (uint32)(repo0), (*uint8)(repo1), (uint32)(repo2), (uint32)(ordering0), &result)
 	return
 }

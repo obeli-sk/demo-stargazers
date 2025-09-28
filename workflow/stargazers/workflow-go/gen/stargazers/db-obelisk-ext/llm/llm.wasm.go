@@ -10,12 +10,16 @@ import (
 
 //go:wasmimport stargazers:db-obelisk-ext/llm get-settings-json-submit
 //go:noescape
-func wasmimport_GetSettingsJSONSubmit(joinSetId0 uint32, result *ExecutionID)
+func wasmimport_GetSettingsJSONSubmit(joinSet0 uint32, result *ExecutionID)
 
 //go:wasmimport stargazers:db-obelisk-ext/llm get-settings-json-await-next
 //go:noescape
-func wasmimport_GetSettingsJSONAwaitNext(joinSetId0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError])
+func wasmimport_GetSettingsJSONAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:db-obelisk-ext/llm get-settings-json-get
 //go:noescape
 func wasmimport_GetSettingsJSONGet(executionId0 *uint8, executionId1 uint32, result *cm.Result[GetExtensionErrorShape, cm.Result[string, string, string], GetExtensionError])
+
+//go:wasmimport stargazers:db-obelisk-ext/llm get-settings-json-invoke
+//go:noescape
+func wasmimport_GetSettingsJSONInvoke(label0 *uint8, label1 uint32, result *cm.Result[ResultStringStringShape, cm.Result[string, string, string], InvokeExtensionError])
