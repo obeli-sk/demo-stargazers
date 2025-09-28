@@ -707,7 +707,7 @@ mod tests {
             use rand::SeedableRng;
             let mut rng = rand::rngs::SmallRng::from_os_rng();
             (0..10)
-                .map(|_| (rand::Rng::random_range(&mut rng, b'a'..=b'z') as char))
+                .map(|_| rand::Rng::random_range(&mut rng, b'a'..=b'z') as char)
                 .collect()
         }
 
