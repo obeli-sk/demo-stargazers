@@ -2,12 +2,12 @@
 
 package execution
 
-// This file contains wasmimport and wasmexport declarations for "obelisk:types@2.0.0".
+// This file contains wasmimport and wasmexport declarations for "obelisk:types@3.0.0".
 
-//go:wasmimport obelisk:types/execution@2.0.0 [resource-drop]join-set-id
+//go:wasmimport obelisk:types/execution@3.0.0 [resource-drop]join-set
 //go:noescape
-func wasmimport_JoinSetIDResourceDrop(self0 uint32)
+func wasmimport_JoinSetResourceDrop(self0 uint32)
 
-//go:wasmimport obelisk:types/execution@2.0.0 [method]join-set-id.id
+//go:wasmimport obelisk:types/execution@3.0.0 [method]join-set.id
 //go:noescape
-func wasmimport_JoinSetIDID(self0 uint32, result *string)
+func wasmimport_JoinSetID(self0 uint32, result *string)

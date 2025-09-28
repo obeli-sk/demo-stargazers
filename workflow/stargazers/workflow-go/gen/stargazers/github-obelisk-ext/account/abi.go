@@ -25,6 +25,12 @@ func lower_ExecutionID(v execution.ExecutionID) (f0 *uint8, f1 uint32) {
 	return
 }
 
+// ResultStringStringShape is used for storage in variant or result types.
+type ResultStringStringShape struct {
+	_     cm.HostLayout
+	shape [unsafe.Sizeof(cm.Result[string, string, string]{})]byte
+}
+
 func lower_OptionString(v cm.Option[string]) (f0 uint32, f1 *uint8, f2 uint32) {
 	some := v.Some()
 	if some != nil {
@@ -40,4 +46,10 @@ func lower_OptionString(v cm.Option[string]) (f0 uint32, f1 *uint8, f2 uint32) {
 type OptionStargazersShape struct {
 	_     cm.HostLayout
 	shape [unsafe.Sizeof(cm.Option[Stargazers]{})]byte
+}
+
+// ResultOptionStargazersStringShape is used for storage in variant or result types.
+type ResultOptionStargazersStringShape struct {
+	_     cm.HostLayout
+	shape [unsafe.Sizeof(cm.Result[OptionStargazersShape, cm.Option[Stargazers], string]{})]byte
 }

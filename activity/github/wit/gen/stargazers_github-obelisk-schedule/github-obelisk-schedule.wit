@@ -2,9 +2,9 @@
 package stargazers:github-obelisk-schedule;
 
 interface account {
-  use obelisk:types/execution@2.0.0.{execution-id};
-  use obelisk:types/time@2.0.0.{schedule-at};
   use stargazers:github/account.{stargazers};
+  use obelisk:types/execution@3.0.0.{execution-id};
+  use obelisk:types/time@3.0.0.{schedule-at};
 
   account-info-schedule: func(schedule-at: schedule-at, login: string) -> execution-id;
 

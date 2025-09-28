@@ -9,15 +9,20 @@ import (
 	"go.bytecodealliance.org/cm"
 )
 
+// Stargazers represents the type alias "stargazers:github-obelisk-ext/account#stargazers".
+//
+// See [account.Stargazers] for more information.
+type Stargazers = account.Stargazers
+
 // ExecutionID represents the type alias "stargazers:github-obelisk-ext/account#execution-id".
 //
 // See [execution.ExecutionID] for more information.
 type ExecutionID = execution.ExecutionID
 
-// JoinSetID represents the imported type alias "stargazers:github-obelisk-ext/account#join-set-id".
+// JoinSet represents the imported type alias "stargazers:github-obelisk-ext/account#join-set".
 //
-// See [execution.JoinSetID] for more information.
-type JoinSetID = execution.JoinSetID
+// See [execution.JoinSet] for more information.
+type JoinSet = execution.JoinSet
 
 // AwaitNextExtensionError represents the type alias "stargazers:github-obelisk-ext/account#await-next-extension-error".
 //
@@ -29,32 +34,32 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
-// Stargazers represents the type alias "stargazers:github-obelisk-ext/account#stargazers".
+// InvokeExtensionError represents the type alias "stargazers:github-obelisk-ext/account#invoke-extension-error".
 //
-// See [account.Stargazers] for more information.
-type Stargazers = account.Stargazers
+// See [execution.InvokeExtensionError] for more information.
+type InvokeExtensionError = execution.InvokeExtensionError
 
 // AccountInfoSubmit represents the imported function "account-info-submit".
 //
-//	account-info-submit: func(join-set-id: borrow<join-set-id>, login: string) -> execution-id
+//	account-info-submit: func(join-set: borrow<join-set>, login: string) -> execution-id
 //
 //go:nosplit
-func AccountInfoSubmit(joinSetID JoinSetID, login string) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func AccountInfoSubmit(joinSet JoinSet, login string) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	login0, login1 := cm.LowerString(login)
-	wasmimport_AccountInfoSubmit((uint32)(joinSetId0), (*uint8)(login0), (uint32)(login1), &result)
+	wasmimport_AccountInfoSubmit((uint32)(joinSet0), (*uint8)(login0), (uint32)(login1), &result)
 	return
 }
 
 // AccountInfoAwaitNext represents the imported function "account-info-await-next".
 //
-//	account-info-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	account-info-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<string, string>>, await-next-extension-error>
 //
 //go:nosplit
-func AccountInfoAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_AccountInfoAwaitNext((uint32)(joinSetId0), &result)
+func AccountInfoAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_AccountInfoAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -70,30 +75,43 @@ func AccountInfoGet(executionID ExecutionID) (result cm.Result[GetExtensionError
 	return
 }
 
+// AccountInfoInvoke represents the imported function "account-info-invoke".
+//
+//	account-info-invoke: func(label: string, login: string) -> result<result<string,
+//	string>, invoke-extension-error>
+//
+//go:nosplit
+func AccountInfoInvoke(label string, login string) (result cm.Result[ResultStringStringShape, cm.Result[string, string, string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
+	login0, login1 := cm.LowerString(login)
+	wasmimport_AccountInfoInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(login0), (uint32)(login1), &result)
+	return
+}
+
 // ListStargazersSubmit represents the imported function "list-stargazers-submit".
 //
-//	list-stargazers-submit: func(join-set-id: borrow<join-set-id>, repo: string, page-size:
+//	list-stargazers-submit: func(join-set: borrow<join-set>, repo: string, page-size:
 //	u8, cursor: option<string>) -> execution-id
 //
 //go:nosplit
-func ListStargazersSubmit(joinSetID JoinSetID, repo string, pageSize uint8, cursor cm.Option[string]) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func ListStargazersSubmit(joinSet JoinSet, repo string, pageSize uint8, cursor cm.Option[string]) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	repo0, repo1 := cm.LowerString(repo)
 	pageSize0 := (uint32)(pageSize)
 	cursor0, cursor1, cursor2 := lower_OptionString(cursor)
-	wasmimport_ListStargazersSubmit((uint32)(joinSetId0), (*uint8)(repo0), (uint32)(repo1), (uint32)(pageSize0), (uint32)(cursor0), (*uint8)(cursor1), (uint32)(cursor2), &result)
+	wasmimport_ListStargazersSubmit((uint32)(joinSet0), (*uint8)(repo0), (uint32)(repo1), (uint32)(pageSize0), (uint32)(cursor0), (*uint8)(cursor1), (uint32)(cursor2), &result)
 	return
 }
 
 // ListStargazersAwaitNext represents the imported function "list-stargazers-await-next".
 //
-//	list-stargazers-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	list-stargazers-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<option<stargazers>, string>>, await-next-extension-error>
 //
 //go:nosplit
-func ListStargazersAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[OptionStargazersShape, cm.Option[Stargazers], string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_ListStargazersAwaitNext((uint32)(joinSetId0), &result)
+func ListStargazersAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[OptionStargazersShape, cm.Option[Stargazers], string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_ListStargazersAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -106,5 +124,20 @@ func ListStargazersAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExt
 func ListStargazersGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[OptionStargazersShape, cm.Option[Stargazers], string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_ListStargazersGet((*uint8)(executionId0), (uint32)(executionId1), &result)
+	return
+}
+
+// ListStargazersInvoke represents the imported function "list-stargazers-invoke".
+//
+//	list-stargazers-invoke: func(label: string, repo: string, page-size: u8, cursor:
+//	option<string>) -> result<result<option<stargazers>, string>, invoke-extension-error>
+//
+//go:nosplit
+func ListStargazersInvoke(label string, repo string, pageSize uint8, cursor cm.Option[string]) (result cm.Result[ResultOptionStargazersStringShape, cm.Result[OptionStargazersShape, cm.Option[Stargazers], string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
+	repo0, repo1 := cm.LowerString(repo)
+	pageSize0 := (uint32)(pageSize)
+	cursor0, cursor1, cursor2 := lower_OptionString(cursor)
+	wasmimport_ListStargazersInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(repo0), (uint32)(repo1), (uint32)(pageSize0), (uint32)(cursor0), (*uint8)(cursor1), (uint32)(cursor2), &result)
 	return
 }

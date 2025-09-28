@@ -2,23 +2,23 @@
 package stargazers:github-obelisk-ext;
 
 interface account {
-  use obelisk:types/execution@2.0.0.{execution-id, join-set-id, await-next-extension-error, get-extension-error, execution-failed};
   use stargazers:github/account.{stargazers};
+  use obelisk:types/execution@3.0.0.{execution-id, join-set, await-next-extension-error, get-extension-error, invoke-extension-error};
 
-  account-info-submit: func(join-set-id: borrow<join-set-id>, login: string) -> execution-id;
+  account-info-submit: func(join-set: borrow<join-set>, login: string) -> execution-id;
 
-  account-info-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<string, string>>, await-next-extension-error>;
+  account-info-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id, result<string, string>>, await-next-extension-error>;
 
   account-info-get: func(execution-id: execution-id) -> result<result<string, string>, get-extension-error>;
 
-  account-info-invoke: func(login: string) -> result<result<string, string>, execution-failed>;
+  account-info-invoke: func(label: string, login: string) -> result<result<string, string>, invoke-extension-error>;
 
-  list-stargazers-submit: func(join-set-id: borrow<join-set-id>, repo: string, page-size: u8, cursor: option<string>) -> execution-id;
+  list-stargazers-submit: func(join-set: borrow<join-set>, repo: string, page-size: u8, cursor: option<string>) -> execution-id;
 
-  list-stargazers-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<option<stargazers>, string>>, await-next-extension-error>;
+  list-stargazers-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id, result<option<stargazers>, string>>, await-next-extension-error>;
 
   list-stargazers-get: func(execution-id: execution-id) -> result<result<option<stargazers>, string>, get-extension-error>;
 
-  list-stargazers-invoke: func(repo: string, page-size: u8, cursor: option<string>) -> result<result<option<stargazers>, string>, execution-failed>;
+  list-stargazers-invoke: func(label: string, repo: string, page-size: u8, cursor: option<string>) -> result<result<option<stargazers>, string>, invoke-extension-error>;
 }
 

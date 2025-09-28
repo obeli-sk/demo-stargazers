@@ -13,10 +13,10 @@ import (
 // See [execution.ExecutionID] for more information.
 type ExecutionID = execution.ExecutionID
 
-// JoinSetID represents the imported type alias "stargazers:llm-obelisk-ext/llm#join-set-id".
+// JoinSet represents the imported type alias "stargazers:llm-obelisk-ext/llm#join-set".
 //
-// See [execution.JoinSetID] for more information.
-type JoinSetID = execution.JoinSetID
+// See [execution.JoinSet] for more information.
+type JoinSet = execution.JoinSet
 
 // AwaitNextExtensionError represents the type alias "stargazers:llm-obelisk-ext/llm#await-next-extension-error".
 //
@@ -28,29 +28,34 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
+// InvokeExtensionError represents the type alias "stargazers:llm-obelisk-ext/llm#invoke-extension-error".
+//
+// See [execution.InvokeExtensionError] for more information.
+type InvokeExtensionError = execution.InvokeExtensionError
+
 // RespondSubmit represents the imported function "respond-submit".
 //
-//	respond-submit: func(join-set-id: borrow<join-set-id>, user-prompt: string, settings-json:
+//	respond-submit: func(join-set: borrow<join-set>, user-prompt: string, settings-json:
 //	string) -> execution-id
 //
 //go:nosplit
-func RespondSubmit(joinSetID JoinSetID, userPrompt string, settingsJSON string) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func RespondSubmit(joinSet JoinSet, userPrompt string, settingsJSON string) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	userPrompt0, userPrompt1 := cm.LowerString(userPrompt)
 	settingsJson0, settingsJson1 := cm.LowerString(settingsJSON)
-	wasmimport_RespondSubmit((uint32)(joinSetId0), (*uint8)(userPrompt0), (uint32)(userPrompt1), (*uint8)(settingsJson0), (uint32)(settingsJson1), &result)
+	wasmimport_RespondSubmit((uint32)(joinSet0), (*uint8)(userPrompt0), (uint32)(userPrompt1), (*uint8)(settingsJson0), (uint32)(settingsJson1), &result)
 	return
 }
 
 // RespondAwaitNext represents the imported function "respond-await-next".
 //
-//	respond-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	respond-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<string, string>>, await-next-extension-error>
 //
 //go:nosplit
-func RespondAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_RespondAwaitNext((uint32)(joinSetId0), &result)
+func RespondAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_RespondAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -63,5 +68,19 @@ func RespondAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionE
 func RespondGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[string, string, string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_RespondGet((*uint8)(executionId0), (uint32)(executionId1), &result)
+	return
+}
+
+// RespondInvoke represents the imported function "respond-invoke".
+//
+//	respond-invoke: func(label: string, user-prompt: string, settings-json: string)
+//	-> result<result<string, string>, invoke-extension-error>
+//
+//go:nosplit
+func RespondInvoke(label string, userPrompt string, settingsJSON string) (result cm.Result[ResultStringStringShape, cm.Result[string, string, string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
+	userPrompt0, userPrompt1 := cm.LowerString(userPrompt)
+	settingsJson0, settingsJson1 := cm.LowerString(settingsJSON)
+	wasmimport_RespondInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(userPrompt0), (uint32)(userPrompt1), (*uint8)(settingsJson0), (uint32)(settingsJson1), &result)
 	return
 }

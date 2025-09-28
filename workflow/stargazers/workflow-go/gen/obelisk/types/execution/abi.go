@@ -12,9 +12,3 @@ type ExecutionIDShape struct {
 	_     cm.HostLayout
 	shape [unsafe.Sizeof(ExecutionID{})]byte
 }
-
-// FunctionMismatchShape is used for storage in variant or result types.
-type FunctionMismatchShape struct {
-	_     cm.HostLayout
-	shape [unsafe.Sizeof(FunctionMismatch{})]byte
-}

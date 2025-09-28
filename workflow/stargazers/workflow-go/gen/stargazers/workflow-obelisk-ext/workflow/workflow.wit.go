@@ -13,10 +13,10 @@ import (
 // See [execution.ExecutionID] for more information.
 type ExecutionID = execution.ExecutionID
 
-// JoinSetID represents the imported type alias "stargazers:workflow-obelisk-ext/workflow#join-set-id".
+// JoinSet represents the imported type alias "stargazers:workflow-obelisk-ext/workflow#join-set".
 //
-// See [execution.JoinSetID] for more information.
-type JoinSetID = execution.JoinSetID
+// See [execution.JoinSet] for more information.
+type JoinSet = execution.JoinSet
 
 // AwaitNextExtensionError represents the type alias "stargazers:workflow-obelisk-ext/workflow#await-next-extension-error".
 //
@@ -28,29 +28,34 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
+// InvokeExtensionError represents the type alias "stargazers:workflow-obelisk-ext/workflow#invoke-extension-error".
+//
+// See [execution.InvokeExtensionError] for more information.
+type InvokeExtensionError = execution.InvokeExtensionError
+
 // StarAddedSubmit represents the imported function "star-added-submit".
 //
-//	star-added-submit: func(join-set-id: borrow<join-set-id>, login: string, repo:
-//	string) -> execution-id
+//	star-added-submit: func(join-set: borrow<join-set>, login: string, repo: string)
+//	-> execution-id
 //
 //go:nosplit
-func StarAddedSubmit(joinSetID JoinSetID, login string, repo string) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func StarAddedSubmit(joinSet JoinSet, login string, repo string) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
-	wasmimport_StarAddedSubmit((uint32)(joinSetId0), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
+	wasmimport_StarAddedSubmit((uint32)(joinSet0), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
 	return
 }
 
 // StarAddedAwaitNext represents the imported function "star-added-await-next".
 //
-//	star-added-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	star-added-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<_, string>>, await-next-extension-error>
 //
 //go:nosplit
-func StarAddedAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_StarAddedAwaitNext((uint32)(joinSetId0), &result)
+func StarAddedAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_StarAddedAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -65,29 +70,43 @@ func StarAddedGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorSh
 	return
 }
 
-// StarAddedParallelSubmit represents the imported function "star-added-parallel-submit".
+// StarAddedInvoke represents the imported function "star-added-invoke".
 //
-//	star-added-parallel-submit: func(join-set-id: borrow<join-set-id>, login: string,
-//	repo: string) -> execution-id
+//	star-added-invoke: func(label: string, login: string, repo: string) -> result<result<_,
+//	string>, invoke-extension-error>
 //
 //go:nosplit
-func StarAddedParallelSubmit(joinSetID JoinSetID, login string, repo string) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func StarAddedInvoke(label string, login string, repo string) (result cm.Result[ResultStringShape, cm.Result[string, struct{}, string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
-	wasmimport_StarAddedParallelSubmit((uint32)(joinSetId0), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
+	wasmimport_StarAddedInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
+	return
+}
+
+// StarAddedParallelSubmit represents the imported function "star-added-parallel-submit".
+//
+//	star-added-parallel-submit: func(join-set: borrow<join-set>, login: string, repo:
+//	string) -> execution-id
+//
+//go:nosplit
+func StarAddedParallelSubmit(joinSet JoinSet, login string, repo string) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	login0, login1 := cm.LowerString(login)
+	repo0, repo1 := cm.LowerString(repo)
+	wasmimport_StarAddedParallelSubmit((uint32)(joinSet0), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
 	return
 }
 
 // StarAddedParallelAwaitNext represents the imported function "star-added-parallel-await-next".
 //
-//	star-added-parallel-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	star-added-parallel-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<_, string>>, await-next-extension-error>
 //
 //go:nosplit
-func StarAddedParallelAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_StarAddedParallelAwaitNext((uint32)(joinSetId0), &result)
+func StarAddedParallelAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_StarAddedParallelAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -103,29 +122,43 @@ func StarAddedParallelGet(executionID ExecutionID) (result cm.Result[GetExtensio
 	return
 }
 
-// StarRemovedSubmit represents the imported function "star-removed-submit".
+// StarAddedParallelInvoke represents the imported function "star-added-parallel-invoke".
 //
-//	star-removed-submit: func(join-set-id: borrow<join-set-id>, login: string, repo:
-//	string) -> execution-id
+//	star-added-parallel-invoke: func(label: string, login: string, repo: string) ->
+//	result<result<_, string>, invoke-extension-error>
 //
 //go:nosplit
-func StarRemovedSubmit(joinSetID JoinSetID, login string, repo string) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func StarAddedParallelInvoke(label string, login string, repo string) (result cm.Result[ResultStringShape, cm.Result[string, struct{}, string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
-	wasmimport_StarRemovedSubmit((uint32)(joinSetId0), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
+	wasmimport_StarAddedParallelInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
+	return
+}
+
+// StarRemovedSubmit represents the imported function "star-removed-submit".
+//
+//	star-removed-submit: func(join-set: borrow<join-set>, login: string, repo: string)
+//	-> execution-id
+//
+//go:nosplit
+func StarRemovedSubmit(joinSet JoinSet, login string, repo string) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	login0, login1 := cm.LowerString(login)
+	repo0, repo1 := cm.LowerString(repo)
+	wasmimport_StarRemovedSubmit((uint32)(joinSet0), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
 	return
 }
 
 // StarRemovedAwaitNext represents the imported function "star-removed-await-next".
 //
-//	star-removed-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	star-removed-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<_, string>>, await-next-extension-error>
 //
 //go:nosplit
-func StarRemovedAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_StarRemovedAwaitNext((uint32)(joinSetId0), &result)
+func StarRemovedAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_StarRemovedAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -141,27 +174,41 @@ func StarRemovedGet(executionID ExecutionID) (result cm.Result[GetExtensionError
 	return
 }
 
-// BackfillSubmit represents the imported function "backfill-submit".
+// StarRemovedInvoke represents the imported function "star-removed-invoke".
 //
-//	backfill-submit: func(join-set-id: borrow<join-set-id>, repo: string) -> execution-id
+//	star-removed-invoke: func(label: string, login: string, repo: string) -> result<result<_,
+//	string>, invoke-extension-error>
 //
 //go:nosplit
-func BackfillSubmit(joinSetID JoinSetID, repo string) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func StarRemovedInvoke(label string, login string, repo string) (result cm.Result[ResultStringShape, cm.Result[string, struct{}, string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
+	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
-	wasmimport_BackfillSubmit((uint32)(joinSetId0), (*uint8)(repo0), (uint32)(repo1), &result)
+	wasmimport_StarRemovedInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
+	return
+}
+
+// BackfillSubmit represents the imported function "backfill-submit".
+//
+//	backfill-submit: func(join-set: borrow<join-set>, repo: string) -> execution-id
+//
+//go:nosplit
+func BackfillSubmit(joinSet JoinSet, repo string) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	repo0, repo1 := cm.LowerString(repo)
+	wasmimport_BackfillSubmit((uint32)(joinSet0), (*uint8)(repo0), (uint32)(repo1), &result)
 	return
 }
 
 // BackfillAwaitNext represents the imported function "backfill-await-next".
 //
-//	backfill-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	backfill-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<_, string>>, await-next-extension-error>
 //
 //go:nosplit
-func BackfillAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_BackfillAwaitNext((uint32)(joinSetId0), &result)
+func BackfillAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_BackfillAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -176,28 +223,40 @@ func BackfillGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorSha
 	return
 }
 
-// BackfillParallelSubmit represents the imported function "backfill-parallel-submit".
+// BackfillInvoke represents the imported function "backfill-invoke".
 //
-//	backfill-parallel-submit: func(join-set-id: borrow<join-set-id>, repo: string)
-//	-> execution-id
+//	backfill-invoke: func(label: string, repo: string) -> result<result<_, string>,
+//	invoke-extension-error>
 //
 //go:nosplit
-func BackfillParallelSubmit(joinSetID JoinSetID, repo string) (result ExecutionID) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
+func BackfillInvoke(label string, repo string) (result cm.Result[ResultStringShape, cm.Result[string, struct{}, string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
 	repo0, repo1 := cm.LowerString(repo)
-	wasmimport_BackfillParallelSubmit((uint32)(joinSetId0), (*uint8)(repo0), (uint32)(repo1), &result)
+	wasmimport_BackfillInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(repo0), (uint32)(repo1), &result)
+	return
+}
+
+// BackfillParallelSubmit represents the imported function "backfill-parallel-submit".
+//
+//	backfill-parallel-submit: func(join-set: borrow<join-set>, repo: string) -> execution-id
+//
+//go:nosplit
+func BackfillParallelSubmit(joinSet JoinSet, repo string) (result ExecutionID) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	repo0, repo1 := cm.LowerString(repo)
+	wasmimport_BackfillParallelSubmit((uint32)(joinSet0), (*uint8)(repo0), (uint32)(repo1), &result)
 	return
 }
 
 // BackfillParallelAwaitNext represents the imported function "backfill-parallel-await-next".
 //
-//	backfill-parallel-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id,
+//	backfill-parallel-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
 //	result<_, string>>, await-next-extension-error>
 //
 //go:nosplit
-func BackfillParallelAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
-	joinSetId0 := cm.Reinterpret[uint32](joinSetID)
-	wasmimport_BackfillParallelAwaitNext((uint32)(joinSetId0), &result)
+func BackfillParallelAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+	joinSet0 := cm.Reinterpret[uint32](joinSet)
+	wasmimport_BackfillParallelAwaitNext((uint32)(joinSet0), &result)
 	return
 }
 
@@ -210,5 +269,18 @@ func BackfillParallelAwaitNext(joinSetID JoinSetID) (result cm.Result[AwaitNextE
 func BackfillParallelGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[string, struct{}, string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_BackfillParallelGet((*uint8)(executionId0), (uint32)(executionId1), &result)
+	return
+}
+
+// BackfillParallelInvoke represents the imported function "backfill-parallel-invoke".
+//
+//	backfill-parallel-invoke: func(label: string, repo: string) -> result<result<_,
+//	string>, invoke-extension-error>
+//
+//go:nosplit
+func BackfillParallelInvoke(label string, repo string) (result cm.Result[ResultStringShape, cm.Result[string, struct{}, string], InvokeExtensionError]) {
+	label0, label1 := cm.LowerString(label)
+	repo0, repo1 := cm.LowerString(repo)
+	wasmimport_BackfillParallelInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(repo0), (uint32)(repo1), &result)
 	return
 }
