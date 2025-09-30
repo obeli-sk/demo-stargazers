@@ -24,7 +24,7 @@ defaults:
     shell: bash -xe {0}
 
 jobs:
-  unit-test:
+  ci-unit:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
@@ -44,12 +44,18 @@ jobs:
       - name: Run unit tests
         env:
           CI: true
-        run: nix develop --command ./scripts/test-unit.sh --profile ci-unit
+        run: nix develop --command ./scripts/test-unit.sh --profile ${{ github.job }}
 
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+      - name: Upload test results
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: junit-report
+          path: target/nextest/${{ github.job }}/junit.xml
+
+      - name: Report results in GitHub UI
+        uses: dorny/test-reporter@dc3a92680fcc15842eef52e8c4606ea7ce6bd3f3
         if: always()
         with:
-          check_name: Test results
-          files: |
-            target/nextest/ci-unit/junit.xml
+          name: Rust tests
+          path: target/nextest/${{ github.job }}/junit.xml
+          reporter: java-junit
