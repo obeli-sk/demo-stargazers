@@ -1,7 +1,5 @@
-default: all
-
 # Build all components (Rust, JS, Go)
-all: rust js go
+build: rust js go
 
 # Build Rust components
 rust:
@@ -19,6 +17,16 @@ js:
 go:
 	./scripts/build-components-go.sh
 
-# List available tasks
-help:
-	just --list
+serve:
+	obelisk server run --config ./obelisk-local.toml
+
+test-unit:
+	./scripts/test-unit.sh
+test-integration:
+	./scripts/test-integration.sh
+test-e2e: rust
+	./scripts/test-e2e.sh ./obelisk-local.toml truncate
+test-e2e-js: js
+	./scripts/test-e2e.sh ./obelisk-local-js-all.toml truncate
+test-e2e-go: go
+	./scripts/test-e2e.sh ./obelisk-local-go-all.toml truncate
