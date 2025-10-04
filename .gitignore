@@ -2,3 +2,4 @@
 /.envrc
 target
 node_modules/
+/go/
