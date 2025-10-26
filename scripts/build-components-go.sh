@@ -4,7 +4,7 @@ set -exuo pipefail
 cd "$(dirname "$0")/.."
 
 
-find . -name 'go.mod' | while read modfile; do
+find . -name 'go.mod' -not -path "./.gopath/*" | while read modfile; do
   dir=$(dirname "$modfile")
   echo "Building $dir"
   (

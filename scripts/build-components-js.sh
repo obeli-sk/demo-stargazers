@@ -3,7 +3,7 @@
 set -exuo pipefail
 cd "$(dirname "$0")/.."
 
-find . -name 'package.json' -not -path '*/node_modules/*' | while read modfile; do
+find . -name 'package.json' -not -path '*/node_modules/*' -not -path './.gopath/*' | while read modfile; do
   dir=$(dirname "$modfile")
   echo "Building $dir"
   (
