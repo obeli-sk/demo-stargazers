@@ -6,12 +6,10 @@ Go reimplementation of [openai](../openai/) activity.
 Required versions of `tinygo`, `wit-bindgen-go-cli`, `wasm-tools` can be found in [dev-deps.txt](../dev-deps.txt).
 See [Go tooling](https://component-model.bytecodealliance.org/language-support/go.html) for more information.
 
+
+Regenerate bindings after modifying `wit` folder:
 ```sh
-go mod init ...
-rm -rf gen
-# Regenerate bindings after modifying `wit` folder
-wit-bindgen-go generate --world root --out gen wit/
-go mod tidy
+./regen.sh
 ```
 
 ## Building

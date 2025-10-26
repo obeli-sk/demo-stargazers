@@ -12,5 +12,5 @@ wasmtime 37.0.2
 node.js v22.19.0
 wizer 10.0.0
 tinygo version 0.39.0 linux/amd64 (using go version go1.25.1 and LLVM version 20.1.8)
-wit-bindgen-go-cli 0.6.2
+wit-bindgen-go-cli 0.7.0
 ldd (GNU libc) 2.40

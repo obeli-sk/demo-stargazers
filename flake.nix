@@ -28,16 +28,16 @@
           rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
           wit-bindgen-go-cli = pkgs.buildGoModule (rec {
             pname = "wit-bindgen-go-cli";
-            version = "0.6.2"; # NB: Update version in dev-deps.sh
+            version = "0.7.0"; # NB: Update version in dev-deps.sh
             src = pkgs.fetchFromGitHub {
               owner = "bytecodealliance";
               repo = "go-modules";
               rev = "v${version}";
-              hash = "sha256-MM3jVhGgTbpC4QZX6HMhJnvWLcyhZZjT7DVqt712InY=";
+              hash = "sha256-bzsB0EsDNk6x1xroIQqbUy7L97JbEJHo7wASnl35X+0=";
             };
             modMode = "workspace";
             subPackages = [ "cmd/wit-bindgen-go" ];
-            vendorHash = "sha256-HR2HE/urN5gs5sh5tHZw3ISoJGsPrVGoI9A24epoRZE=";
+            vendorHash = "sha256-9BLzPxLc+HoVQuUtTwLj6QZvN7BLrX5Zy4s5eWTXvwA=";
             proxyVendor = true;
           });
           commonDeps = with pkgs; [

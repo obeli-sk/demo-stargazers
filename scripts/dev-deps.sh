@@ -23,6 +23,6 @@ echo "node.js $(node --version)" >> dev-deps.txt
 wizer --version >> dev-deps.txt
 # Go
 tinygo version >> dev-deps.txt
-echo "wit-bindgen-go-cli 0.6.2" >> dev-deps.txt
+echo "wit-bindgen-go-cli 0.7.0" >> dev-deps.txt
 # libc
 ldd --version | head -n 1 >> dev-deps.txt

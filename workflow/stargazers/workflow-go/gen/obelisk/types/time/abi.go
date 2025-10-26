@@ -7,8 +7,8 @@ import (
 	"unsafe"
 )
 
-// DurationShape is used for storage in variant or result types.
-type DurationShape struct {
+// DateTimeShape is used for storage in variant or result types.
+type DateTimeShape struct {
 	_     cm.HostLayout
-	shape [unsafe.Sizeof(Duration{})]byte
+	shape [unsafe.Sizeof(DateTime{})]byte
 }

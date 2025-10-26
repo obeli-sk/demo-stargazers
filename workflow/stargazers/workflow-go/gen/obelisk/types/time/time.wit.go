@@ -103,7 +103,7 @@ type DateTime struct {
 //		at(datetime),
 //		in(duration),
 //	}
-type ScheduleAt cm.Variant[uint8, DurationShape, Duration]
+type ScheduleAt cm.Variant[uint8, DateTimeShape, DateTime]
 
 // ScheduleAtNow returns a [ScheduleAt] of case "now".
 func ScheduleAtNow() ScheduleAt {

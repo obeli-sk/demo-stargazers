@@ -21,7 +21,7 @@ See [Go tooling](https://component-model.bytecodealliance.org/language-support/g
 
 ```sh
 go mod init ...
-./regenerate.sh
+./regen.sh
 ```
 
 ## Building

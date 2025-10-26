@@ -1,7 +1,8 @@
 package root:component;
 
 world root {
-    include stargazers:workflow/exports;
+    // include stargazers:workflow/exports;
+    export stargazers:workflow/workflow;
 
     // Import the implemented interface for `backfill`
     import stargazers:workflow/workflow;
@@ -20,6 +21,6 @@ world root {
     import obelisk:log/log@1.0.0;
 
     // TinyGo limitation, not used.
-    include wasi:cli/command@0.2.0; 
+    include wasi:cli/command@0.2.0;
 
 }

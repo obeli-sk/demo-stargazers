@@ -8,7 +8,7 @@ See [Go tooling](https://component-model.bytecodealliance.org/language-support/g
 
 ```sh
 go mod init <module-path>
-./regenerate.sh
+./regen.sh
 ```
 
 ## Building
