@@ -1,10 +1,10 @@
-cargo-binstall 1.15.9
+cargo-binstall 1.16.0
 cargo-edit-upgrade 0.13.8
 cargo-expand 1.0.118
 cargo generate 0.23.5
 cargo-nextest 0.9.111
-just 1.43.0
-obelisk 0.27.0
+just 1.43.1
+obelisk 0.28.0
 pkg-config 0.29.2
 rustc 1.91.1 (ed61e7d7e 2025-11-07)
 wasm-tools 1.239.0
