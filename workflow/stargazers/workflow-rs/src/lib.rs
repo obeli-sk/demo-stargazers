@@ -1,8 +1,5 @@
 use crate::exports::stargazers::workflow::workflow::Guest;
-use obelisk::{
-    types::execution::AwaitNextExtensionError,
-    workflow::workflow_support::{ClosingStrategy, new_join_set_named},
-};
+use obelisk::{types::execution::AwaitNextExtensionError, workflow::workflow_support};
 use stargazers::{
     db,
     db_obelisk_ext::llm::{get_settings_json_await_next, get_settings_json_submit},
@@ -39,11 +36,10 @@ impl Guest for Component {
         let description = db::user::add_star_get_description(&login, &repo)?;
         if description.is_none() {
             // Create two join sets for the two child executions.
-            let join_set_info =
-                new_join_set_named(&format!("info_{login}"), ClosingStrategy::Complete)
-                    .expect("github login does not contain illegal characters");
+            let join_set_info = workflow_support::join_set_create_named(&format!("info_{login}"))
+                .expect("github login does not contain illegal characters");
             let join_set_settings =
-                new_join_set_named(&format!("settings_{login}"), ClosingStrategy::Complete)
+                workflow_support::join_set_create_named(&format!("settings_{login}"))
                     .expect("github login does not contain illegal characters");
             // Submit the two child executions asynchronously.
             account_info_submit(&join_set_info, &login);
@@ -97,7 +93,7 @@ impl Guest for Component {
         {
             let mut join_set_batch = Vec::new();
             for login in &resp.logins {
-                let join_set = new_join_set_named(login, ClosingStrategy::Complete)
+                let join_set = workflow_support::join_set_create_named(login)
                     .expect("github login does not contain illegal characters");
                 // `-submit`-ting child executions without `-await`-ing results
                 imported_workflow_ext::star_added_parallel_submit(&join_set, login, &repo);
