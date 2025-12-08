@@ -5,6 +5,7 @@ package account
 
 import (
 	"github.com/obeli-sk/demo-stargazers/workflow-go/gen/obelisk/types/execution"
+	joinset "github.com/obeli-sk/demo-stargazers/workflow-go/gen/obelisk/types/join-set"
 	"github.com/obeli-sk/demo-stargazers/workflow-go/gen/stargazers/github/account"
 	"go.bytecodealliance.org/cm"
 )
@@ -21,8 +22,8 @@ type ExecutionID = execution.ExecutionID
 
 // JoinSet represents the imported type alias "stargazers:github-obelisk-ext/account#join-set".
 //
-// See [execution.JoinSet] for more information.
-type JoinSet = execution.JoinSet
+// See [joinset.JoinSet] for more information.
+type JoinSet = joinset.JoinSet
 
 // AwaitNextExtensionError represents the type alias "stargazers:github-obelisk-ext/account#await-next-extension-error".
 //

@@ -6,40 +6,32 @@ import (
 	"go.bytecodealliance.org/cm"
 )
 
-// This file contains wasmimport and wasmexport declarations for "obelisk:workflow@3.0.0".
+// This file contains wasmimport and wasmexport declarations for "obelisk:workflow@4.0.0".
 
-//go:wasmimport obelisk:workflow/workflow-support@3.0.0 random-u64
+//go:wasmimport obelisk:workflow/workflow-support@4.0.0 random-u64
 //go:noescape
 func wasmimport_RandomU64(min0 uint64, maxExclusive0 uint64) (result0 uint64)
 
-//go:wasmimport obelisk:workflow/workflow-support@3.0.0 random-u64-inclusive
+//go:wasmimport obelisk:workflow/workflow-support@4.0.0 random-u64-inclusive
 //go:noescape
 func wasmimport_RandomU64Inclusive(min0 uint64, maxInclusive0 uint64) (result0 uint64)
 
-//go:wasmimport obelisk:workflow/workflow-support@3.0.0 random-string
+//go:wasmimport obelisk:workflow/workflow-support@4.0.0 random-string
 //go:noescape
 func wasmimport_RandomString(minLength0 uint32, maxLengthExclusive0 uint32, result *string)
 
-//go:wasmimport obelisk:workflow/workflow-support@3.0.0 sleep
+//go:wasmimport obelisk:workflow/workflow-support@4.0.0 sleep
 //go:noescape
-func wasmimport_Sleep(scheduleAt0 uint32, scheduleAt1 uint64, scheduleAt2 uint64, result *DateTime)
+func wasmimport_Sleep(scheduleAt0 uint32, scheduleAt1 uint64, scheduleAt2 uint64, result *cm.Result[DateTime, DateTime, struct{}])
 
-//go:wasmimport obelisk:workflow/workflow-support@3.0.0 submit-delay
+//go:wasmimport obelisk:workflow/workflow-support@4.0.0 join-set-create
 //go:noescape
-func wasmimport_SubmitDelay(joinSet0 uint32, timeout0 uint32, timeout1 uint64, timeout2 uint64, result *DelayID)
+func wasmimport_JoinSetCreate() (result0 uint32)
 
-//go:wasmimport obelisk:workflow/workflow-support@3.0.0 new-join-set-named
+//go:wasmimport obelisk:workflow/workflow-support@4.0.0 join-set-create-named
 //go:noescape
-func wasmimport_NewJoinSetNamed(name0 *uint8, name1 uint32, closingStrategy0 uint32, result *cm.Result[JoinSetCreateErrorShape, JoinSet, JoinSetCreateError])
+func wasmimport_JoinSetCreateNamed(name0 *uint8, name1 uint32, result *cm.Result[JoinSetCreateErrorShape, JoinSet, JoinSetCreateError])
 
-//go:wasmimport obelisk:workflow/workflow-support@3.0.0 new-join-set-generated
+//go:wasmimport obelisk:workflow/workflow-support@4.0.0 join-set-close
 //go:noescape
-func wasmimport_NewJoinSetGenerated(closingStrategy0 uint32) (result0 uint32)
-
-//go:wasmimport obelisk:workflow/workflow-support@3.0.0 close
-//go:noescape
-func wasmimport_Close(joinSet0 uint32)
-
-//go:wasmimport obelisk:workflow/workflow-support@3.0.0 join-next
-//go:noescape
-func wasmimport_JoinNext(joinSet0 uint32, result *cm.Result[ResponseIDShape, ResponseID, JoinNextError])
+func wasmimport_JoinSetClose(self0 uint32)

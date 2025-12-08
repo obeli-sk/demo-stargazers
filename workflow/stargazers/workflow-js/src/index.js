@@ -8,7 +8,7 @@ import { getSettingsJsonSubmit, getSettingsJsonAwaitNext } from 'stargazers:db-o
 import { addStarGetDescription, updateUserDescription, removeStar } from 'stargazers:db/user';
 import { respond as llmRespond } from 'stargazers:llm/llm';
 // Obelisk host utilities for workflows
-import { newJoinSetNamed, close } from 'obelisk:workflow/workflow-support@3.0.0';
+import { joinSetCreateNamed, joinSetClose } from 'obelisk:workflow/workflow-support@4.0.0';
 import { debug as log_debug, info as log_info, error as log_error } from 'obelisk:log/log@1.0.0'
 
 console.log = function (...args) {
@@ -23,10 +23,6 @@ console.error = function (...args) {
   const message = args.join(' ');
   log_error(message);
 }
-
-const ClosingStrategy = {
-  Complete: "complete",
-};
 
 function stringify_error(e) {
   let errorDetails;
@@ -100,9 +96,10 @@ export const workflow = {
       if (existingDescription === null || existingDescription === undefined) {
         console.log(`No description for ${login} on ${repo}, generating in parallel...`);
         // Create two join sets for the two child executions (async operations).
-        // WIT: func new-join-set-named(name: string, closing-strategy: closing-strategy) -> join-set
-        const joinSetInfo = newJoinSetNamed(`info_${login}`, "complete");
-        const joinSetSettings = newJoinSetNamed(`settings_${login}`, ClosingStrategy.Complete);
+
+        // WIT: join-set-create-named: func(name: string) -> result<join-set, join-set-create-error>;
+        const joinSetInfo = joinSetCreateNamed(`info_${login}`);
+        const joinSetSettings = joinSetCreateNamed(`settings_${login}`);
 
         // Submit the two child executions asynchronously using Obelisk extensions.
         // WIT: account-info-submit: func(join-set-id: borrow<join-set-id>, login: string) -> execution-id
@@ -216,7 +213,7 @@ export const workflow = {
           // No need to await; the engine handles join sets completion.
           console.log(`Submitting task for ${login}...`);
           // WIT: star-added-parallel-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id
-          let joinSet = newJoinSetNamed(login, ClosingStrategy.Complete);
+          let joinSet = joinSetCreateNamed(login);
           starAddedParallelSubmit(
             joinSet, // Create a join set per user
             login,
@@ -226,7 +223,8 @@ export const workflow = {
         }
         // Close all join sets of this batch for back-pressure.
         for (let joinSet of joinSetList) {
-          close(joinSet);
+          // WIT: join-set-close: func(self: join-set);
+          joinSetClose(joinSet);
         }
 
         if (!gotWholePage) {

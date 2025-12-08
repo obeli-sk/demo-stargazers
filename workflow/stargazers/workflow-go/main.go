@@ -74,11 +74,11 @@ func (c *Component) StarAddedParallel(login string, repo string) cm.Result[strin
 	if descriptionPtr == nil { // If description was None
 		joinSetInfoName := fmt.Sprintf("info_%s", login)
 		// Imported WIT: obelisk:workflow/workflow-support.new-join-set-named: func(name: string, closing-strategy: closing-strategy) -> join-set-id
-		joinSetInfoWrapped := obeliskWorkflowSupport.NewJoinSetNamed(joinSetInfoName, obeliskWorkflowSupport.ClosingStrategyComplete)
+		joinSetInfoWrapped := obeliskWorkflowSupport.JoinSetCreateNamed(joinSetInfoName)
 		joinSetInfo := *joinSetInfoWrapped.OK()
 
 		joinSetSettingsName := fmt.Sprintf("settings_%s", login)
-		joinSetSettingsWrapped := obeliskWorkflowSupport.NewJoinSetNamed(joinSetSettingsName, obeliskWorkflowSupport.ClosingStrategyComplete)
+		joinSetSettingsWrapped := obeliskWorkflowSupport.JoinSetCreateNamed(joinSetSettingsName)
 		joinSetSettings := *joinSetSettingsWrapped.OK()
 
 		// Imported WIT: stargazers:github-obelisk-ext/account.account-info-submit: func(join-set-id: borrow<join-set-id>, login: string) -> execution-id
@@ -204,7 +204,7 @@ func (c *Component) BackfillParallel(repo string) (result cm.Result[string, stru
 		for _, stargazeLogin := range loginsSlice {
 			joinSetName := stargazeLogin
 			// Imported WIT: obelisk:workflow/workflow-support.new-join-set-named: func(name: string, closing-strategy: closing-strategy) -> join-set-id
-			joinSetForChildWrapped := obeliskWorkflowSupport.NewJoinSetNamed(joinSetName, obeliskWorkflowSupport.ClosingStrategyComplete)
+			joinSetForChildWrapped := obeliskWorkflowSupport.JoinSetCreateNamed(joinSetName)
 			joinSetForChild := *joinSetForChildWrapped.OK()
 
 			// Imported WIT: stargazers:workflow-obelisk-ext/workflow.star-added-parallel-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id
@@ -212,7 +212,7 @@ func (c *Component) BackfillParallel(repo string) (result cm.Result[string, stru
 			joinSetList = append(joinSetList, joinSetForChild)
 		}
 		for _, joinSet := range joinSetList {
-			obeliskWorkflowSupport.Close(joinSet)
+			obeliskWorkflowSupport.JoinSetClose(joinSet)
 		}
 		if !gotWholePage {
 			break
