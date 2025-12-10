@@ -104,7 +104,8 @@ impl Guest for Component {
                 break;
             }
             cursor = Some(resp.cursor);
-            // join_set_batch get closed blocking until child executions are completed.
+            // `join_set_batch` is automatically closed here, as it is removed from the scope.
+            // Parent workflow will block until all child workflows finish.
         }
         Ok(())
     }

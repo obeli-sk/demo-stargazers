@@ -1,2 +1,4 @@
 /.direnv
 /target
+/.gopath/
+node_modules/
