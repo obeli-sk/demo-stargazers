@@ -1,13 +1,13 @@
-cargo-binstall 1.16.2
+cargo-binstall 1.16.3
 cargo-edit-upgrade 0.13.8
 cargo-expand 1.0.118
 cargo generate 0.23.5
 cargo-nextest 0.9.114
 just 1.43.1
-obelisk 0.29.1
+obelisk 0.30.0
 pkg-config 0.29.2
-rustc 1.91.1 (ed61e7d7e 2025-11-07)
-wasm-tools 1.242.0
+rustc 1.92.0 (ded5c06cf 2025-12-08)
+wasm-tools 1.243.0
 wasmtime 39.0.1
 node.js v22.21.1
 wizer 10.0.0
