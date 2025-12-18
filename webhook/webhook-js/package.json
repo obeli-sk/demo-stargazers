@@ -7,7 +7,7 @@
     "build": "npm run build:esbuild && npm run build:componentize"
   },
   "dependencies": {
-    "hono": "^4.7.9"
+    "hono": "^4.10.3"
   },
   "devDependencies": {
     "@bytecodealliance/componentize-js": "0.19.0",
