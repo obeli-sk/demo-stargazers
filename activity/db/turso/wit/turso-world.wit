@@ -1,6 +1,5 @@
 package stargazers:db-turso;
 
 world any {
-    // wasi:http/outgoing-handler imports are added automatically by `waki` crate.
     include stargazers:db/exports;
 }

@@ -1,7 +1,8 @@
+use anyhow::{Context, bail};
 use request::{PipelineAction, PipelineRequest};
 use response::PipelineResponse;
 use serde::{Deserialize, Serialize};
-use waki::Client;
+use wstd::http::{Body, Client, Method, Request, StatusCode};
 
 use crate::{ENV_TURSO_LOCATION, ENV_TURSO_TOKEN};
 
@@ -44,6 +45,7 @@ pub enum TursoValue {
 }
 
 pub mod response {
+    use anyhow::anyhow;
     use serde::Deserialize;
 
     use super::TursoValue;
@@ -54,13 +56,13 @@ pub mod response {
     }
 
     impl PipelineResponse {
-        pub fn ok_responses(self) -> Result<Vec<Response>, String> {
+        pub fn ok_responses(self) -> Result<Vec<Response>, anyhow::Error> {
             self.results
                 .into_iter()
                 .map(|res| match res {
                     ResponseResult::Ok { response } => Ok(response),
                     ResponseResult::Error { error } => {
-                        Err(format!("Got response result error {error:?}"))
+                        Err(anyhow!("Got response result error {error:?}"))
                     }
                 })
                 .collect::<Result<_, _>>()
@@ -132,48 +134,46 @@ pub mod response {
 pub struct TursoClient {
     url: String,
     token: String,
-    client: Client,
 }
 
 impl TursoClient {
-    pub fn new() -> Result<Self, String> {
+    pub fn new() -> Result<Self, anyhow::Error> {
         let token = std::env::var(ENV_TURSO_TOKEN)
-            .map_err(|_| format!("{ENV_TURSO_TOKEN} must be set as an environment variable"))?;
-        let turso_location = std::env::var(ENV_TURSO_LOCATION)
-            .map_err(|_| format!("{ENV_TURSO_LOCATION} must be set as an environment variable"))?;
-        let client = Client::new();
+            .with_context(|| format!("{ENV_TURSO_TOKEN} must be set as an environment variable"))?;
+        let turso_location = std::env::var(ENV_TURSO_LOCATION).with_context(|| {
+            format!("{ENV_TURSO_LOCATION} must be set as an environment variable")
+        })?;
         let url = format!("https://{turso_location}/v2/pipeline");
-        Ok(Self { url, token, client })
+        Ok(Self { url, token })
     }
 
     fn bearer(&self) -> String {
         format!("Bearer {}", self.token)
     }
 
-    fn post(&self) -> waki::RequestBuilder {
-        self.client
-            .post(&self.url)
-            .header("Authorization", self.bearer())
+    fn post(&self) -> wstd::http::request::Builder {
+        Request::builder()
+            .header("Authorization", &self.bearer())
             .header("Content-Type", "application/json")
+            .method(Method::POST)
+            .uri(&self.url)
     }
 
-    pub fn post_json(&self, request: &PipelineRequest) -> Result<Vec<response::Response>, String> {
+    pub async fn post_json(
+        &self,
+        request: &PipelineRequest,
+    ) -> Result<Vec<response::Response>, anyhow::Error> {
         assert_eq!(
             Some(&PipelineAction::Close),
             request.requests.last(),
             "last action must be close"
         );
-        let resp = self
-            .post()
-            .json(request)
-            .send()
-            .map_err(|err| format!("Failed to send request: {err:?}"))?;
-        if resp.status_code() != 200 {
-            return Err(format!("Unexpected status code: {}", resp.status_code()));
+        let req = self.post().body(Body::from_json(request)?)?;
+        let mut resp = Client::new().send(req).await?;
+        if resp.status() != StatusCode::OK {
+            bail!("Unexpected status code: {}", resp.status());
         }
-        let resp: PipelineResponse = resp
-            .json()
-            .map_err(|err| format!("Failed to parse response: {err:?}"))?;
+        let resp: PipelineResponse = resp.body_mut().json().await?;
 
         // Make sure there are no errors
         resp.ok_responses()

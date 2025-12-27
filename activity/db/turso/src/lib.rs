@@ -1,14 +1,15 @@
 mod turso;
-use std::time::SystemTime;
 
 use crate::exports::stargazers::db::llm::Guest as LlmGuest;
 use crate::exports::stargazers::db::user::Guest as UserGuest;
 use exports::stargazers::db::user::{Ordering, Stargazer};
 use humantime::format_rfc3339_millis;
+use std::time::SystemTime;
 use turso::request::{NamedArg, PipelineAction, PipelineRequest, Stmt};
 use turso::response::{QueryResult, Response, extract_first_value_from_nth_response};
 use turso::{TursoClient, TursoValue};
 use wit_bindgen::generate;
+use wstd::runtime::block_on;
 
 pub const ENV_TURSO_TOKEN: &str = "TURSO_TOKEN";
 pub const ENV_TURSO_LOCATION: &str = "TURSO_LOCATION";
@@ -31,7 +32,8 @@ impl LlmGuest for Component {
             ],
         };
 
-        let resp = TursoClient::new()?.post_json(&request_body)?;
+        let resp = block_on(async move { TursoClient::new()?.post_json(&request_body).await })
+            .map_err(|err| err.to_string())?;
         if let TursoValue::Text { value: first_value } =
             extract_first_value_from_nth_response(resp, 0)?
         {
@@ -89,7 +91,8 @@ fn get_user_description_and_star_status(
         ],
     };
 
-    let resp = TursoClient::new()?.post_json(&request_body)?;
+    let resp = block_on(async move { TursoClient::new()?.post_json(&request_body).await })
+        .map_err(|err| err.to_string())?;
     parse_user_description_and_star_status(resp)
 }
 
@@ -204,7 +207,8 @@ impl UserGuest for Component {
                     PipelineAction::Close,
                 ],
             };
-            TursoClient::new()?.post_json(&request_body)?;
+            block_on(async move { TursoClient::new()?.post_json(&request_body).await })
+                .map_err(|err| err.to_string())?;
         }
         Ok(description)
     }
@@ -254,7 +258,8 @@ impl UserGuest for Component {
             ],
         };
 
-        TursoClient::new()?.post_json(&request_body)?;
+        block_on(async move { TursoClient::new()?.post_json(&request_body).await })
+            .map_err(|err| err.to_string())?;
 
         Ok(())
     }
@@ -298,7 +303,8 @@ impl UserGuest for Component {
             ],
         };
 
-        TursoClient::new()?.post_json(&request_body)?;
+        block_on(async move { TursoClient::new()?.post_json(&request_body).await })
+            .map_err(|err| err.to_string())?;
 
         Ok(())
     }
@@ -344,7 +350,8 @@ impl UserGuest for Component {
                 PipelineAction::Close,
             ],
         };
-        let resp = TursoClient::new()?.post_json(&request_body)?;
+        let resp = block_on(async move { TursoClient::new()?.post_json(&request_body).await })
+            .map_err(|err| err.to_string())?;
         process_resp_list_stargazers(resp)
     }
 }
@@ -676,6 +683,8 @@ mod tests {
     }
 
     mod integration {
+        use wstd::runtime::block_on;
+
         use crate::{
             Component, ENV_TURSO_LOCATION, ENV_TURSO_TOKEN,
             exports::stargazers::db::{
@@ -711,7 +720,7 @@ mod tests {
                 .collect()
         }
 
-        fn delete_from(table: &str) {
+        async fn delete_from(table: &str) {
             println!("DELETE FROM {table}");
             TursoClient::new()
                 .unwrap()
@@ -727,15 +736,17 @@ mod tests {
                         PipelineAction::Close,
                     ],
                 })
+                .await
                 .unwrap();
         }
 
-        fn select_name(table: &str) -> Vec<String> {
-            select_single_non_null_column(table, "name")
+        async fn select_name(table: &str) -> Vec<String> {
+            select_single_non_null_column(table, "name").await
         }
 
-        fn select_single_non_null_column(table: &str, column: &str) -> Vec<String> {
+        async fn select_single_non_null_column(table: &str, column: &str) -> Vec<String> {
             select(table, &[column])
+                .await
                 .into_iter()
                 .map(|row| {
                     // There must be one string per row
@@ -745,7 +756,7 @@ mod tests {
                 .collect()
         }
 
-        fn select(table: &str, params: &[&str]) -> Vec<Vec<Option<String>>> {
+        async fn select(table: &str, params: &[&str]) -> Vec<Vec<Option<String>>> {
             let sql = format!("SELECT {} FROM {table}", params.join(","));
             println!("{sql}");
             let resp = TursoClient::new()
@@ -761,6 +772,7 @@ mod tests {
                         PipelineAction::Close,
                     ],
                 })
+                .await
                 .unwrap();
             assert_eq!(2, resp.len());
             let first_result = resp.into_iter().next().unwrap();
@@ -790,9 +802,12 @@ mod tests {
             set_up();
             const PARAM_SETTINGS: &str = "settings";
             const EXPECTED: &str = r#"{"a":1}"#;
-            delete_from("llm");
+            block_on(async move {
+                delete_from("llm").await;
+            });
             // Create the row
-            TursoClient::new()
+            block_on(async move {
+                TursoClient::new()
                 .unwrap()
                 .post_json(&PipelineRequest {
                     requests: vec![
@@ -812,41 +827,55 @@ mod tests {
                         PipelineAction::Close,
                     ],
                 })
+                .await
                 .unwrap();
+            });
             let settings_json = Component::get_settings_json().unwrap();
             assert_eq!(EXPECTED, settings_json);
             // Make a SELECT just to make sure it is stored where we expect.
-            assert_eq!(
-                vec![EXPECTED],
-                select_single_non_null_column("llm", "settings")
-            );
+            block_on(async move {
+                assert_eq!(
+                    vec![EXPECTED],
+                    select_single_non_null_column("llm", "settings").await
+                );
+            });
         }
 
         #[test]
         #[ignore]
         fn user_update_should_create_the_user() {
             set_up();
-            delete_from("users");
+            block_on(async move {
+                delete_from("users").await;
+            });
             let login = random_string();
             let description = random_string();
             println!("Creating user `{login}` with description `{description}`");
             Component::update_user_description(login.clone(), description.clone()).unwrap();
             // Check user
-            assert_eq!(vec![login.clone()], select_name("users"));
+            block_on({
+                let login = login.clone();
+                async move {
+                    assert_eq!(vec![login.clone()], select_name("users").await);
+                }
+            });
 
             println!("Deleting the user");
             Component::remove_star(login, "any".to_string()).unwrap();
-
-            assert_eq!(Vec::<String>::new(), select_name("users"));
+            block_on(async move {
+                assert_eq!(Vec::<String>::new(), select_name("users").await);
+            });
         }
 
         #[test]
         #[ignore]
         fn link_and_update_should_work_on_the_same_user() {
             set_up();
-            delete_from("users");
-            delete_from("repos");
-            delete_from("stars");
+            block_on(async move {
+                delete_from("users").await;
+                delete_from("repos").await;
+                delete_from("stars").await;
+            });
             let login = random_string();
             let repo = random_string();
             println!("Creating user `{login}` and repo `{repo}`");
@@ -858,19 +887,23 @@ mod tests {
             println!("Updating user `{login}` with description `{description}`");
             Component::update_user_description(login.clone(), description.clone()).unwrap();
             // Check the user and description directly in the database.
-            assert_eq!(
-                vec![vec![Some(login), Some(description)]],
-                select("users", &["name", "description"])
-            );
+            block_on(async move {
+                assert_eq!(
+                    vec![vec![Some(login), Some(description)]],
+                    select("users", &["name", "description"]).await
+                )
+            });
         }
 
         #[test]
         #[ignore]
         fn list_stargazers_should_work() {
             set_up();
-            delete_from("users");
-            delete_from("repos");
-            delete_from("stars");
+            block_on(async move {
+                delete_from("users").await;
+                delete_from("repos").await;
+                delete_from("stars").await;
+            });
             let repo1 = random_string();
             let repo2 = random_string();
 
@@ -926,9 +959,11 @@ mod tests {
         #[ignore]
         fn list_stargazers_should_be_updated_on_description_update() {
             set_up();
-            delete_from("users");
-            delete_from("repos");
-            delete_from("stars");
+            block_on(async move {
+                delete_from("users").await;
+                delete_from("repos").await;
+                delete_from("stars").await;
+            });
 
             let insert = |stargazer: &Stargazer| {
                 Component::add_star_get_description(
@@ -967,13 +1002,15 @@ mod tests {
             assert_eq!(vec![s_old, s_new], actual);
         }
 
-        #[test]
         #[ignore]
+        #[test]
         fn link_after_update_should_return_the_description() {
             set_up();
-            delete_from("users");
-            delete_from("repos");
-            delete_from("stars");
+            block_on(async move {
+                delete_from("users").await;
+                delete_from("repos").await;
+                delete_from("stars").await;
+            });
 
             let login = random_string();
             let description = random_string();
@@ -988,48 +1025,62 @@ mod tests {
             assert_eq!(Some(&description), actual_description.as_ref());
 
             // Check the user and description directly in the database.
-            assert_eq!(
-                vec![vec![Some(login), Some(description)]],
-                select("users", &["name", "description"])
-            );
+            block_on(async move {
+                assert_eq!(
+                    vec![vec![Some(login), Some(description)]],
+                    select("users", &["name", "description"]).await
+                );
+            });
         }
 
         #[test]
         #[ignore]
         fn user_link_unlink_should_retain_the_repo_only() {
             set_up();
-            delete_from("users");
-            delete_from("repos");
-            delete_from("stars");
+            block_on(async move {
+                delete_from("users").await;
+                delete_from("repos").await;
+                delete_from("stars").await;
+            });
             let login = random_string();
             let repo = random_string();
             println!("Creating user `{login}` and repo `{repo}`");
             Component::add_star_get_description(login.clone(), repo.clone()).unwrap();
             // Check that data is inserted into `users`, `repos`, `stars`.
-            assert_eq!(vec![login.clone()], select_name("users"));
-            assert_eq!(vec![repo.clone()], select_name("repos"));
-            assert_eq!(
-                vec![vec![Some(login.clone()), Some(repo.clone())]],
-                select("stars", &["user_name", "repo_name"])
-            );
+            block_on({
+                let login = login.clone();
+                let repo = repo.clone();
+                async move {
+                    assert_eq!(vec![login.clone()], select_name("users").await);
+                    assert_eq!(vec![repo.clone()], select_name("repos").await);
+                    assert_eq!(
+                        vec![vec![Some(login.clone()), Some(repo.clone())]],
+                        select("stars", &["user_name", "repo_name"]).await
+                    );
+                }
+            });
             println!("Deleting the user");
             Component::remove_star(login, repo.clone()).unwrap();
-            // Check that only `repos` is not empty,
-            assert_eq!(Vec::<String>::new(), select_name("users"));
-            assert_eq!(vec![repo.clone()], select_name("repos"));
-            assert_eq!(
-                Vec::<Vec<Option<String>>>::new(),
-                select("stars", &["user_name", "repo_name"])
-            );
+            // Check that only `repos` is not empty
+            block_on(async move {
+                assert_eq!(Vec::<String>::new(), select_name("users").await);
+                assert_eq!(vec![repo.clone()], select_name("repos").await);
+                assert_eq!(
+                    Vec::<Vec<Option<String>>>::new(),
+                    select("stars", &["user_name", "repo_name"]).await
+                );
+            });
         }
 
         #[test]
         #[ignore]
         fn user_updated_at_should_not_change_if_already_starred() {
             set_up();
-            delete_from("users");
-            delete_from("repos");
-            delete_from("stars");
+            block_on(async move {
+                delete_from("users").await;
+                delete_from("repos").await;
+                delete_from("stars").await;
+            });
 
             let login = random_string();
             let repo = random_string();
@@ -1037,27 +1088,34 @@ mod tests {
             Component::add_star_get_description(login.clone(), repo.clone()).unwrap();
 
             // Capture the initial updated_at timestamp
-            let initial_updated_at: String = select("users", &["updated_at"])
-                .into_iter()
-                .next()
-                .expect("user should exist")
-                .into_iter()
-                .next()
-                .expect("updated_at should be present")
-                .expect("updated_at should not be null");
+
+            let initial_updated_at: String = block_on(async move {
+                select("users", &["updated_at"])
+                    .await
+                    .into_iter()
+                    .next()
+                    .expect("user should exist")
+                    .into_iter()
+                    .next()
+                    .expect("updated_at should be present")
+                    .expect("updated_at should not be null")
+            });
 
             // Star the same repo again with the same user
             Component::add_star_get_description(login.clone(), repo.clone()).unwrap();
 
             // Capture the updated updated_at timestamp
-            let updated_updated_at: String = select("users", &["updated_at"])
-                .into_iter()
-                .next()
-                .expect("user should exist")
-                .into_iter()
-                .next()
-                .expect("updated_at should be present")
-                .expect("updated_at should not be null");
+            let updated_updated_at: String = block_on(async move {
+                select("users", &["updated_at"])
+                    .await
+                    .into_iter()
+                    .next()
+                    .expect("user should exist")
+                    .into_iter()
+                    .next()
+                    .expect("updated_at should be present")
+                    .expect("updated_at should not be null")
+            });
 
             // Verify that the updated_at timestamp has not changed
             assert_eq!(initial_updated_at, updated_updated_at);

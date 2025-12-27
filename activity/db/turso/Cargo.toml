@@ -13,11 +13,12 @@ version.workspace = true
 crate-type = ["cdylib"]
 
 [dependencies]
+anyhow.workspace = true
 humantime.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-waki.workspace = true
 wit-bindgen.workspace = true
+wstd.workspace = true
 
 [dev-dependencies]
 rand.workspace = true

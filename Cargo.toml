@@ -17,6 +17,7 @@ edition = "2024"
 rust-version = "1.90.0"
 
 [workspace.dependencies]
+anyhow = "1.0"
 cynic = "3.12.0"
 cynic-codegen = "3.12.0"
 derive_more = { version = "2.1", features = ["display"] }
@@ -34,6 +35,7 @@ sha2 = "0.10.9"
 waki = { version = "0.5.1", features = ["json"] }
 waki-macros = "0.5.1"
 wit-bindgen = "0.50.0"
+wstd = "0.6.3"
 
 [profile.release]
 opt-level = "s"
