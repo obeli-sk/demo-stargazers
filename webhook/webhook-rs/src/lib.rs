@@ -1,10 +1,13 @@
+use std::collections::HashMap;
+
 use crate::obelisk::types::time::ScheduleAt::Now;
 use stargazers::{
     db::{self, user::Ordering},
     workflow_obelisk_schedule::workflow::{star_added_schedule, star_removed_schedule},
 };
-use waki::{ErrorCode, Method, Request, Response, handler};
 use wit_bindgen::generate;
+use wstd::http::{Error, Request, Response, StatusCode};
+use wstd::http::{Method, body::Body};
 
 generate!({
     generate_all,
@@ -42,20 +45,33 @@ struct Repository {
     owner: User,
 }
 
-#[handler]
-fn handle(req: Request) -> Result<Response, ErrorCode> {
-    if matches!(req.method(), Method::Post) {
-        handle_webhook(req)
-    } else if matches!(req.method(), Method::Get) {
+#[wstd::http_server]
+async fn main(req: Request<Body>) -> Result<Response<Body>, Error> {
+    if req.method() == Method::POST {
+        handle_webhook(req).await
+    } else if req.method() == Method::GET {
         handle_get(req)
     } else {
-        Err(ErrorCode::HttpRequestMethodInvalid)
+        Ok(Response::builder()
+            .status(StatusCode::METHOD_NOT_ALLOWED)
+            .body(Body::empty())
+            .unwrap())
     }
 }
 
-fn handle_webhook(req: Request) -> Result<Response, ErrorCode> {
-    let sha256_signature = req.header(HTTP_HEADER_SIGNATURE).cloned();
-    let body = req.body().unwrap();
+async fn handle_webhook(req: Request<Body>) -> Result<Response<Body>, Error> {
+    let sha256_signature = req.headers().get(HTTP_HEADER_SIGNATURE).cloned();
+    let mut body = req.into_body();
+    let body = match body.contents().await {
+        Ok(ok) => ok,
+        Err(err) => {
+            eprintln!("cannot get request body contents - {err:?}");
+            return Ok(Response::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .body(Body::empty())
+                .unwrap());
+        }
+    };
     if matches!(
         std::env::var(ENV_GITHUB_WEBHOOK_INSECURE).as_deref(),
         Ok("true")
@@ -74,10 +90,17 @@ fn handle_webhook(req: Request) -> Result<Response, ErrorCode> {
         });
         verify_signature(&secret, &body, sha256_signature);
     }
-    let event: StarEvent = serde_json::from_slice(&body).map_err(|err| {
-        eprintln!("Cannot deserialize - {err:?}");
-        ErrorCode::HttpRequestDenied
-    })?;
+    let event: StarEvent = match serde_json::from_slice(&body) {
+        Ok(ok) => ok,
+        Err(err) => {
+            eprintln!("Cannot deserialize - {err:?}");
+            return Ok(Response::builder()
+                .status(StatusCode::BAD_REQUEST)
+                .body(Body::empty())
+                .unwrap());
+        }
+    };
+
     println!("Got event {event:?}");
     let repo = event.repository.to_string();
     // Execute the workflow.
@@ -87,7 +110,7 @@ fn handle_webhook(req: Request) -> Result<Response, ErrorCode> {
     };
     let resp = Response::builder();
     let resp = resp.header("execution-id", execution_id.id);
-    resp.build() // Send response: 200 OK
+    Ok(resp.body(Body::empty()).unwrap()) // Send response: 200 OK
 }
 
 /// Verify a message using a shared secret and X-Hub-Signature-256 formatted hash.
@@ -116,9 +139,18 @@ fn verify_signature(secret: &str, payload: &[u8], sha256_signature: &str) {
 }
 
 /// Render a JSON array with last few stargazers.
-fn handle_get(req: Request) -> Result<Response, ErrorCode> {
+fn handle_get(req: Request<Body>) -> Result<Response<Body>, Error> {
     const MAX_LIMIT: u8 = 5;
-    let query = req.query();
+    let query: HashMap<_, _> = req
+        .uri()
+        .query()
+        .map(|query_str| {
+            url::form_urlencoded::parse(query_str.as_ref())
+                .into_owned()
+                .collect()
+        })
+        .unwrap_or_default();
+
     let limit = query
         .get("limit")
         .and_then(|limit| limit.parse::<u8>().ok())
@@ -130,11 +162,18 @@ fn handle_get(req: Request) -> Result<Response, ErrorCode> {
     } else {
         Ordering::Descending
     };
-    let list = db::user::list_stargazers(limit, repo, ordering).map_err(|err| {
-        eprintln!("{err}");
-        ErrorCode::InternalError(None)
-    })?;
-    Response::builder().json(&list).build()
+    match db::user::list_stargazers(limit, repo, ordering) {
+        Ok(list) => {
+            Ok(Response::builder().body(Body::from_json(&list).expect("must be serializable"))?)
+        }
+        Err(err) => {
+            eprintln!("{err}");
+            Ok(Response::builder()
+                .status(StatusCode::INTERNAL_SERVER_ERROR)
+                .body(Body::empty())
+                .unwrap())
+        }
+    }
 }
 
 #[cfg(test)]
