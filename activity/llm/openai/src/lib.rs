@@ -1,8 +1,11 @@
 use exports::stargazers::llm::llm::Guest;
 use serde::{Deserialize, Serialize};
 use std::env;
-use waki::Client;
 use wit_bindgen::generate;
+use wstd::{
+    http::{Body, Client, Method, Request, StatusCode},
+    runtime::block_on,
+};
 
 const ENV_OPENAI_API_KEY: &str = "OPENAI_API_KEY";
 
@@ -54,45 +57,59 @@ struct Settings {
     max_tokens: usize,
 }
 
+async fn respond(user_prompt: String, settings: String) -> Result<String, String> {
+    let api_key = env::var(ENV_OPENAI_API_KEY)
+        .map_err(|_| format!("{ENV_OPENAI_API_KEY} must be set as an environment variable"))?;
+
+    let settings: Settings =
+        serde_json::from_str(&settings).expect("`settings_json` must be parseable");
+
+    let mut messages = settings.messages;
+    messages.push(Message {
+        role: Role::User,
+        content: user_prompt,
+    });
+
+    let request_body = OpenAIRequest {
+        model: settings.model,
+        messages,
+        max_tokens: settings.max_tokens,
+    };
+
+    let req = Request::builder()
+        .header("Authorization", format!("Bearer {api_key}"))
+        .header("Content-Type", "application/json")
+        .method(Method::POST)
+        .uri("https://api.openai.com/v1/chat/completions")
+        .body(
+            Body::from_json(&request_body)
+                .map_err(|err| format!("cannot serialize the request - {err:?}"))?,
+        )
+        .map_err(|err| format!("cannot create the request - {err:?}"))?;
+    let resp = Client::new()
+        .send(req)
+        .await
+        .map_err(|err| format!("cannot send the request - {err:?}"))?;
+
+    if resp.status() != StatusCode::OK {
+        return Err(format!("Unexpected status code: {}", resp.status()));
+    }
+    let response: OpenAIResponse = resp
+        .into_body()
+        .json()
+        .await
+        .map_err(|err| format!("{err:?}"))?;
+
+    if let Some(choice) = response.choices.into_iter().next() {
+        Ok(choice.message.content)
+    } else {
+        Err("No response from OpenAI".to_string())
+    }
+}
+
 impl Guest for Component {
     fn respond(user_prompt: String, settings: String) -> Result<String, String> {
-        let api_key = env::var(ENV_OPENAI_API_KEY)
-            .map_err(|_| format!("{ENV_OPENAI_API_KEY} must be set as an environment variable"))?;
-
-        let settings: Settings =
-            serde_json::from_str(&settings).expect("`settings_json` must be parseable");
-
-        let mut messages = settings.messages;
-        messages.push(Message {
-            role: Role::User,
-            content: user_prompt,
-        });
-
-        let request_body = OpenAIRequest {
-            model: settings.model,
-            messages,
-            max_tokens: settings.max_tokens,
-        };
-
-        let resp = Client::new()
-            .post("https://api.openai.com/v1/chat/completions")
-            .header("Authorization", format!("Bearer {api_key}"))
-            .header("Content-Type", "application/json")
-            .json(&request_body)
-            .send()
-            .map_err(|err| format!("{err:?}"))?;
-
-        if resp.status_code() != 200 {
-            return Err(format!("Unexpected status code: {}", resp.status_code()));
-        }
-
-        let response: OpenAIResponse = resp.json().map_err(|err| format!("{err:?}"))?;
-
-        if let Some(choice) = response.choices.into_iter().next() {
-            Ok(choice.message.content)
-        } else {
-            Err("No response from OpenAI".to_string())
-        }
+        block_on(respond(user_prompt, settings))
     }
 }
 

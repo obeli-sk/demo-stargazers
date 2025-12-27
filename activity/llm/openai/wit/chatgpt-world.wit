@@ -1,7 +1,6 @@
 package stargazers:llm-openai;
 
 world root {
-    // wasi:http/outgoing-handler imports are added automatically by `waki` crate.
 
     include stargazers:llm/exports;
 }
