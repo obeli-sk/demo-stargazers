@@ -88,9 +88,9 @@ async fn handle_webhook(req: Request<Body>) -> Result<Response<Body>, Error> {
         let sha256_signature = sha256_signature.to_str().unwrap_or_else(|_| {
             panic!("HTTP header {HTTP_HEADER_SIGNATURE} must be ASCII-encoded")
         });
-        verify_signature(&secret, &body, sha256_signature);
+        verify_signature(&secret, body, sha256_signature);
     }
-    let event: StarEvent = match serde_json::from_slice(&body) {
+    let event: StarEvent = match serde_json::from_slice(body) {
         Ok(ok) => ok,
         Err(err) => {
             eprintln!("Cannot deserialize - {err:?}");
