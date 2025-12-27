@@ -23,8 +23,8 @@ query QueryStargazers($repo: URI!, $page: Int!, $cursor: String) {
 }
 */
 #[derive(cynic::QueryVariables, Debug)]
-pub struct QueryStargazersVariables<'a> {
-    pub cursor: Option<&'a str>,
+pub struct QueryStargazersVariables {
+    pub cursor: Option<String>,
     pub page: i32,
     pub repo: Uri,
 }

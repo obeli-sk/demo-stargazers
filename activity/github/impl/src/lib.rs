@@ -6,8 +6,11 @@ use stargazers::{
     QueryStargazers, QueryStargazersVariables, Repository, StargazerConnection, StargazerEdge,
     UniformResourceLocatable,
 };
-use waki::Client;
 use wit_bindgen::generate;
+use wstd::{
+    http::{Body, Client, Method, Request, StatusCode},
+    runtime::block_on,
+};
 mod stargazers;
 
 const ENV_GITHUB_TOKEN: &str = "GITHUB_TOKEN";
@@ -23,22 +26,31 @@ struct GraphQLRequest {
     variables: serde_json::Value,
 }
 
-fn send_query<T: Serialize + ?Sized, R: serde::de::DeserializeOwned>(
-    query: &T,
-) -> Result<R, String> {
+async fn send_query<T: Serialize, R: serde::de::DeserializeOwned>(query: T) -> Result<R, String> {
     let github_token = std::env::var(ENV_GITHUB_TOKEN)
         .map_err(|_| format!("{ENV_GITHUB_TOKEN} must be passed as environment variable"))?;
-    let resp = Client::new()
-        .post("https://api.github.com/graphql")
-        .header("Authorization", format!("Bearer {github_token}"))
+    let req = Request::builder()
+        .header("Authorization", &format!("Bearer {github_token}"))
+        .header("Content-Type", "application/json")
         .header("User-Agent", "test")
-        .json(&query)
-        .send()
+        .method(Method::POST)
+        .uri("https://api.github.com/graphql")
+        .body(
+            Body::from_json(&query)
+                .map_err(|err| format!("cannot serialize the request - {err:?}"))?,
+        )
+        .map_err(|err| format!("cannot create the request - {err:?}"))?;
+    let mut resp = Client::new()
+        .send(req)
+        .await
         .map_err(|err| format!("cannot send the request - {err:?}"))?;
-    if resp.status_code() != 200 {
-        return Err(format!("Unexpected status code: {}", resp.status_code()));
+
+    if resp.status() != StatusCode::OK {
+        return Err(format!("Unexpected status code: {}", resp.status()));
     }
-    resp.json()
+    resp.body_mut()
+        .json()
+        .await
         .map_err(|err| format!("deserialization error - {err:?}"))
 }
 
@@ -81,7 +93,7 @@ impl Guest for Component {
             variables: serde_json::to_value(&UserArguments { login })
                 .expect("`UserArguments` must be serializable"),
         };
-        let resp: GraphQlResponse<serde_json::Value> = send_query(&query)?;
+        let resp: GraphQlResponse<serde_json::Value> = block_on(send_query(query))?;
         if let Some(data) = resp.data {
             Ok(data.to_string())
         } else {
@@ -96,12 +108,12 @@ impl Guest for Component {
     ) -> Result<Option<Stargazers>, String> {
         use cynic::QueryBuilder;
         let vars = QueryStargazersVariables {
-            cursor: cursor.as_deref(),
+            cursor,
             page: i32::from(page_size),
             repo: stargazers::Uri(repo),
         };
         let query = QueryStargazers::build(vars);
-        let resp: GraphQlResponse<QueryStargazers> = send_query(&query)?;
+        let resp: GraphQlResponse<QueryStargazers> = block_on(send_query(query))?;
         extract_stargazers(resp)
     }
 }

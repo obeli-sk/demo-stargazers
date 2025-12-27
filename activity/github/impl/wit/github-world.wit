@@ -1,7 +1,6 @@
 package stargazers:account-github;
 
 world any {
-  // wasi:http/outgoing-handler imports are added automatically by `waki` crate.
-  
+
   include stargazers:github/exports;
 }

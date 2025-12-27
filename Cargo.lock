@@ -23,8 +23,8 @@ dependencies = [
  "cynic-codegen",
  "serde",
  "serde_json",
- "waki",
  "wit-bindgen 0.50.0",
+ "wstd",
 ]
 
 [[package]]
