@@ -5,13 +5,10 @@ fn main() -> Result<()> {
     println!("cargo:rerun-if-changed=wit/");
     Opts {
         generate_all: true,
+        additional_derive_attributes: vec!["serde::Serialize".to_string()],
         ..Default::default()
     }
     .build()
     .generate_to_out_dir(None)?;
-
-    cynic_codegen::register_schema("github")
-        .from_sdl_file("graphql/github.graphql")?
-        .as_default()?;
     Ok(())
 }

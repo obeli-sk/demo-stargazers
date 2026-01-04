@@ -1,6 +1,7 @@
-use crate::exports::stargazers::workflow::workflow::Guest;
-use obelisk::{types::execution::AwaitNextExtensionError, workflow::workflow_support};
-use stargazers::{
+use crate::generated::exports::stargazers::workflow::workflow::Guest;
+use generated::export;
+use generated::obelisk::{types::execution::AwaitNextExtensionError, workflow::workflow_support};
+use generated::stargazers::{
     db,
     db_obelisk_ext::llm::{get_settings_json_await_next, get_settings_json_submit},
     github,
@@ -8,11 +9,14 @@ use stargazers::{
     llm::llm,
     workflow_obelisk_ext::workflow as imported_workflow_ext,
 };
-use wit_bindgen::generate;
 
-generate!({ generate_all });
+mod generated {
+    #![allow(clippy::empty_line_after_outer_attr)]
+    include!(concat!(env!("OUT_DIR"), "/any.rs"));
+}
+
 struct Component;
-export!(Component);
+export!(Component with_types_in generated);
 
 impl Guest for Component {
     fn star_added(login: String, repo: String) -> Result<(), String> {

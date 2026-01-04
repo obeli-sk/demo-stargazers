@@ -12,6 +12,8 @@ dependencies = [
  "serde",
  "serde_json",
  "wit-bindgen 0.50.0",
+ "wit-bindgen-rust",
+ "wit-parser",
  "wstd",
 ]
 
@@ -19,11 +21,14 @@ dependencies = [
 name = "activity-github-impl"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "cynic",
  "cynic-codegen",
  "serde",
  "serde_json",
  "wit-bindgen 0.50.0",
+ "wit-bindgen-rust",
+ "wit-parser",
  "wstd",
 ]
 
@@ -31,9 +36,12 @@ dependencies = [
 name = "activity-llm-openai"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "serde",
  "serde_json",
  "wit-bindgen 0.50.0",
+ "wit-bindgen-rust",
+ "wit-parser",
  "wstd",
 ]
 
@@ -1072,6 +1080,7 @@ dependencies = [
 name = "webhook"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "derive_more",
  "hex",
  "hmac",
@@ -1080,6 +1089,8 @@ dependencies = [
  "sha2",
  "url",
  "wit-bindgen 0.50.0",
+ "wit-bindgen-rust",
+ "wit-parser",
  "wstd",
 ]
 
@@ -1185,7 +1196,10 @@ dependencies = [
 name = "workflow"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "wit-bindgen 0.50.0",
+ "wit-bindgen-rust",
+ "wit-parser",
 ]
 
 [[package]]

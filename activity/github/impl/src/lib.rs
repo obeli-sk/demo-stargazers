@@ -1,12 +1,12 @@
-use crate::exports::stargazers::github::account::Guest;
 use cynic::GraphQlResponse;
-use exports::stargazers::github::account::Stargazers;
+use generated::export;
+use generated::exports::stargazers::github::account::Guest;
+use generated::exports::stargazers::github::account::Stargazers;
 use serde::Serialize;
 use stargazers::{
     QueryStargazers, QueryStargazersVariables, Repository, StargazerConnection, StargazerEdge,
     UniformResourceLocatable,
 };
-use wit_bindgen::generate;
 use wstd::{
     http::{Body, Client, Method, Request, StatusCode},
     runtime::block_on,
@@ -15,9 +15,13 @@ mod stargazers;
 
 const ENV_GITHUB_TOKEN: &str = "GITHUB_TOKEN";
 
-generate!({ generate_all });
-pub(crate) struct Component;
-export!(Component);
+mod generated {
+    #![allow(clippy::empty_line_after_outer_attr)]
+    include!(concat!(env!("OUT_DIR"), "/any.rs"));
+}
+
+struct Component;
+export!(Component with_types_in generated);
 
 #[derive(Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -161,7 +165,7 @@ pub struct UserArguments {
 #[cfg(test)]
 mod tests {
     use crate::Component;
-    use crate::exports::stargazers::github::account::Guest;
+    use crate::generated::exports::stargazers::github::account::Guest;
     use crate::{ENV_GITHUB_TOKEN, extract_stargazers, stargazers::QueryStargazers};
     use cynic::GraphQlResponse;
 

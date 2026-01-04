@@ -1,22 +1,26 @@
 mod turso;
 
-use crate::exports::stargazers::db::llm::Guest as LlmGuest;
-use crate::exports::stargazers::db::user::Guest as UserGuest;
-use exports::stargazers::db::user::{Ordering, Stargazer};
+use generated::export;
+use generated::exports::stargazers::db::llm::Guest as LlmGuest;
+use generated::exports::stargazers::db::user::Guest as UserGuest;
+use generated::exports::stargazers::db::user::{Ordering, Stargazer};
 use humantime::format_rfc3339_millis;
 use std::time::SystemTime;
 use turso::request::{NamedArg, PipelineAction, PipelineRequest, Stmt};
 use turso::response::{QueryResult, Response, extract_first_value_from_nth_response};
 use turso::{TursoClient, TursoValue};
-use wit_bindgen::generate;
 use wstd::runtime::block_on;
 
 pub const ENV_TURSO_TOKEN: &str = "TURSO_TOKEN";
 pub const ENV_TURSO_LOCATION: &str = "TURSO_LOCATION";
 
-generate!({ generate_all, additional_derives: [PartialEq] });
-pub(crate) struct Component;
-export!(Component);
+mod generated {
+    #![allow(clippy::empty_line_after_outer_attr)]
+    include!(concat!(env!("OUT_DIR"), "/any.rs"));
+}
+
+struct Component;
+export!(Component with_types_in generated);
 
 impl LlmGuest for Component {
     fn get_settings_json() -> Result<String, String> {
@@ -410,7 +414,7 @@ fn process_resp_list_stargazers(
 #[cfg(test)]
 mod tests {
     use crate::{
-        exports::stargazers::db::user::Stargazer,
+        generated::exports::stargazers::db::user::Stargazer,
         process_resp_list_stargazers,
         turso::{
             TursoValue,
@@ -687,10 +691,8 @@ mod tests {
 
         use crate::{
             Component, ENV_TURSO_LOCATION, ENV_TURSO_TOKEN,
-            exports::stargazers::db::{
-                llm::Guest as _,
-                user::{Guest as _, Ordering, Stargazer},
-            },
+            generated::exports::stargazers::db::llm::Guest as _,
+            generated::exports::stargazers::db::user::{Guest as _, Ordering, Stargazer},
             turso::{
                 TursoClient, TursoValue,
                 request::{NamedArg, PipelineAction, PipelineRequest, Stmt},

@@ -21,3 +21,6 @@ wstd.workspace = true
 
 [build-dependencies]
 cynic-codegen.workspace = true
+anyhow.workspace = true
+wit-bindgen-rust.workspace = true
+wit-parser.workspace = true

@@ -1,18 +1,17 @@
 use std::collections::HashMap;
 
-use crate::obelisk::types::time::ScheduleAt::Now;
-use stargazers::{
+use crate::generated::obelisk::types::time::ScheduleAt::Now;
+use generated::stargazers::{
     db::{self, user::Ordering},
     workflow_obelisk_schedule::workflow::{star_added_schedule, star_removed_schedule},
 };
-use wit_bindgen::generate;
 use wstd::http::{Error, Request, Response, StatusCode};
 use wstd::http::{Method, body::Body};
 
-generate!({
-    generate_all,
-    additional_derives: [serde::Serialize],
-});
+mod generated {
+    #![allow(clippy::empty_line_after_outer_attr)]
+    include!(concat!(env!("OUT_DIR"), "/any.rs"));
+}
 
 const HTTP_HEADER_SIGNATURE: &str = "X-Hub-Signature-256";
 const ENV_GITHUB_WEBHOOK_INSECURE: &str = "GITHUB_WEBHOOK_INSECURE";

@@ -22,3 +22,8 @@ sha2.workspace = true
 url.workspace = true
 wit-bindgen.workspace = true
 wstd.workspace = true
+
+[build-dependencies]
+anyhow.workspace = true
+wit-bindgen-rust.workspace = true
+wit-parser.workspace = true

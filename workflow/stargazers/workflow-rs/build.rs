@@ -9,9 +9,5 @@ fn main() -> Result<()> {
     }
     .build()
     .generate_to_out_dir(None)?;
-
-    cynic_codegen::register_schema("github")
-        .from_sdl_file("graphql/github.graphql")?
-        .as_default()?;
     Ok(())
 }

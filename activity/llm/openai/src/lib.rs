@@ -1,7 +1,7 @@
-use exports::stargazers::llm::llm::Guest;
+use generated::export;
+use generated::exports::stargazers::llm::llm::Guest;
 use serde::{Deserialize, Serialize};
 use std::env;
-use wit_bindgen::generate;
 use wstd::{
     http::{Body, Client, Method, Request, StatusCode},
     runtime::block_on,
@@ -9,9 +9,13 @@ use wstd::{
 
 const ENV_OPENAI_API_KEY: &str = "OPENAI_API_KEY";
 
-generate!({ generate_all });
-pub(crate) struct Component;
-export!(Component);
+mod generated {
+    #![allow(clippy::empty_line_after_outer_attr)]
+    include!(concat!(env!("OUT_DIR"), "/root.rs"));
+}
+
+struct Component;
+export!(Component with_types_in generated);
 
 #[derive(Serialize)]
 struct OpenAIRequest {
@@ -117,7 +121,7 @@ impl Guest for Component {
 mod tests {
     use crate::Component;
     use crate::ENV_OPENAI_API_KEY;
-    use crate::exports::stargazers::llm::llm::Guest;
+    use crate::generated::exports::stargazers::llm::llm::Guest;
     use crate::{Message, Role, Settings};
 
     fn set_up() {
