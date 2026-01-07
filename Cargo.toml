@@ -36,7 +36,7 @@ sha2 = "0.10.9"
 wit-bindgen = "0.50.0"
 wit-bindgen-rust = "0.50.0"
 wit-parser = "0.243.0"
-wstd = "0.6.3"
+wstd = "0.6.4"
 
 [profile.release]
 opt-level = "s"

@@ -1210,9 +1210,9 @@ checksum = "9edde0db4769d2dc68579893f2306b26c6ecfbe0ef499b013d731b7b9247e0b9"
 
 [[package]]
 name = "wstd"
-version = "0.6.3"
+version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ead0d18333b8c689c279ea51634c31176444116f081cdef09d38869ccde4e06"
+checksum = "15758597a9831e07f4f3ee42c92f26c5fff8d426e69230b952d254f0be6be7c0"
 dependencies = [
  "anyhow",
  "async-task",
@@ -1232,9 +1232,9 @@ dependencies = [
 
 [[package]]
 name = "wstd-macro"
-version = "0.6.3"
+version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "945e8c92222f77a0887934a1605bf4238fe40b51e4426122c70a74e0b1f209a9"
+checksum = "e4f5b6c619893e223942311e538916fabbe6bb73e313a7f7152501dfe70eee11"
 dependencies = [
  "quote",
  "syn",
