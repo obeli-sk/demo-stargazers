@@ -14,7 +14,7 @@ generate() {
     echo "Updating $dir"
     (
       cd "$dir/wit"
-      obelisk generate extensions "$component_type" . gen
+      obelisk generate wit-extensions "$component_type" . gen
     )
   done
 }
