@@ -16,13 +16,15 @@ class MockOpenAIHandler(BaseHTTPRequestHandler):
             content_length = int(self.headers.get('Content-Length', 0))
             body = self.rfile.read(content_length)
             
+            request_data = {}
+            user_prompt = 'unknown'
             try:
                 request_data = json.loads(body)
                 # Extract user message for a more contextual mock response
                 user_messages = [m for m in request_data.get('messages', []) if m.get('role') == 'user']
                 user_prompt = user_messages[-1]['content'] if user_messages else 'unknown'
             except (json.JSONDecodeError, KeyError, IndexError):
-                user_prompt = 'unknown'
+                pass
             
             # Return a mock response
             response = {
