@@ -8,7 +8,7 @@ enabled = true
 name = "activity_llm_openai_go"
 location.path = "${OBELISK_TOML_DIR}/activity/llm/openai-go/dist/openai-go.wasm"
 exec.lock_expiry.seconds = 10
-env_vars = ["OPENAI_API_KEY"]
+env_vars = ["OPENAI_API_KEY", "OPENAI_API_BASE_URL"]
 forward_stdout = "stderr"
 forward_stderr = "stderr"
 

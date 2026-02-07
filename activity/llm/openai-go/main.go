@@ -15,6 +15,8 @@ import (
 )
 
 const openAIEnv = "OPENAI_API_KEY"
+const openAIBaseURLEnv = "OPENAI_API_BASE_URL"
+const defaultOpenAIBaseURL = "https://api.openai.com"
 
 
 type Role string
@@ -71,6 +73,12 @@ func respond(userPrompt string, settingsJSON string) (result cm.Result[string, s
 		)
 	}
 
+	// Base URL (optional, defaults to api.openai.com)
+	baseURL := os.Getenv(openAIBaseURLEnv)
+	if baseURL == "" {
+		baseURL = defaultOpenAIBaseURL
+	}
+
 	// 2. Parse settings
 	var settings Settings
 	if err := json.Unmarshal([]byte(settingsJSON), &settings); err != nil {
@@ -100,7 +108,7 @@ func respond(userPrompt string, settingsJSON string) (result cm.Result[string, s
 	fmt.Println("OpenAI request:", string(rawReq))
 
 	// 5. Do HTTP POST via wasihttp
-	req, err := http.NewRequest(http.MethodPost, "https://api.openai.com/v1/chat/completions", bytes.NewReader(rawReq))
+	req, err := http.NewRequest(http.MethodPost, baseURL+"/v1/chat/completions", bytes.NewReader(rawReq))
 	if err != nil {
 		return cm.Err[cm.Result[string, string, string]](
 			fmt.Sprintf("failed to create request: %v", err),

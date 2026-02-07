@@ -12,7 +12,7 @@ listening_addr = "0.0.0.0:9090"
 name = "activity_llm_openai"
 location.oci = "docker.io/getobelisk/demo_stargazers_activity_llm_openai:2026-01-04@sha256:b796355dff413f1f3eeb2774aacb7a418d021ffe39fe26905e4e24a1950b58e2"
 exec.lock_expiry.seconds = 10
-env_vars = ["OPENAI_API_KEY"]
+env_vars = ["OPENAI_API_KEY", "OPENAI_API_BASE_URL"]
 
 [[activity_wasm]]
 name = "activity_github_impl"

@@ -14,26 +14,51 @@ OBELISK_TOML="$1"
 TRUNCATE="${2:-}"
 STAR_ACCOUNT="someghaccount"
 STAR_REPO="someghrepo"
+MOCK_OPENAI_PORT=18080
 
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
+
+# Start mock OpenAI server
+python3 ./scripts/mock-openai-server.py $MOCK_OPENAI_PORT &
+MOCK_PID=$!
+echo "Started mock OpenAI server with PID $MOCK_PID"
+
+# Set environment variables for mock OpenAI
+export OPENAI_API_KEY="mock-api-key-for-testing"
+export OPENAI_API_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
+
+# Wait for mock server to be ready
+SECONDS=0
+while ! curl -s http://127.0.0.1:$MOCK_OPENAI_PORT/v1/chat/completions -X POST -d '{}' > /dev/null 2>&1; do
+    if [[ $SECONDS -ge 5 ]]; then
+        echo "Mock OpenAI server failed to start"
+        exit 1
+    fi
+    sleep 0.5
+done
+echo "Mock OpenAI server is ready"
 
 obelisk server verify --config $OBELISK_TOML
 obelisk server run --config $OBELISK_TOML &
 PID=$!
 cleanup() {
-    echo "Sending SIGINT to process $PID..."
-    kill -SIGINT $PID
+    echo "Sending SIGINT to obelisk process $PID..."
+    kill -SIGINT $PID 2>/dev/null || true
 
     # Wait up to 5 seconds for the process to exit
     SECONDS=0
-    while kill -SIGINT $PID 2>/dev/null; do
+    while kill -0 $PID 2>/dev/null; do
         if [[ $SECONDS -ge 5 ]]; then
             echo "Cleanup timeout reached. Sending SIGKILL to process $PID..."
-            kill -SIGKILL $PID
+            kill -SIGKILL $PID 2>/dev/null || true
             break
         fi
         sleep 1
     done
+
+    # Kill mock OpenAI server
+    echo "Stopping mock OpenAI server (PID $MOCK_PID)..."
+    kill $MOCK_PID 2>/dev/null || true
 }
 
 trap cleanup EXIT

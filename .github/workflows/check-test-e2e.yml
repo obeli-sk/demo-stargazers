@@ -46,7 +46,6 @@ jobs:
 
       - name: Verify obelisk-local.toml
         env:
-          OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
@@ -56,7 +55,6 @@ jobs:
 
       - name: Verify obelisk-oci.toml
         env:
-          OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
@@ -69,7 +67,6 @@ jobs:
 
       - name: Verify obelisk-local-js-all.toml
         env:
-          OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
@@ -82,7 +79,6 @@ jobs:
 
       - name: Verify obelisk-local-go-all.toml
         env:
-          OPENAI_API_KEY: ${{ secrets.E2E_OPENAI_API_KEY }}
           GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}

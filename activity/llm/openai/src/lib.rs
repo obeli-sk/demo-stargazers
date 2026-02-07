@@ -8,6 +8,8 @@ use wstd::{
 };
 
 const ENV_OPENAI_API_KEY: &str = "OPENAI_API_KEY";
+const ENV_OPENAI_API_BASE_URL: &str = "OPENAI_API_BASE_URL";
+const DEFAULT_OPENAI_BASE_URL: &str = "https://api.openai.com";
 
 mod generated {
     #![allow(clippy::empty_line_after_outer_attr)]
@@ -65,6 +67,9 @@ async fn respond(user_prompt: String, settings: String) -> Result<String, String
     let api_key = env::var(ENV_OPENAI_API_KEY)
         .map_err(|_| format!("{ENV_OPENAI_API_KEY} must be set as an environment variable"))?;
 
+    let base_url = env::var(ENV_OPENAI_API_BASE_URL)
+        .unwrap_or_else(|_| DEFAULT_OPENAI_BASE_URL.to_string());
+
     let settings: Settings =
         serde_json::from_str(&settings).expect("`settings_json` must be parseable");
 
@@ -84,7 +89,7 @@ async fn respond(user_prompt: String, settings: String) -> Result<String, String
         .header("Authorization", format!("Bearer {api_key}"))
         .header("Content-Type", "application/json")
         .method(Method::POST)
-        .uri("https://api.openai.com/v1/chat/completions")
+        .uri(format!("{base_url}/v1/chat/completions"))
         .body(
             Body::from_json(&request_body)
                 .map_err(|err| format!("cannot serialize the request - {err:?}"))?,
@@ -120,7 +125,7 @@ impl Guest for Component {
 #[cfg(test)]
 mod tests {
     use crate::Component;
-    use crate::ENV_OPENAI_API_KEY;
+    use crate::{ENV_OPENAI_API_KEY, ENV_OPENAI_API_BASE_URL};
     use crate::generated::exports::stargazers::llm::llm::Guest;
     use crate::{Message, Role, Settings};
 
@@ -129,6 +134,9 @@ mod tests {
             panic!("TEST_{ENV_OPENAI_API_KEY} must be set as an environment variable")
         });
         unsafe { std::env::set_var(ENV_OPENAI_API_KEY, test_token) };
+        if let Ok(base_url) = std::env::var(format!("TEST_{ENV_OPENAI_API_BASE_URL}")) {
+            unsafe { std::env::set_var(ENV_OPENAI_API_BASE_URL, base_url) };
+        }
     }
 
     #[test]
