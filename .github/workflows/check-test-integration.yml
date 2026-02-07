@@ -44,11 +44,9 @@ jobs:
       - name: Run integration tests
         env:
           CI: true
-          TEST_OPENAI_API_KEY: ${{ secrets.TEST_OPENAI_API_KEY }}
           TEST_GITHUB_TOKEN: ${{ secrets.TEST_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TEST_GITHUB_REPO: ${{ secrets.TEST_GITHUB_REPO }}
           TEST_TURSO_TOKEN: ${{ secrets.TEST_TURSO_TOKEN }}
           TEST_TURSO_LOCATION: ${{ secrets.TEST_TURSO_LOCATION }}
-
         run: nix develop --command ./scripts/test-integration.sh

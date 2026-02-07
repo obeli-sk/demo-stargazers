@@ -8,7 +8,7 @@ enabled = true
 name = "activity_llm_openai"
 location.path = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/activity_llm_openai.wasm"
 exec.lock_expiry.seconds = 10
-env_vars = ["OPENAI_API_KEY"]
+env_vars = ["OPENAI_API_KEY", "OPENAI_API_BASE_URL"]
 forward_stdout = "stderr"
 forward_stderr = "stderr"
 

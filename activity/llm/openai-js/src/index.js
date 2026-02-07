@@ -1,12 +1,17 @@
 import axios from 'axios';
 import { getEnvironment } from 'wasi:cli/environment@0.2.3';
 
+const ENV_OPENAI_API_KEY = "OPENAI_API_KEY";
+const ENV_OPENAI_API_BASE_URL = "OPENAI_API_BASE_URL";
+const DEFAULT_OPENAI_BASE_URL = "https://api.openai.com";
+
 export const llm = {
     async respond(userPrompt, settingsString) {
         console.log("Responding to", userPrompt, settingsString);
-        const ENV_OPENAI_API_KEY = "OPENAI_API_KEY";
         // TODO: Switch to `process.env[ENV_OPENAI_API_KEY]` when https://github.com/bytecodealliance/ComponentizeJS/issues/190 is resolved.
-        const apiKey = new Map(getEnvironment()).get(ENV_OPENAI_API_KEY);
+        const envMap = new Map(getEnvironment());
+        const apiKey = envMap.get(ENV_OPENAI_API_KEY);
+        const baseUrl = envMap.get(ENV_OPENAI_API_BASE_URL) || DEFAULT_OPENAI_BASE_URL;
 
         if (!apiKey) {
             throw `${ENV_OPENAI_API_KEY} must be set as an environment variable or passed in options`;
@@ -41,7 +46,7 @@ export const llm = {
         let response;
         try {
             response = await axios.post(
-                "https://api.openai.com/v1/chat/completions",
+                `${baseUrl}/v1/chat/completions`,
                 requestBody,
                 {
                     headers: {

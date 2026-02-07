@@ -8,7 +8,7 @@ enabled = true
 name = "openai_js"
 location.path = "${OBELISK_TOML_DIR}/activity/llm/openai-js/dist/openai-js.wasm"
 exec.lock_expiry.seconds = 10
-env_vars = ["OPENAI_API_KEY"]
+env_vars = ["OPENAI_API_KEY", "OPENAI_API_BASE_URL"]
 forward_stdout = "stderr"
 forward_stderr = "stderr"
 
