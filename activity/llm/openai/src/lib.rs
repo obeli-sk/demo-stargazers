@@ -67,8 +67,8 @@ async fn respond(user_prompt: String, settings: String) -> Result<String, String
     let api_key = env::var(ENV_OPENAI_API_KEY)
         .map_err(|_| format!("{ENV_OPENAI_API_KEY} must be set as an environment variable"))?;
 
-    let base_url = env::var(ENV_OPENAI_API_BASE_URL)
-        .unwrap_or_else(|_| DEFAULT_OPENAI_BASE_URL.to_string());
+    let base_url =
+        env::var(ENV_OPENAI_API_BASE_URL).unwrap_or_else(|_| DEFAULT_OPENAI_BASE_URL.to_string());
 
     let settings: Settings =
         serde_json::from_str(&settings).expect("`settings_json` must be parseable");
@@ -125,8 +125,8 @@ impl Guest for Component {
 #[cfg(test)]
 mod tests {
     use crate::Component;
-    use crate::{ENV_OPENAI_API_KEY, ENV_OPENAI_API_BASE_URL};
     use crate::generated::exports::stargazers::llm::llm::Guest;
+    use crate::{ENV_OPENAI_API_BASE_URL, ENV_OPENAI_API_KEY};
     use crate::{Message, Role, Settings};
 
     fn set_up() {
