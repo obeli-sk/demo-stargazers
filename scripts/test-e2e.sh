@@ -23,14 +23,6 @@ export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
 if [[ -z "${OPENAI_API_KEY:-}" ]]; then
     echo "OPENAI_API_KEY not set, using mock OpenAI server"
     
-    # OCI configs use pre-built images that don't support OPENAI_API_BASE_URL
-    # Skip OCI tests when using mock server
-    if [[ "$OBELISK_TOML" == *"-oci"* ]] || [[ "$OBELISK_TOML" == *"oci.toml" ]]; then
-        echo "Skipping OCI config test - OCI images don't support mock server (OPENAI_API_BASE_URL)"
-        echo "To run OCI tests, set OPENAI_API_KEY environment variable"
-        exit 0
-    fi
-    
     # Start mock OpenAI server
     python3 ./scripts/mock-openai-server.py $MOCK_OPENAI_PORT &
     MOCK_PID=$!
