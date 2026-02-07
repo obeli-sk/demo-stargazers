@@ -55,6 +55,7 @@
             # e2e tests
             openssl
             curlMinimal
+            python3
             # javascript support
             nodejs_22
             wizer
