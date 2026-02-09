@@ -1,7 +1,7 @@
 api.listening_addr = "127.0.0.1:5005"   # Address and port on which the API server will listen.
 webui.listening_addr = "127.0.0.1:8080" # Address and port on which the webui will listen.
 
-[log.stdout]
+[log.console]
 enabled = true
 
 [[http_server]]
@@ -10,30 +10,30 @@ listening_addr = "0.0.0.0:9090"
 
 [[activity_wasm]]
 name = "activity_llm_openai"
-location.oci = "docker.io/getobelisk/demo_stargazers_activity_llm_openai:2026-02-07@sha256:416ce1a4b83fc4d87679d4b6a13a40b36f20d638320966eb41a52ac554a92c08"
+location = "oci://docker.io/getobelisk/demo_stargazers_activity_llm_openai:2026-02-07@sha256:416ce1a4b83fc4d87679d4b6a13a40b36f20d638320966eb41a52ac554a92c08"
 exec.lock_expiry.seconds = 10
 env_vars = ["OPENAI_API_KEY", "OPENAI_API_BASE_URL"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
-location.oci = "docker.io/getobelisk/demo_stargazers_activity_github_impl:2026-02-07@sha256:2f0b25ce740eb66bf7eec4fc09fff88ac5019195bbf96cce95eb7fc8d4e2cbd2"
+location = "oci://docker.io/getobelisk/demo_stargazers_activity_github_impl:2026-02-07@sha256:2f0b25ce740eb66bf7eec4fc09fff88ac5019195bbf96cce95eb7fc8d4e2cbd2"
 env_vars = ["GITHUB_TOKEN"]
 exec.lock_expiry.seconds = 5
 
 [[activity_wasm]]
 name = "activity_db_turso"
-location.oci = "docker.io/getobelisk/demo_stargazers_activity_db_turso:2026-02-07@sha256:d7fde7c4a29327ebe0f0856b2b65c7a44b797d76c8b739475dcd10e091e7b907"
+location = "oci://docker.io/getobelisk/demo_stargazers_activity_db_turso:2026-02-07@sha256:d7fde7c4a29327ebe0f0856b2b65c7a44b797d76c8b739475dcd10e091e7b907"
 env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 
 [[workflow]]
 name = "workflow"
-location.oci = "docker.io/getobelisk/demo_stargazers_workflow:2026-02-07@sha256:bcea95710a9465eb3b588f84509f3038405bbbdd218538a3a64ff440ec81b0bc"
+location = "oci://docker.io/getobelisk/demo_stargazers_workflow:2026-02-07@sha256:bcea95710a9465eb3b588f84509f3038405bbbdd218538a3a64ff440ec81b0bc"
 backtrace.sources = { "/home/runner/work/demo-stargazers/demo-stargazers/workflow/stargazers/workflow-rs/src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/stargazers/workflow-rs/src/lib.rs" }
 
 [[webhook_endpoint]]
 name = "webhook"
-location.oci = "docker.io/getobelisk/demo_stargazers_webhook:2026-02-07@sha256:9212bf8892123e61a766af8c35bf23f3d414d30d9cb3145f0749db88538c97b8"
+location = "oci://docker.io/getobelisk/demo_stargazers_webhook:2026-02-07@sha256:9212bf8892123e61a766af8c35bf23f3d414d30d9cb3145f0749db88538c97b8"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 forward_stdout = "stderr"

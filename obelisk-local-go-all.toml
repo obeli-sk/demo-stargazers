@@ -1,12 +1,12 @@
 api.listening_addr = "127.0.0.1:5005"   # Address and port on which the API server will listen.
 webui.listening_addr = "127.0.0.1:8080" # Address and port on which the webui will listen.
 
-[log.stdout]
+[log.console]
 enabled = true
 
 [[activity_wasm]]
 name = "activity_llm_openai_go"
-location.path = "${OBELISK_TOML_DIR}/activity/llm/openai-go/dist/openai-go.wasm"
+location = "${OBELISK_TOML_DIR}/activity/llm/openai-go/dist/openai-go.wasm"
 exec.lock_expiry.seconds = 10
 env_vars = ["OPENAI_API_KEY", "OPENAI_API_BASE_URL"]
 forward_stdout = "stderr"
@@ -14,7 +14,7 @@ forward_stderr = "stderr"
 
 [[activity_wasm]]
 name = "activity_github_impl"
-location.path = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/activity_github_impl.wasm"
+location = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/activity_github_impl.wasm"
 env_vars = ["GITHUB_TOKEN"]
 exec.lock_expiry.seconds = 5
 forward_stdout = "stderr"
@@ -22,7 +22,7 @@ forward_stderr = "stderr"
 
 [[activity_wasm]]
 name = "activity_db_turso"
-location.path = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/activity_db_turso.wasm"
+location = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/activity_db_turso.wasm"
 env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
 forward_stdout = "stderr"
 forward_stderr = "stderr"
@@ -30,7 +30,7 @@ exec.lock_expiry.seconds = 5
 
 [[workflow]]
 name = "workflow_go"
-location.path = "${OBELISK_TOML_DIR}/workflow/stargazers/workflow-go/dist/workflow-go.wasm"
+location = "${OBELISK_TOML_DIR}/workflow/stargazers/workflow-go/dist/workflow-go.wasm"
 stub_wasi = true
 [workflow.backtrace.sources]
 "${OBELISK_TOML_DIR}/workflow/stargazers/workflow-go/main.go" =                                                    "${OBELISK_TOML_DIR}/workflow/stargazers/workflow-go/main.go"
@@ -44,7 +44,7 @@ listening_addr = "0.0.0.0:9090"
 
 [[webhook_endpoint]]
 name = "webhook_go"
-location.path = "${OBELISK_TOML_DIR}/webhook/webhook-go/dist/webhook-go.wasm"
+location = "${OBELISK_TOML_DIR}/webhook/webhook-go/dist/webhook-go.wasm"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 env_vars = [
