@@ -36,8 +36,6 @@ name = "webhook"
 location = "oci://docker.io/getobelisk/demo_stargazers_webhook:2026-02-07@sha256:9212bf8892123e61a766af8c35bf23f3d414d30d9cb3145f0749db88538c97b8"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
-forward_stdout = "stderr"
-forward_stderr = "stderr"
 env_vars = [
     "GITHUB_WEBHOOK_SECRET",
     # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification

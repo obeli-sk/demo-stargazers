@@ -9,23 +9,17 @@ name = "activity_llm_openai_go"
 location = "${OBELISK_TOML_DIR}/activity/llm/openai-go/dist/openai-go.wasm"
 exec.lock_expiry.seconds = 10
 env_vars = ["OPENAI_API_KEY", "OPENAI_API_BASE_URL"]
-forward_stdout = "stderr"
-forward_stderr = "stderr"
 
 [[activity_wasm]]
 name = "activity_github_impl"
 location = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/activity_github_impl.wasm"
 env_vars = ["GITHUB_TOKEN"]
 exec.lock_expiry.seconds = 5
-forward_stdout = "stderr"
-forward_stderr = "stderr"
 
 [[activity_wasm]]
 name = "activity_db_turso"
 location = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/activity_db_turso.wasm"
 env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
-forward_stdout = "stderr"
-forward_stderr = "stderr"
 exec.lock_expiry.seconds = 5
 
 [[workflow]]
@@ -42,8 +36,6 @@ name = "webhook"
 location = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/webhook.wasm"
 http_server = "webhook_server"
 routes = [{ methods = ["POST", "GET"], route = "" }]
-forward_stdout = "stderr"
-forward_stderr = "stderr"
 env_vars = [
     "GITHUB_WEBHOOK_SECRET",
     # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
