@@ -14,10 +14,10 @@ push() {
     FILE_NAME_WITHOUT_EXT=$(basename "$RELATIVE_PATH" | sed 's/\.[^.]*$//')
     OCI_LOCATION="${PREFIX}${FILE_NAME_WITHOUT_EXT}:${TAG}"
     echo "Pushing ${RELATIVE_PATH} to ${OCI_LOCATION}..."
-    OUTPUT=$(obelisk client component push "$RELATIVE_PATH" "$OCI_LOCATION")
+    OUTPUT=$(obelisk component push "$RELATIVE_PATH" "$OCI_LOCATION")
 
     # Replace the old location with the actual OCI location
-    sed -i -E "/name = \"${FILE_NAME_WITHOUT_EXT}\"/{n;s|location\.oci = \".*\"|location.oci = \"${OUTPUT}\"|}" "$TOML_FILE"
+    sed -i -E "/name = \"${FILE_NAME_WITHOUT_EXT}\"/{n;s|location = \".*\"|location = \"${OUTPUT}\"|}" "$TOML_FILE"
 }
 
 # Rebuild rust components
