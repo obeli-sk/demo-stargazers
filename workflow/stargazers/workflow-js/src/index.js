@@ -8,7 +8,7 @@ import { getSettingsJsonSubmit, getSettingsJsonAwaitNext } from 'stargazers:db-o
 import { addStarGetDescription, updateUserDescription, removeStar } from 'stargazers:db/user';
 import { respond as llmRespond } from 'stargazers:llm/llm';
 // Obelisk host utilities for workflows
-import { joinSetCreateNamed, joinSetClose } from 'obelisk:workflow/workflow-support@4.0.0';
+import { joinSetCreateNamed, joinSetClose } from 'obelisk:workflow/workflow-support@4.1.0';
 import { debug as log_debug, info as log_info, error as log_error } from 'obelisk:log/log@1.0.0'
 
 console.log = function (...args) {
