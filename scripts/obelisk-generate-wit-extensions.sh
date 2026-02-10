@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Generate obelisk extension dirs for each wit-interface
+
 set -exuo pipefail
 cd "$(dirname "$0")/.."
 
@@ -10,10 +12,10 @@ generate() {
   if [ ! -d "$path" ]; then
     return 0
   fi
-  find "$path" -maxdepth 1 -type d -exec test -d "{}/wit" \; -print | while read -r dir; do
+  find "$path" -maxdepth 1 -type d -name "wit-interface" | while read -r dir; do
     echo "Updating $dir"
     (
-      cd "$dir/wit"
+      cd "$dir"
       obelisk generate wit-extensions "$component_type" . gen
     )
   done

@@ -42,9 +42,10 @@ jobs:
         run: |
           nix develop . --command ./scripts/dev-deps.sh
 
-      - name: Generate extensions
+      - name: Generate extensions and wit support
         run: |
-          nix develop . --command ./scripts/obelisk-generate-extensions.sh
+          nix develop . --command ./scripts/obelisk-generate-wit-extensions.sh
+          nix develop . --command ./scripts/obelisk-generate-wit-support.sh
 
       - name: Generate Unique Branch Name
         id: branch-name
