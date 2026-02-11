@@ -98,7 +98,7 @@ obelisk server run --config ./obelisk-local.toml
 ```
 In another terminal run the activity.
 ```sh
-obelisk client execution submit --follow stargazers:db/llm.get-settings-json []
+obelisk execution submit --follow stargazers:db/llm.get-settings-json []
 ```
 
 ## Testing

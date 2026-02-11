@@ -19,7 +19,7 @@ obelisk server run --config ./obelisk-local.toml
 ```
 In another terminal run the activity.
 ```sh
-obelisk client execution submit --follow stargazers:github/account.account-info '["your-github-login"]'
+obelisk execution submit --follow stargazers:github/account.account-info '["your-github-login"]'
 ```
 
 ## Testing

@@ -34,7 +34,7 @@ Use the following parameters:
 * parameter `settings-json`: `"{\"model\": \"gpt-3.5-turbo\",\"max_tokens\": 50}"`
 
 ```sh
-obelisk client execution submit --follow stargazers:llm/llm.respond '["Tell me about Rust programming", "{\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 50}"]'
+obelisk execution submit --follow stargazers:llm/llm.respond '["Tell me about Rust programming", "{\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 50}"]'
 ```
 
 ## Integration testing

@@ -9,7 +9,7 @@
     "build:esbuild": "node esbuild.config.js",
     "build:componentize": "node call-componentize.js",
     "build": "npm run build:esbuild && npm run build:componentize",
-    "test:submit": "obelisk client execution submit --follow stargazers:workflow/workflow.star-added-parallel '[\"tomasol\",\"obeli-sk/obelisk\"]'"
+    "test:submit": "obelisk execution submit --follow stargazers:workflow/workflow.star-added-parallel '[\"tomasol\",\"obeli-sk/obelisk\"]'"
   },
   "componentMeta": {
     "disableFeatures": [

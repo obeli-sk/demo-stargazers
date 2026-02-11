@@ -9,7 +9,7 @@
     "build:esbuild": "node esbuild.config.js",
     "build:componentize": "node call-componentize.js",
     "build": "npm run build:esbuild && npm run build:componentize",
-    "test:submit": "obelisk client execution submit --follow stargazers:llm/llm.respond '[\"Tell me about Rust programming\", \"{\\\"model\\\": \\\"gpt-3.5-turbo\\\", \\\"max_tokens\\\": 50}\"]'"
+    "test:submit": "obelisk execution submit --follow stargazers:llm/llm.respond '[\"Tell me about Rust programming\", \"{\\\"model\\\": \\\"gpt-3.5-turbo\\\", \\\"max_tokens\\\": 50}\"]'"
   },
   "dependencies": {
     "axios": "^1.9.0"

@@ -25,6 +25,6 @@ obelisk server run --config obelisk-local-go-activity.toml
 
 ## Testing
 ```sh
-obelisk client execution submit --follow stargazers:llm/llm.respond \
+obelisk execution submit --follow stargazers:llm/llm.respond \
     '["Tell me about Rust programming", "{\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 50}"]'
 ```
