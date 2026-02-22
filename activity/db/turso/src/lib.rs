@@ -714,14 +714,6 @@ mod tests {
             unsafe { std::env::set_var(ENV_TURSO_LOCATION, test_location) };
         }
 
-        fn random_string() -> String {
-            use rand::SeedableRng;
-            let mut rng = rand::rngs::SmallRng::from_os_rng();
-            (0..10)
-                .map(|_| rand::Rng::random_range(&mut rng, b'a'..=b'z') as char)
-                .collect()
-        }
-
         async fn delete_from(table: &str) {
             println!("DELETE FROM {table}");
             TursoClient::new()
@@ -850,20 +842,19 @@ mod tests {
             block_on(async move {
                 delete_from("users").await;
             });
-            let login = random_string();
-            let description = random_string();
+            let login = "login-user-update-should-create-the-user";
+            let description = "desc 1";
             println!("Creating user `{login}` with description `{description}`");
-            Component::update_user_description(login.clone(), description.clone()).unwrap();
+            Component::update_user_description(login.to_string(), description.to_string()).unwrap();
             // Check user
             block_on({
-                let login = login.clone();
                 async move {
-                    assert_eq!(vec![login.clone()], select_name("users").await);
+                    assert_eq!(vec![login], select_name("users").await);
                 }
             });
 
             println!("Deleting the user");
-            Component::remove_star(login, "any".to_string()).unwrap();
+            Component::remove_star(login.to_string(), "any".to_string()).unwrap();
             block_on(async move {
                 assert_eq!(Vec::<String>::new(), select_name("users").await);
             });
@@ -878,20 +869,20 @@ mod tests {
                 delete_from("repos").await;
                 delete_from("stars").await;
             });
-            let login = random_string();
-            let repo = random_string();
+            let login = "login-link-and-update-should-work-on-the-same-user";
+            let repo = "repo-link-and-update-should-work-on-the-same-user";
             println!("Creating user `{login}` and repo `{repo}`");
             let description =
-                Component::add_star_get_description(login.clone(), repo.clone()).unwrap();
+                Component::add_star_get_description(login.to_string(), repo.to_string()).unwrap();
             assert!(description.is_none());
 
-            let description = random_string();
+            let description = "desc";
             println!("Updating user `{login}` with description `{description}`");
-            Component::update_user_description(login.clone(), description.clone()).unwrap();
+            Component::update_user_description(login.to_string(), description.to_string()).unwrap();
             // Check the user and description directly in the database.
             block_on(async move {
                 assert_eq!(
-                    vec![vec![Some(login), Some(description)]],
+                    vec![vec![Some(login.to_string()), Some(description.to_string())]],
                     select("users", &["name", "description"]).await
                 )
             });
@@ -906,8 +897,8 @@ mod tests {
                 delete_from("repos").await;
                 delete_from("stars").await;
             });
-            let repo1 = random_string();
-            let repo2 = random_string();
+            let repo1 = "repo1-list-stargazers-should-work";
+            let repo2 = "repo2-list-stargazers-should-work";
 
             let insert = |stargazer: &Stargazer| {
                 Component::add_star_get_description(
@@ -922,23 +913,23 @@ mod tests {
             };
 
             let s_old_repo1 = Stargazer {
-                login: random_string(),
-                description: Some(random_string()),
-                repo: repo1.clone(),
+                login: "login1-list-stargazers-should-work".to_string(),
+                description: Some("desc".to_string()),
+                repo: repo1.to_string(),
             };
             insert(&s_old_repo1);
 
             let s_new_repo1 = Stargazer {
-                login: random_string(),
+                login: "login2-list-stargazers-should-work".to_string(),
                 description: None,
-                repo: repo1.clone(),
+                repo: repo1.to_string(),
             };
             insert(&s_new_repo1);
 
             let s_repo2 = Stargazer {
-                login: random_string(),
+                login: "login3-list-stargazers-should-work".to_string(),
                 description: None,
-                repo: repo2.clone(),
+                repo: repo2.to_string(),
             };
             insert(&s_repo2);
 
@@ -950,7 +941,8 @@ mod tests {
             );
             // Get only the latest from repo1
             let actual =
-                Component::list_stargazers(1, Some(repo1.clone()), Ordering::Descending).unwrap();
+                Component::list_stargazers(1, Some(repo1.to_string()), Ordering::Descending)
+                    .unwrap();
             assert_eq!(vec![s_new_repo1.clone()], actual);
             // Get the oldest only from all repos
             let actual = Component::list_stargazers(1, None, Ordering::Ascending).unwrap();
@@ -979,21 +971,21 @@ mod tests {
                 }
             };
             let mut s_old = Stargazer {
-                login: random_string(),
+                login: "login1-list-stargazers-should-be-updated-on-description-update".to_string(),
                 description: None,
-                repo: random_string(),
+                repo: "repo1-list-stargazers-should-be-updated-on-description-update".to_string(),
             };
             insert(&s_old);
             let s_new = Stargazer {
-                login: random_string(),
+                login: "login2-list-stargazers-should-be-updated-on-description-update".to_string(),
                 description: None,
-                repo: random_string(),
+                repo: "repo2-list-stargazers-should-be-updated-on-description-update".to_string(),
             };
             insert(&s_new);
             let actual = Component::list_stargazers(2, None, Ordering::Descending).unwrap();
             assert_eq!(vec![s_new.clone(), s_old.clone()], actual);
             // Update the description of s_old to change its `updated_at`
-            s_old.description = Some(random_string());
+            s_old.description = Some("desc".to_string());
             Component::update_user_description(
                 s_old.login.clone(),
                 s_old.description.clone().expect("description was just set"),
@@ -1014,12 +1006,12 @@ mod tests {
                 delete_from("stars").await;
             });
 
-            let login = random_string();
-            let description = random_string();
+            let login = "login1-link-after-update-should-return-the-description".to_string();
+            let description = "desc".to_string();
             println!("Creating user `{login}` with description `{description}`");
             Component::update_user_description(login.clone(), description.clone()).unwrap();
 
-            let repo = random_string();
+            let repo = "repo1-link-after-update-should-return-the-description".to_string();
             println!("Starring repo `{repo}`");
             let actual_description =
                 Component::add_star_get_description(login.clone(), repo.clone()).unwrap();
@@ -1044,8 +1036,8 @@ mod tests {
                 delete_from("repos").await;
                 delete_from("stars").await;
             });
-            let login = random_string();
-            let repo = random_string();
+            let login = "login1-user-link-unlink-should-retain-the-repo-only".to_string();
+            let repo = "repo1-user-link-unlink-should-retain-the-repo-only".to_string();
             println!("Creating user `{login}` and repo `{repo}`");
             Component::add_star_get_description(login.clone(), repo.clone()).unwrap();
             // Check that data is inserted into `users`, `repos`, `stars`.
@@ -1084,8 +1076,8 @@ mod tests {
                 delete_from("stars").await;
             });
 
-            let login = random_string();
-            let repo = random_string();
+            let login = "login1-user-updated-at-should-not-change-if-already-starred".to_string();
+            let repo = "repo1-user-updated-at-should-not-change-if-already-starred".to_string();
             println!("Creating user `{login}` and repo `{repo}`");
             Component::add_star_get_description(login.clone(), repo.clone()).unwrap();
 

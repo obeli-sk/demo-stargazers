@@ -20,9 +20,6 @@ serde_json.workspace = true
 wit-bindgen.workspace = true
 wstd.workspace = true
 
-[dev-dependencies]
-rand.workspace = true
-
 [build-dependencies]
 anyhow.workspace = true
 wit-bindgen-rust.workspace = true
