@@ -53,7 +53,7 @@ jobs:
           path: target/nextest/${{ github.job }}/junit.xml
 
       - name: Report results in GitHub UI
-        uses: dorny/test-reporter@e17be7e0078fc00f61965f3b4032f1e1fdc7fcfb
+        uses: dorny/test-reporter@3d76b34a4535afbd0600d347b09a6ee5deb3ed7f
         if: always()
         with:
           name: Rust tests
