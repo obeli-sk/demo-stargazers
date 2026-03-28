@@ -16,13 +16,22 @@ STAR_ACCOUNT="someghaccount"
 STAR_REPO="someghrepo"
 MOCK_OPENAI_PORT=18080
 MOCK_PID=""
+MOCK_OPENAI_API_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
 
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
 
 # Use mock server unless OPENAI_API_KEY is already set
 if [[ -z "${OPENAI_API_KEY:-}" ]]; then
-    echo "OPENAI_API_KEY not set, using mock OpenAI server"
-    
+    export OPENAI_API_KEY="mock-api-key-for-testing"
+    export OPENAI_API_BASE_URL="$MOCK_OPENAI_API_BASE_URL"
+fi
+
+obelisk server verify --config $OBELISK_TOML
+obelisk server run --config $OBELISK_TOML &
+PID=$!
+# Start the mock server. Starting after `obelisk verify` to avoid two cleanup functions.
+if [[ "$OPENAI_API_BASE_URL" == "$MOCK_OPENAI_API_BASE_URL" ]]; then
+    echo "OPENAI_API_KEY was not set, using mock OpenAI server"
     # Start mock OpenAI server
     python3 ./scripts/mock-openai-server.py $MOCK_OPENAI_PORT &
     MOCK_PID=$!
@@ -38,18 +47,8 @@ if [[ -z "${OPENAI_API_KEY:-}" ]]; then
         sleep 0.5
     done
     echo "Mock OpenAI server is ready"
-
-    # Set environment variables for mock OpenAI
-    export OPENAI_API_KEY="mock-api-key-for-testing"
-    export OPENAI_API_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
-else
-    echo "OPENAI_API_KEY is set, using real OpenAI API"
-    # OPENAI_API_BASE_URL can optionally be set for custom endpoints
 fi
 
-obelisk server verify --config $OBELISK_TOML
-obelisk server run --config $OBELISK_TOML &
-PID=$!
 cleanup() {
     echo "Sending SIGINT to obelisk process $PID..."
     kill -SIGINT $PID 2>/dev/null || true
