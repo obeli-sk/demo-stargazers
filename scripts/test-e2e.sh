@@ -107,6 +107,13 @@ while ! obelisk component list 2>/dev/null; do
     sleep 1
 done
 
+# Make sure this repo has no stars
+JSON=$(curl --fail "http://127.0.0.1:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1")
+if [[ "$JSON" != "[]" ]]; then
+    echo "The repo ${STAR_ACCOUNT}/${STAR_REPO} already has star gazers"
+    exit 1
+fi
+
 PAYLOAD='{
     "action": "created",
     "sender": {
