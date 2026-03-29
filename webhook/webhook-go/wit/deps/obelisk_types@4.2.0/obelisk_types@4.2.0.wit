@@ -1,4 +1,4 @@
-package obelisk:types@4.1.0;
+package obelisk:types@4.2.0;
 
 @since(version = 3.0.0)
 interface time {
@@ -94,6 +94,10 @@ interface execution {
     /// Error variants that may occur when calling `-stub` extension functions.
     @since(version = 3.0.0)
     variant stub-error {
+        /// execution was not found.
+        execution-not-found,
+        /// supplied return value does not type check.
+        type-check-error(string),
         /// Conflict can happen when a second writer attempts to stub a value, while the
         /// value is not equal to the already stubbed value.
         conflict,
@@ -106,8 +110,38 @@ interface execution {
         timeout: option<duration>,
         // TODO: add `max-retries`, `retry_exp_backoff`
     }
+
+    @since(version = 4.2.0)
+    variant schedule-json-error {
+        /// See `Function` definition
+        ffqn-parsing-error(string),
+        function-not-found,
+        type-check-error(string),
+    }
 }
 
+@since(version = 4.2.0)
+interface backtrace {
+    @since(version = 4.2.0)
+    record frame-symbol {
+        func-name: option<string>,
+        file: option<string>,
+        line: option<u32>,
+        col: option<u32>,
+    }
+
+    @since(version = 4.2.0)
+    record frame-info {
+        module: string,
+        func-name: string,
+        symbols: list<frame-symbol>,
+    }
+
+    @since(version = 4.2.0)
+    record wasm-backtrace {
+        frames: list<frame-info>,
+    }
+}
 
 @since(version = 4.0.0)
 interface join-set {
