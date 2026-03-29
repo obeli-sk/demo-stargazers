@@ -35,11 +35,6 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
-// InvokeExtensionError represents the type alias "stargazers:github-obelisk-ext/account#invoke-extension-error".
-//
-// See [execution.InvokeExtensionError] for more information.
-type InvokeExtensionError = execution.InvokeExtensionError
-
 // AccountInfoSubmit represents the imported function "account-info-submit".
 //
 //	account-info-submit: func(join-set: borrow<join-set>, login: string) -> execution-id
@@ -73,19 +68,6 @@ func AccountInfoAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionE
 func AccountInfoGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[string, string, string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_AccountInfoGet((*uint8)(executionId0), (uint32)(executionId1), &result)
-	return
-}
-
-// AccountInfoInvoke represents the imported function "account-info-invoke".
-//
-//	account-info-invoke: func(label: string, login: string) -> result<result<string,
-//	string>, invoke-extension-error>
-//
-//go:nosplit
-func AccountInfoInvoke(label string, login string) (result cm.Result[ResultStringStringShape, cm.Result[string, string, string], InvokeExtensionError]) {
-	label0, label1 := cm.LowerString(label)
-	login0, login1 := cm.LowerString(login)
-	wasmimport_AccountInfoInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(login0), (uint32)(login1), &result)
 	return
 }
 
@@ -125,20 +107,5 @@ func ListStargazersAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensi
 func ListStargazersGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[OptionStargazersShape, cm.Option[Stargazers], string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_ListStargazersGet((*uint8)(executionId0), (uint32)(executionId1), &result)
-	return
-}
-
-// ListStargazersInvoke represents the imported function "list-stargazers-invoke".
-//
-//	list-stargazers-invoke: func(label: string, repo: string, page-size: u8, cursor:
-//	option<string>) -> result<result<option<stargazers>, string>, invoke-extension-error>
-//
-//go:nosplit
-func ListStargazersInvoke(label string, repo string, pageSize uint8, cursor cm.Option[string]) (result cm.Result[ResultOptionStargazersStringShape, cm.Result[OptionStargazersShape, cm.Option[Stargazers], string], InvokeExtensionError]) {
-	label0, label1 := cm.LowerString(label)
-	repo0, repo1 := cm.LowerString(repo)
-	pageSize0 := (uint32)(pageSize)
-	cursor0, cursor1, cursor2 := lower_OptionString(cursor)
-	wasmimport_ListStargazersInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(repo0), (uint32)(repo1), (uint32)(pageSize0), (uint32)(cursor0), (*uint8)(cursor1), (uint32)(cursor2), &result)
 	return
 }

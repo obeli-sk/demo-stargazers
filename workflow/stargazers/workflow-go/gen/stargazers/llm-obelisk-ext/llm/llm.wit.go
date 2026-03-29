@@ -29,11 +29,6 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
-// InvokeExtensionError represents the type alias "stargazers:llm-obelisk-ext/llm#invoke-extension-error".
-//
-// See [execution.InvokeExtensionError] for more information.
-type InvokeExtensionError = execution.InvokeExtensionError
-
 // RespondSubmit represents the imported function "respond-submit".
 //
 //	respond-submit: func(join-set: borrow<join-set>, user-prompt: string, settings-json:
@@ -69,19 +64,5 @@ func RespondAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionError
 func RespondGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[string, string, string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_RespondGet((*uint8)(executionId0), (uint32)(executionId1), &result)
-	return
-}
-
-// RespondInvoke represents the imported function "respond-invoke".
-//
-//	respond-invoke: func(label: string, user-prompt: string, settings-json: string)
-//	-> result<result<string, string>, invoke-extension-error>
-//
-//go:nosplit
-func RespondInvoke(label string, userPrompt string, settingsJSON string) (result cm.Result[ResultStringStringShape, cm.Result[string, string, string], InvokeExtensionError]) {
-	label0, label1 := cm.LowerString(label)
-	userPrompt0, userPrompt1 := cm.LowerString(userPrompt)
-	settingsJson0, settingsJson1 := cm.LowerString(settingsJSON)
-	wasmimport_RespondInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(userPrompt0), (uint32)(userPrompt1), (*uint8)(settingsJson0), (uint32)(settingsJson1), &result)
 	return
 }
