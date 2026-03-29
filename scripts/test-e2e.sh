@@ -7,7 +7,7 @@
 # waits for the scheduled execution to complete,
 # and verifies that the user is stored in the database along with the generated description.
 
-set -exuo pipefail
+set -exo pipefail
 cd "$(dirname "$0")/.."
 
 OBELISK_TOML="$1"
