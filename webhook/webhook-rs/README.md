@@ -13,14 +13,14 @@ export GITHUB_WEBHOOK_SECRET="..."
 ```
 Then in your `obelisk.toml` make sure that the variable is forwarded to the WASM instance:
 ```toml
-[[webhook_endpoint]]
+[[webhook_endpoint_wasm]]
 name = "webhook"
 env_vars = ["GITHUB_WEBHOOK_SECRET"]
 ```
 
 The verification can be turned off for testing purposes in your `obelisk.toml`:
 ```toml
-[[webhook_endpoint]]
+[[webhook_endpoint_wasm]]
 name = "webhook"
 env_vars = ["GITHUB_WEBHOOK_INSECURE=true"]
 ```

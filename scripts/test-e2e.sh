@@ -26,8 +26,8 @@ if [[ -z "${OPENAI_API_KEY:-}" ]]; then
     export OPENAI_API_BASE_URL="$MOCK_OPENAI_API_BASE_URL"
 fi
 
-obelisk server verify --config $OBELISK_TOML
-obelisk server run --config $OBELISK_TOML &
+obelisk server verify --deployment $OBELISK_TOML
+obelisk server run --deployment $OBELISK_TOML &
 PID=$!
 # Start the mock server. Starting after `obelisk verify` to avoid two cleanup functions.
 if [[ "$OPENAI_API_BASE_URL" == "$MOCK_OPENAI_API_BASE_URL" ]]; then

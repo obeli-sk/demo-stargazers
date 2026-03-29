@@ -49,7 +49,7 @@ jobs:
 
       - name: Verify obelisk-local-js variants
         run: |
-          nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-js-activity.toml
-          nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-js-workflow.toml
-          nix develop --command obelisk server verify --ignore-missing-env-vars --config obelisk-local-js-webhook.toml
+          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-js-activity.toml
+          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-js-workflow.toml
+          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-js-webhook.toml
           # obelisk-local-js-all.toml is verified by e2e workflow

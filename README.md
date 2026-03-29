@@ -85,14 +85,14 @@ Otherwise install the following:
 The exact versions of dependencies used for development and testing are in [dev-deps.txt](./dev-deps.txt).
 
 ```sh
-obelisk server run --config ./obelisk-oci.toml
+obelisk server run --deployment ./obelisk-oci.toml
 ```
 
 The server will start downloading the WASM components from the Docker Hub. Wait for the following
 lines in the process output:
 
 ```log
-HTTP server `webhook_server` is listening on http://127.0.0.1:9090
+HTTP server `external` is listening on http://127.0.0.1:9090
 HTTP server `webui` is listening on http://127.0.0.1:8080
 Serving gRPC requests at 127.0.0.1:5005
 Server is ready
@@ -108,7 +108,7 @@ The configuration above downloads the WASM Components from the Docker Hub.
 To build all the Rust components locally run
 ```sh
 just rust
-obelisk server run --config ./obelisk-local.toml
+obelisk server run --deployment ./obelisk-local.toml
 ```
 
 To build JavaScript components use
