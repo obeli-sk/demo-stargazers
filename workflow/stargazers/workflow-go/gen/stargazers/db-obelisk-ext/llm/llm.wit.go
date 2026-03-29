@@ -29,11 +29,6 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
-// InvokeExtensionError represents the type alias "stargazers:db-obelisk-ext/llm#invoke-extension-error".
-//
-// See [execution.InvokeExtensionError] for more information.
-type InvokeExtensionError = execution.InvokeExtensionError
-
 // GetSettingsJSONSubmit represents the imported function "get-settings-json-submit".
 //
 //	get-settings-json-submit: func(join-set: borrow<join-set>) -> execution-id
@@ -66,17 +61,5 @@ func GetSettingsJSONAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtens
 func GetSettingsJSONGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[string, string, string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_GetSettingsJSONGet((*uint8)(executionId0), (uint32)(executionId1), &result)
-	return
-}
-
-// GetSettingsJSONInvoke represents the imported function "get-settings-json-invoke".
-//
-//	get-settings-json-invoke: func(label: string) -> result<result<string, string>,
-//	invoke-extension-error>
-//
-//go:nosplit
-func GetSettingsJSONInvoke(label string) (result cm.Result[ResultStringStringShape, cm.Result[string, string, string], InvokeExtensionError]) {
-	label0, label1 := cm.LowerString(label)
-	wasmimport_GetSettingsJSONInvoke((*uint8)(label0), (uint32)(label1), &result)
 	return
 }

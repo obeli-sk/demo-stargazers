@@ -40,11 +40,6 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
-// InvokeExtensionError represents the type alias "stargazers:db-obelisk-ext/user#invoke-extension-error".
-//
-// See [execution.InvokeExtensionError] for more information.
-type InvokeExtensionError = execution.InvokeExtensionError
-
 // AddStarGetDescriptionSubmit represents the imported function "add-star-get-description-submit".
 //
 //	add-star-get-description-submit: func(join-set: borrow<join-set>, login: string,
@@ -80,20 +75,6 @@ func AddStarGetDescriptionAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNext
 func AddStarGetDescriptionGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[OptionStringShape, cm.Option[string], string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_AddStarGetDescriptionGet((*uint8)(executionId0), (uint32)(executionId1), &result)
-	return
-}
-
-// AddStarGetDescriptionInvoke represents the imported function "add-star-get-description-invoke".
-//
-//	add-star-get-description-invoke: func(label: string, login: string, repo: string)
-//	-> result<result<option<string>, string>, invoke-extension-error>
-//
-//go:nosplit
-func AddStarGetDescriptionInvoke(label string, login string, repo string) (result cm.Result[ResultOptionStringStringShape, cm.Result[OptionStringShape, cm.Option[string], string], InvokeExtensionError]) {
-	label0, label1 := cm.LowerString(label)
-	login0, login1 := cm.LowerString(login)
-	repo0, repo1 := cm.LowerString(repo)
-	wasmimport_AddStarGetDescriptionInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
 	return
 }
 
@@ -135,20 +116,6 @@ func RemoveStarGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorS
 	return
 }
 
-// RemoveStarInvoke represents the imported function "remove-star-invoke".
-//
-//	remove-star-invoke: func(label: string, login: string, repo: string) -> result<result<_,
-//	string>, invoke-extension-error>
-//
-//go:nosplit
-func RemoveStarInvoke(label string, login string, repo string) (result cm.Result[ResultStringShape, cm.Result[string, struct{}, string], InvokeExtensionError]) {
-	label0, label1 := cm.LowerString(label)
-	login0, login1 := cm.LowerString(login)
-	repo0, repo1 := cm.LowerString(repo)
-	wasmimport_RemoveStarInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(login0), (uint32)(login1), (*uint8)(repo0), (uint32)(repo1), &result)
-	return
-}
-
 // UpdateUserDescriptionSubmit represents the imported function "update-user-description-submit".
 //
 //	update-user-description-submit: func(join-set: borrow<join-set>, username: string,
@@ -184,20 +151,6 @@ func UpdateUserDescriptionAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNext
 func UpdateUserDescriptionGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[string, struct{}, string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_UpdateUserDescriptionGet((*uint8)(executionId0), (uint32)(executionId1), &result)
-	return
-}
-
-// UpdateUserDescriptionInvoke represents the imported function "update-user-description-invoke".
-//
-//	update-user-description-invoke: func(label: string, username: string, description:
-//	string) -> result<result<_, string>, invoke-extension-error>
-//
-//go:nosplit
-func UpdateUserDescriptionInvoke(label string, username string, description string) (result cm.Result[ResultStringShape, cm.Result[string, struct{}, string], InvokeExtensionError]) {
-	label0, label1 := cm.LowerString(label)
-	username0, username1 := cm.LowerString(username)
-	description0, description1 := cm.LowerString(description)
-	wasmimport_UpdateUserDescriptionInvoke((*uint8)(label0), (uint32)(label1), (*uint8)(username0), (uint32)(username1), (*uint8)(description0), (uint32)(description1), &result)
 	return
 }
 
@@ -237,20 +190,5 @@ func ListStargazersAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensi
 func ListStargazersGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorShape, cm.Result[cm.List[Stargazer], cm.List[Stargazer], string], GetExtensionError]) {
 	executionId0, executionId1 := lower_ExecutionID(executionID)
 	wasmimport_ListStargazersGet((*uint8)(executionId0), (uint32)(executionId1), &result)
-	return
-}
-
-// ListStargazersInvoke represents the imported function "list-stargazers-invoke".
-//
-//	list-stargazers-invoke: func(label: string, last: u8, repo: option<string>, ordering:
-//	ordering) -> result<result<list<stargazer>, string>, invoke-extension-error>
-//
-//go:nosplit
-func ListStargazersInvoke(label string, last uint8, repo cm.Option[string], ordering Ordering) (result cm.Result[ResultListStargazerStringShape, cm.Result[cm.List[Stargazer], cm.List[Stargazer], string], InvokeExtensionError]) {
-	label0, label1 := cm.LowerString(label)
-	last0 := (uint32)(last)
-	repo0, repo1, repo2 := lower_OptionString(repo)
-	ordering0 := (uint32)(ordering)
-	wasmimport_ListStargazersInvoke((*uint8)(label0), (uint32)(label1), (uint32)(last0), (uint32)(repo0), (*uint8)(repo1), (uint32)(repo2), (uint32)(ordering0), &result)
 	return
 }

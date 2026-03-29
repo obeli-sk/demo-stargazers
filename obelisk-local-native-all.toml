@@ -1,0 +1,100 @@
+[[activity_js]]
+name = "openai_native"
+location = "${DEPLOYMENT_DIR}/activity/llm/openai-native/openai.js"
+ffqn = "stargazers:llm/llm.respond"
+params = [
+  { name = "user-prompt", type = "string" },
+  { name = "settings-json", type = "string" },
+]
+return_type = "result<string, string>"
+exec.lock_expiry.seconds = 10
+env_vars = [{key="OPENAI_API_BASE_URL", value="${OPENAI_API_BASE_URL:-https://api.openai.com}"}]
+[[activity_js.allowed_host]]
+pattern = "${OPENAI_API_BASE_URL:-https://api.openai.com}"
+methods = ["POST"]
+[activity_js.allowed_host.secrets]
+env_vars = ["OPENAI_API_KEY"]
+replace_in = ["headers"]
+
+[[activity_wasm]]
+name = "activity_github_impl"
+location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/activity_github_impl.wasm"
+exec.lock_expiry.seconds = 5
+[[activity_wasm.allowed_host]]
+pattern = "https://api.github.com"
+methods = ["POST"]
+[activity_wasm.allowed_host.secrets]
+env_vars = ["GITHUB_TOKEN"]
+replace_in = ["headers"]
+
+[[activity_wasm]]
+name = "activity_db_turso"
+location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/activity_db_turso.wasm"
+env_vars = ["TURSO_LOCATION"]
+exec.lock_expiry.seconds = 5
+[[activity_wasm.allowed_host]]
+pattern = "${TURSO_LOCATION}"
+methods = ["POST"]
+[activity_wasm.allowed_host.secrets]
+env_vars = ["TURSO_TOKEN"]
+replace_in = ["headers"]
+
+
+[[workflow_js]]
+name = "workflow_native_star_added"
+location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-native/star-added.js"
+ffqn = "stargazers:workflow/workflow.star-added"
+params = [
+  { name = "login", type = "string" },
+  { name = "repo", type = "string" },
+]
+return_type = "result<_, string>"
+
+[[workflow_js]]
+name = "workflow_native_star_added_parallel"
+location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-native/star-added-parallel.js"
+ffqn = "stargazers:workflow/workflow.star-added-parallel"
+params = [
+  { name = "login", type = "string" },
+  { name = "repo", type = "string" },
+]
+return_type = "result<_, string>"
+
+[[workflow_js]]
+name = "workflow_native_star_removed"
+location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-native/star-removed.js"
+ffqn = "stargazers:workflow/workflow.star-removed"
+params = [
+  { name = "login", type = "string" },
+  { name = "repo", type = "string" },
+]
+return_type = "result<_, string>"
+
+[[workflow_js]]
+name = "workflow_native_backfill"
+location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-native/backfill.js"
+ffqn = "stargazers:workflow/workflow.backfill"
+params = [
+  { name = "repo", type = "string" },
+]
+return_type = "result<_, string>"
+
+[[workflow_js]]
+name = "workflow_native_backfill_parallel"
+location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-native/backfill-parallel.js"
+ffqn = "stargazers:workflow/workflow.backfill-parallel"
+params = [
+  { name = "repo", type = "string" },
+]
+return_type = "result<_, string>"
+
+# Set GITHUB_WEBHOOK_SECRET to the webhook secret configured in GitHub.
+# For development without a secret, set GITHUB_WEBHOOK_INSECURE=true instead.
+[[webhook_endpoint_js]]
+name = "webhook_native"
+location = "${DEPLOYMENT_DIR}/webhook/webhook-native/webhook.js"
+routes = [{ methods = ["POST", "GET"], route = "" }]
+env_vars = [
+    "GITHUB_WEBHOOK_SECRET",
+    # "GITHUB_WEBHOOK_INSECURE=true"  # skip verification (development only)
+]

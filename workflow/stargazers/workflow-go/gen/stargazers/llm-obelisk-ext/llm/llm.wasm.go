@@ -19,7 +19,3 @@ func wasmimport_RespondAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExt
 //go:wasmimport stargazers:llm-obelisk-ext/llm respond-get
 //go:noescape
 func wasmimport_RespondGet(executionId0 *uint8, executionId1 uint32, result *cm.Result[GetExtensionErrorShape, cm.Result[string, string, string], GetExtensionError])
-
-//go:wasmimport stargazers:llm-obelisk-ext/llm respond-invoke
-//go:noescape
-func wasmimport_RespondInvoke(label0 *uint8, label1 uint32, userPrompt0 *uint8, userPrompt1 uint32, settingsJson0 *uint8, settingsJson1 uint32, result *cm.Result[ResultStringStringShape, cm.Result[string, string, string], InvokeExtensionError])

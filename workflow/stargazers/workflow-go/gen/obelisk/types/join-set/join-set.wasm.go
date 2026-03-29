@@ -6,20 +6,20 @@ import (
 	"go.bytecodealliance.org/cm"
 )
 
-// This file contains wasmimport and wasmexport declarations for "obelisk:types@4.0.0".
+// This file contains wasmimport and wasmexport declarations for "obelisk:types@4.2.0".
 
-//go:wasmimport obelisk:types/join-set@4.0.0 [resource-drop]join-set
+//go:wasmimport obelisk:types/join-set@4.2.0 [resource-drop]join-set
 //go:noescape
 func wasmimport_JoinSetResourceDrop(self0 uint32)
 
-//go:wasmimport obelisk:types/join-set@4.0.0 [method]join-set.id
+//go:wasmimport obelisk:types/join-set@4.2.0 [method]join-set.id
 //go:noescape
 func wasmimport_JoinSetID(self0 uint32, result *string)
 
-//go:wasmimport obelisk:types/join-set@4.0.0 [method]join-set.join-next
+//go:wasmimport obelisk:types/join-set@4.2.0 [method]join-set.join-next
 //go:noescape
 func wasmimport_JoinSetJoinNext(self0 uint32, result *cm.Result[TupleResponseIDResultShape, cm.Tuple[ResponseID, cm.BoolResult], JoinNextError])
 
-//go:wasmimport obelisk:types/join-set@4.0.0 [method]join-set.submit-delay
+//go:wasmimport obelisk:types/join-set@4.2.0 [method]join-set.submit-delay
 //go:noescape
 func wasmimport_JoinSetSubmitDelay(self0 uint32, timeout0 uint32, timeout1 uint64, timeout2 uint64, result *DelayID)

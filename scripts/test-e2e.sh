@@ -7,7 +7,7 @@
 # waits for the scheduled execution to complete,
 # and verifies that the user is stored in the database along with the generated description.
 
-set -exuo pipefail
+set -exo pipefail
 cd "$(dirname "$0")/.."
 
 OBELISK_TOML="$1"
@@ -26,8 +26,8 @@ if [[ -z "${OPENAI_API_KEY:-}" ]]; then
     export OPENAI_API_BASE_URL="$MOCK_OPENAI_API_BASE_URL"
 fi
 
-obelisk server verify --config $OBELISK_TOML
-obelisk server run --config $OBELISK_TOML &
+obelisk server verify --deployment $OBELISK_TOML
+obelisk server run --deployment $OBELISK_TOML &
 PID=$!
 # Start the mock server. Starting after `obelisk verify` to avoid two cleanup functions.
 if [[ "$OPENAI_API_BASE_URL" == "$MOCK_OPENAI_API_BASE_URL" ]]; then

@@ -1,43 +1,49 @@
-api.listening_addr = "127.0.0.1:5005"   # Address and port on which the API server will listen.
-webui.listening_addr = "127.0.0.1:8080" # Address and port on which the webui will listen.
-
-[log.console]
-enabled = true
-
 [[activity_wasm]]
 name = "openai_js"
-location = "${OBELISK_TOML_DIR}/activity/llm/openai-js/dist/openai-js.wasm"
+location = "${DEPLOYMENT_DIR}/activity/llm/openai-js/dist/openai-js.wasm"
 exec.lock_expiry.seconds = 10
-env_vars = ["OPENAI_API_KEY", "OPENAI_API_BASE_URL"]
+env_vars = [{key="OPENAI_API_BASE_URL", value="${OPENAI_API_BASE_URL:-https://api.openai.com}"}]
+[[activity_wasm.allowed_host]]
+pattern = "${OPENAI_API_BASE_URL:-https://api.openai.com}"
+methods = ["POST"]
+[activity_wasm.allowed_host.secrets]
+env_vars = ["OPENAI_API_KEY"]
+replace_in = ["headers"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
-location = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/activity_github_impl.wasm"
-env_vars = ["GITHUB_TOKEN"]
+location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/activity_github_impl.wasm"
 exec.lock_expiry.seconds = 5
+[[activity_wasm.allowed_host]]
+pattern = "https://api.github.com"
+methods = ["POST"]
+[activity_wasm.allowed_host.secrets]
+env_vars = ["GITHUB_TOKEN"]
+replace_in = ["headers"]
 
 [[activity_wasm]]
 name = "activity_db_turso"
-location = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/activity_db_turso.wasm"
-env_vars = ["TURSO_TOKEN", "TURSO_LOCATION"]
+location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/activity_db_turso.wasm"
+env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
+[[activity_wasm.allowed_host]]
+pattern = "${TURSO_LOCATION}"
+methods = ["POST"]
+[activity_wasm.allowed_host.secrets]
+env_vars = ["TURSO_TOKEN"]
+replace_in = ["headers"]
 
-[[workflow]]
+[[workflow_wasm]]
 name = "workflow"
-location = "${OBELISK_TOML_DIR}/target/wasm32-unknown-unknown/release/workflow.wasm"
-backtrace.sources = { ".../src/lib.rs" = "${OBELISK_TOML_DIR}/workflow/stargazers/workflow-rs/src/lib.rs" }
+location = "${DEPLOYMENT_DIR}/target/wasm32-unknown-unknown/release/workflow.wasm"
+backtrace.sources = { ".../src/lib.rs" = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-rs/src/lib.rs" }
 
-[[http_server]]
-name = "webhook_server"
-listening_addr = "0.0.0.0:9090"
-
-[[webhook_endpoint]]
+[[webhook_endpoint_wasm]]
 name = "webhook"
-location = "${OBELISK_TOML_DIR}/target/wasm32-wasip2/release/webhook.wasm"
-http_server = "webhook_server"
+location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/webhook.wasm"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 env_vars = [
     "GITHUB_WEBHOOK_SECRET",
     # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
 ]
-backtrace.sources = { ".../src/lib.rs" = "${OBELISK_TOML_DIR}/webhook/webhook-rs/src/lib.rs" }
+backtrace.sources = { ".../src/lib.rs" = "${DEPLOYMENT_DIR}/webhook/webhook-rs/src/lib.rs" }

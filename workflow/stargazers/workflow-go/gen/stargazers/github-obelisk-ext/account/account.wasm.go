@@ -20,10 +20,6 @@ func wasmimport_AccountInfoAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNex
 //go:noescape
 func wasmimport_AccountInfoGet(executionId0 *uint8, executionId1 uint32, result *cm.Result[GetExtensionErrorShape, cm.Result[string, string, string], GetExtensionError])
 
-//go:wasmimport stargazers:github-obelisk-ext/account account-info-invoke
-//go:noescape
-func wasmimport_AccountInfoInvoke(label0 *uint8, label1 uint32, login0 *uint8, login1 uint32, result *cm.Result[ResultStringStringShape, cm.Result[string, string, string], InvokeExtensionError])
-
 //go:wasmimport stargazers:github-obelisk-ext/account list-stargazers-submit
 //go:noescape
 func wasmimport_ListStargazersSubmit(joinSet0 uint32, repo0 *uint8, repo1 uint32, pageSize0 uint32, cursor0 uint32, cursor1 *uint8, cursor2 uint32, result *ExecutionID)
@@ -35,7 +31,3 @@ func wasmimport_ListStargazersAwaitNext(joinSet0 uint32, result *cm.Result[Await
 //go:wasmimport stargazers:github-obelisk-ext/account list-stargazers-get
 //go:noescape
 func wasmimport_ListStargazersGet(executionId0 *uint8, executionId1 uint32, result *cm.Result[GetExtensionErrorShape, cm.Result[OptionStargazersShape, cm.Option[Stargazers], string], GetExtensionError])
-
-//go:wasmimport stargazers:github-obelisk-ext/account list-stargazers-invoke
-//go:noescape
-func wasmimport_ListStargazersInvoke(label0 *uint8, label1 uint32, repo0 *uint8, repo1 uint32, pageSize0 uint32, cursor0 uint32, cursor1 *uint8, cursor2 uint32, result *cm.Result[ResultOptionStargazersStringShape, cm.Result[OptionStargazersShape, cm.Option[Stargazers], string], InvokeExtensionError])

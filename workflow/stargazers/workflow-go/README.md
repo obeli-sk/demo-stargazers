@@ -11,7 +11,7 @@ This **should** mitigate the nondeterminism coming by the `cli` world.See [TinyG
 Obelisk must be configured to stub the WASI imports of workflows authored in Go:
 
 ```toml
-[[workflow]]
+[[workflow_wasm]]
 stub_wasi = true
 ```
 
