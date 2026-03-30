@@ -116,4 +116,9 @@ To build JavaScript components use
 just js
 ```
 
+To build Go components use
+```sh
+just go
+```
+
 Make sure to use tools and versions as specified in [dev-deps.txt](./dev-deps.txt).
