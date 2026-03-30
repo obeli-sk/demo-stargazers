@@ -1,5 +1,5 @@
-# Build all components (Rust, JS, Go)
-build: rust js go
+# Build all components (Rust, JS)
+build: rust js
 
 # Build Rust components
 rust:
@@ -13,10 +13,6 @@ rust:
 js:
 	./scripts/build-components-js.sh
 
-# Build Go components
-go:
-	./scripts/build-components-go.sh
-
 serve:
 	obelisk server run --config ./obelisk-local.toml
 
@@ -28,5 +24,3 @@ test-e2e: rust
 	./scripts/test-e2e.sh ./obelisk-local.toml truncate
 test-e2e-js: js
 	./scripts/test-e2e.sh ./obelisk-local-js-all.toml truncate
-test-e2e-go: go
-	./scripts/test-e2e.sh ./obelisk-local-go-all.toml truncate
