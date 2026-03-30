@@ -22,7 +22,7 @@ cynic = "3.13.1"
 cynic-codegen = "3.13.1"
 derive_more = { version = "2.1", features = ["display"] }
 hex = "0.4.3"
-hmac = "0.12.1"
+hmac = "0.13.0"
 humantime = "2.3.0"
 url = "2.5.8"
 serde = { version = "1.0", features = ["derive"] }
