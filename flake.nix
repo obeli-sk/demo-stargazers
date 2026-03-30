@@ -1,6 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-tinygo.url = "github:NixOS/nixpkgs/b40629efe5d6ec48dd1efba650c797ddbd39ace0";
     flake-utils.url = "github:numtide/flake-utils";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
@@ -17,13 +18,16 @@
       };
     };
   };
-  outputs = { self, nixpkgs, flake-utils, rust-overlay, obelisk }:
+  outputs = { self, nixpkgs, nixpkgs-tinygo, flake-utils, rust-overlay, obelisk }:
     flake-utils.lib.eachDefaultSystem
       (system:
         let
           overlays = [ (import rust-overlay) ];
           pkgs = import nixpkgs {
             inherit system overlays;
+          };
+          pkgsTinyGo = import nixpkgs-tinygo {
+            inherit system;
           };
           rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
           wit-bindgen-go-cli = pkgs.buildGoModule (rec {
@@ -61,8 +65,8 @@
             nodejs_22
             wizer
             # Go
-            go
-            tinygo
+            go_1_25
+            pkgsTinyGo.tinygo
             wit-bindgen-go-cli
           ];
           withObelisk = commonDeps ++ [ obelisk.packages.${system}.default ];
