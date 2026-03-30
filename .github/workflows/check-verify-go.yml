@@ -1,0 +1,55 @@
+name: check-verify-go
+permissions:
+  contents: read
+  issues: read
+  checks: write
+  pull-requests: write
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "The ref (branch or SHA) to process"
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash -xe {0}
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.inputs.ref }} # Use the ref if provided, otherwise defaults to the current branch/commit
+
+      - uses: nixbuild/nix-quick-install-action@v34
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+          nix_conf: |
+            extra-substituters = https://cache.garnix.io
+            extra-trusted-public-keys = cache.garnix.io:CTFPyKSLcx5RMJKfLo5EEPUObbA78b0YQ2DTCJXqr9g
+      - name: Populate the nix store
+        run: |
+          nix develop --command echo
+
+      - name: Build Rust Components
+        run: nix develop --command just rust
+
+      - name: Build Go Components
+        run: nix develop --command just go
+
+      - name: Verify obelisk-local-go variants
+        run: |
+          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-go-activity.toml
+          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-go-workflow.toml
+          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-go-webhook.toml
+          # obelisk-local-go-all.toml is verified by e2e workflow

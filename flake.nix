@@ -26,6 +26,20 @@
             inherit system overlays;
           };
           rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+          wit-bindgen-go-cli = pkgs.buildGoModule (rec {
+            pname = "wit-bindgen-go-cli";
+            version = "0.7.0"; # NB: Update version in dev-deps.sh
+            src = pkgs.fetchFromGitHub {
+              owner = "bytecodealliance";
+              repo = "go-modules";
+              rev = "v${version}";
+              hash = "sha256-bzsB0EsDNk6x1xroIQqbUy7L97JbEJHo7wASnl35X+0=";
+            };
+            modMode = "workspace";
+            subPackages = [ "cmd/wit-bindgen-go" ];
+            vendorHash = "sha256-9BLzPxLc+HoVQuUtTwLj6QZvN7BLrX5Zy4s5eWTXvwA=";
+            proxyVendor = true;
+          });
           commonDeps = with pkgs; [
             cargo-binstall
             cargo-edit
@@ -46,6 +60,10 @@
             # javascript support
             nodejs_22
             wizer
+            # Go
+            go
+            tinygo
+            wit-bindgen-go-cli
           ];
           withObelisk = commonDeps ++ [ obelisk.packages.${system}.default ];
         in
