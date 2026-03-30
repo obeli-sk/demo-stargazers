@@ -25,10 +25,10 @@ push() {
 # Rebuild rust components
 just rust
 
-push activity "target/wasm32-wasip2/release/activity_llm_openai.wasm"
-push activity "target/wasm32-wasip2/release/activity_github_impl.wasm"
-push activity "target/wasm32-wasip2/release/activity_db_turso.wasm"
-push workflow "target/wasm32-unknown-unknown/release/workflow.wasm"
-push webhook_endpoint "target/wasm32-wasip2/release/webhook.wasm"
+push activity_wasm "target/wasm32-wasip2/release/activity_llm_openai.wasm"
+push activity_wasm "target/wasm32-wasip2/release/activity_github_impl.wasm"
+push activity_wasm "target/wasm32-wasip2/release/activity_db_turso.wasm"
+push workflow_wasm "target/wasm32-unknown-unknown/release/workflow.wasm"
+push webhook_endpoint_wasm "target/wasm32-wasip2/release/webhook.wasm"
 
 echo "All components pushed and TOML file updated successfully."
