@@ -6,9 +6,9 @@ The `account` interface fetches basic info like repositories, contributions etc.
 
 ## Prerequisites
 [Classic GitHub token](https://github.com/settings/tokens/) with `read:org` permission is required.
-The token must be accesible as `GITHUB_TOKEN` environment variable.
+The token must be accesible as `GITHUB_TOKEN_STARGAZERS` environment variable.
 ```sh
-export GITHUB_TOKEN="..."
+export GITHUB_TOKEN_STARGAZERS="..."
 ```
 
 ## Running the activity
@@ -32,7 +32,7 @@ cargo nextest run
 ## Integration testing
 
 ```sh
-export TEST_GITHUB_TOKEN="..."
+export TEST_GITHUB_TOKEN_STARGAZERS="..."
 export TEST_GITHUB_LOGIN="..."
 export TEST_GITHUB_REPO="..."
 # optinally export TEST_GITHUB_STARGAZERS_CURSOR="..."
@@ -62,7 +62,6 @@ echo '
 {"query":"'$(echo $QUERY)'", "variables":{"repo":"obeli-sk/obelisk", "page":2}}
 ' | curl -X POST \
 -H "User-Agent: test" \
--H "Authorization: Bearer $GITHUB_TOKEN" https://api.github.com/graphql \
+-H "Authorization: Bearer $GITHUB_TOKEN_STARGAZERS" https://api.github.com/graphql \
 -d @-
-
 ```

@@ -24,7 +24,7 @@ exec.lock_expiry.seconds = 5
 pattern = "https://api.github.com"
 methods = ["POST"]
 [activity_wasm.allowed_host.secrets]
-env_vars = ["GITHUB_TOKEN"]
+env_vars = ["GITHUB_TOKEN_STARGAZERS"]
 replace_in = ["headers"]
 
 [[activity_wasm]]

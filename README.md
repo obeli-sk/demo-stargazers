@@ -33,7 +33,7 @@ Here is the complete [workflow source](./workflow/stargazers/workflow-rs/src/lib
 ### Setting up the external services
 The activities require folowing values to be present as environment variables:
 ```sh
-export GITHUB_TOKEN="..."
+export GITHUB_TOKEN_STARGAZERS="..."
 export OPENAI_API_KEY="..."
 export TURSO_TOKEN="..."
 export GITHUB_WEBHOOK_SECRET="some-secret"

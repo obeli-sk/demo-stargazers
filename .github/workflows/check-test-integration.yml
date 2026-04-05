@@ -44,7 +44,7 @@ jobs:
       - name: Run integration tests
         env:
           CI: true
-          TEST_GITHUB_TOKEN: ${{ secrets.TEST_GITHUB_TOKEN }}
+          TEST_GITHUB_TOKEN_STARGAZERS: ${{ secrets.TEST_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TEST_GITHUB_REPO: ${{ secrets.TEST_GITHUB_REPO }}
           TEST_TURSO_TOKEN: ${{ secrets.TEST_TURSO_TOKEN }}
