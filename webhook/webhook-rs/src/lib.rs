@@ -5,6 +5,7 @@ use generated::stargazers::{
     db::{self, user::Ordering},
     workflow_obelisk_schedule::workflow::{star_added_schedule, star_removed_schedule},
 };
+use hmac::KeyInit as _;
 use wstd::http::{Error, Request, Response, StatusCode};
 use wstd::http::{Method, body::Body};
 
