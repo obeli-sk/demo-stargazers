@@ -46,7 +46,7 @@ jobs:
 
       - name: Verify obelisk-local.toml
         env:
-          GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
+          GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
@@ -55,7 +55,7 @@ jobs:
 
       - name: Verify obelisk-oci.toml
         env:
-          GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
+          GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
@@ -67,7 +67,7 @@ jobs:
 
       - name: Verify obelisk-local-js-all.toml
         env:
-          GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
+          GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
@@ -79,7 +79,7 @@ jobs:
 
       - name: Verify obelisk-local-go-all.toml
         env:
-          GITHUB_TOKEN: ${{ secrets.E2E_GITHUB_TOKEN }}
+          GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}

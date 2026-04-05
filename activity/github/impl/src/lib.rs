@@ -13,7 +13,7 @@ use wstd::{
 };
 mod stargazers;
 
-const ENV_GITHUB_TOKEN: &str = "GITHUB_TOKEN";
+const ENV_GITHUB_TOKEN: &str = "GITHUB_TOKEN_STARGAZERS";
 
 mod generated {
     #![allow(clippy::empty_line_after_outer_attr)]

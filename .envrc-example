@@ -1,7 +1,7 @@
 use flake .
 watch_file ./rust-toolchain.toml ./flake.nix
 
-export GITHUB_TOKEN="..."
+export GITHUB_TOKEN_STARGAZERS="..."
 export GITHUB_WEBHOOK_SECRET="..."
 export OPENAI_API_KEY="..."
 export OPENAI_API_BASE_URL="https://api.openai.com"
@@ -11,7 +11,7 @@ export TURSO_LOCATION="[yourdb].turso.io"
 export TEST_OPENAI_API_KEY="..."
 export TEST_TURSO_TOKEN="..."
 export TEST_TURSO_LOCATION="..."
-export TEST_GITHUB_TOKEN="..."
+export TEST_GITHUB_TOKEN_STARGAZERS="..."
 export TEST_GITHUB_LOGIN="..."
 export TEST_GITHUB_REPO="..."
 
