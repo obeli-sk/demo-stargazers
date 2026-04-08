@@ -6,29 +6,35 @@ set -exuo pipefail
 cd "$(dirname "$0")/.."
 
 TAG="$1"
-TOML_FILE="obelisk-oci.toml"
-PREFIX="docker.io/getobelisk/demo_stargazers_"
+PREFIX="oci://docker.io/getobelisk/demo_stargazers_"
 
-push() {
-    COMPONENT_TYPE=$1
-    RELATIVE_PATH=$2
+push_component() {
+    local LOCAL_DEPLOYMENT_TOML="$1"
+    local COMPONENT_NAME="$2"
 
-    FILE_NAME_WITHOUT_EXT=$(basename "$RELATIVE_PATH" | sed 's/\.[^.]*$//')
-    OCI_LOCATION="${PREFIX}${FILE_NAME_WITHOUT_EXT}:${TAG}"
-    echo "Pushing ${RELATIVE_PATH} to ${OCI_LOCATION}..."
-    OUTPUT=$(obelisk component push "$RELATIVE_PATH" "$OCI_LOCATION")
-
-    # Replace the old location with the actual OCI location
-    obelisk component add ${COMPONENT_TYPE} ${OUTPUT} --name ${FILE_NAME_WITHOUT_EXT} --deployment $TOML_FILE
+    OCI_LOCATION="${PREFIX}${COMPONENT_NAME}:${TAG}"
+    obelisk component push --deployment "$LOCAL_DEPLOYMENT_TOML" "$COMPONENT_NAME" "$OCI_LOCATION"
 }
 
-# Rebuild rust components
+push_and_update() {
+    local LOCAL_DEPLOYMENT_TOML="$1"
+    local COMPONENT_NAME="$2"
+    shift 2
+    DST_TOML_FILES=("$@")
+
+    OCI_LOCATION=$(push_component "$LOCAL_DEPLOYMENT_TOML" "$COMPONENT_NAME")
+
+    for DST_TOML_FILE in "${DST_TOML_FILES[@]}"; do
+        obelisk component add --deployment "$DST_TOML_FILE" "$OCI_LOCATION" "$COMPONENT_NAME"
+    done
+}
+
 just rust
 
-push activity_wasm "target/wasm32-wasip2/release/activity_llm_openai.wasm"
-push activity_wasm "target/wasm32-wasip2/release/activity_github_impl.wasm"
-push activity_wasm "target/wasm32-wasip2/release/activity_db_turso.wasm"
-push workflow_wasm "target/wasm32-unknown-unknown/release/workflow.wasm"
-push webhook_endpoint_wasm "target/wasm32-wasip2/release/webhook.wasm"
+push_and_update obelisk-local.toml activity_llm_openai obelisk-oci.toml
+push_and_update obelisk-local.toml activity_github_impl obelisk-oci.toml
+push_and_update obelisk-local.toml activity_db_turso obelisk-oci.toml
+push_and_update obelisk-local.toml workflow obelisk-oci.toml
+push_and_update obelisk-local.toml webhook obelisk-oci.toml
 
 echo "All components pushed and TOML file updated successfully."
