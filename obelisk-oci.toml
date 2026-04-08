@@ -1,6 +1,6 @@
 [[activity_wasm]]
 name = "activity_llm_openai"
-location = "oci://docker.io/getobelisk/demo_stargazers_activity_llm_openai:2026-04-05@sha256:26f073c064a5428e9e17fdaa9eba76794cf39ad79a69483f7b1fb5577e28f301"
+location = "oci://docker.io/getobelisk/demo_stargazers_activity_llm_openai:2026-04-08@sha256:52767bbc9d9748af971438e853edf8438e886994cefa1f6756cde7b4de347912"
 exec.lock_expiry.seconds = 10
 env_vars = [{key="OPENAI_API_BASE_URL", value="${OPENAI_API_BASE_URL:-https://api.openai.com}"}]
 [[activity_wasm.allowed_host]]
@@ -12,7 +12,7 @@ replace_in = ["headers"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
-location = "oci://docker.io/getobelisk/demo_stargazers_activity_github_impl:2026-04-05@sha256:34fcf5fb952ed826edd63a6dc19cddac5c6dd92b34c302e1c8004cbc25444085"
+location = "oci://docker.io/getobelisk/demo_stargazers_activity_github_impl:2026-04-08@sha256:14df5892af6e701b864668e0d11c8db51c5ec4677037c8066a77b3f99a1cf26d"
 exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
 pattern = "https://api.github.com"
@@ -23,7 +23,7 @@ replace_in = ["headers"]
 
 [[activity_wasm]]
 name = "activity_db_turso"
-location = "oci://docker.io/getobelisk/demo_stargazers_activity_db_turso:2026-04-05@sha256:21d69046eb152b6d70cc3b593a0ae31a82291936fa5c13e493ed01add54b55bf"
+location = "oci://docker.io/getobelisk/demo_stargazers_activity_db_turso:2026-04-08@sha256:6fafabb15c5468d7970acf0b66beec6e41bea26c96f6de148a32e00d14fdedad"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
@@ -35,12 +35,12 @@ replace_in = ["headers"]
 
 [[workflow_wasm]]
 name = "workflow"
-location = "oci://docker.io/getobelisk/demo_stargazers_workflow:2026-04-05@sha256:59bc04945d3504b3caf1f8e167360f3c78689377607b76a4747a2db5aa5f89ca"
+location = "oci://docker.io/getobelisk/demo_stargazers_workflow:2026-04-08@sha256:78caee35dab856009460b012e69e3407edf9f50b4031909cb003f223f9039d8f"
 backtrace.sources = { "/home/runner/work/demo-stargazers/demo-stargazers/workflow/stargazers/workflow-rs/src/lib.rs" = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-rs/src/lib.rs" }
 
 [[webhook_endpoint_wasm]]
 name = "webhook"
-location = "oci://docker.io/getobelisk/demo_stargazers_webhook:2026-04-05@sha256:9d357a89e927432b67cccb06c51bddae3def587a3569f176c7686c1a2d1332fe"
+location = "oci://docker.io/getobelisk/demo_stargazers_webhook:2026-04-08@sha256:a14e1a4946b467a73057717bcbd4a7879b2892b146b30c5d559d5e7ed952d130"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 env_vars = [
     "GITHUB_WEBHOOK_SECRET",
