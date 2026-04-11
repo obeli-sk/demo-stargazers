@@ -123,12 +123,12 @@ async function handlePost(request) {
     let execId;
     if (event.action === 'created') {
         console.info(`Scheduling star_added for ${senderLogin} on ${repoFullName}`);
-        execId = obelisk.generateExecutionId();
+        execId = obelisk.executionIdGenerate();
         obelisk.schedule(execId, 'stargazers:workflow/workflow.star-added',
             [senderLogin, repoFullName]);
     } else if (event.action === 'deleted') {
         console.info(`Scheduling star_removed for ${senderLogin} on ${repoFullName}`);
-        execId = obelisk.generateExecutionId();
+        execId = obelisk.executionIdGenerate();
         obelisk.schedule(execId, 'stargazers:workflow/workflow.star-removed',
             [senderLogin, repoFullName]);
     } else {
