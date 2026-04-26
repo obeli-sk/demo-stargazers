@@ -16,26 +16,38 @@ permissions:
 jobs:
   bump-cargo-lock:
     runs-on: ubuntu-24.04
+    env:
+      DEVSHELL: .#noObelisk    
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: compatible
+            cmd: cargo upgrade
+          - name: incompatible
+            cmd: cargo upgrade --incompatible
+
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 1
 
       - name: Generate Unique Branch Name
         id: branch-name
-        run: echo "branch_name=bump-cargo-lock-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+        run: echo "branch_name=bump-cargo-lock-${{ matrix.name }}-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
 
-      - uses: nixbuild/nix-quick-install-action@v34
+      - uses: nixbuild/nix-quick-install-action@2c9db80fb984ceb1bcaa77cdda3fdf8cfba92035
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Populate the nix store without Obelisk
+
+      - name: Populate the nix store
         run: |
-          nix develop .#noObelisk --command echo
+          nix develop $DEVSHELL --command echo
 
       - name: Bump Cargo.lock, Cargo.toml
         run: |
-          nix develop .#noObelisk --command cargo upgrade --incompatible
-          nix develop .#noObelisk --command cargo update
+          nix develop $DEVSHELL --command cargo update
+          nix develop $DEVSHELL --command ${{ matrix.cmd }}
 
       - name: Configure Git
         run: |
@@ -57,7 +69,7 @@ jobs:
                 -H "Authorization: Bearer $GITHUB_TOKEN" \
                 https://api.github.com/repos/$OWNER/$REPO/pulls \
                 -d '{
-                  "title": "Bump Rust dependencies",
+                  "title": "Bump '${{ matrix.name }}' dependencies",
                   "head": "'${{ steps.branch-name.outputs.branch_name }}'",
                   "base": "main",
                   "body": ""
