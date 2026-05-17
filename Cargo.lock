@@ -12,7 +12,7 @@ dependencies = [
  "serde_json",
  "wit-bindgen",
  "wit-bindgen-rust",
- "wit-parser 0.248.0",
+ "wit-parser 0.249.0",
  "wstd",
 ]
 
@@ -27,7 +27,7 @@ dependencies = [
  "serde_json",
  "wit-bindgen",
  "wit-bindgen-rust",
- "wit-parser 0.248.0",
+ "wit-parser 0.249.0",
  "wstd",
 ]
 
@@ -40,7 +40,7 @@ dependencies = [
  "serde_json",
  "wit-bindgen",
  "wit-bindgen-rust",
- "wit-parser 0.248.0",
+ "wit-parser 0.249.0",
  "wstd",
 ]
 
@@ -1041,9 +1041,9 @@ dependencies = [
 
 [[package]]
 name = "wasmparser"
-version = "0.248.0"
+version = "0.249.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aa4439c5eee9df71ee0c6efb37f63b1fcb1fec38f85f5142c54e7ed05d33091a"
+checksum = "30538cae9a794215f490b532df01c557e2e2bfac92569482554acd0992a102ea"
 dependencies = [
  "bitflags",
  "indexmap",
@@ -1064,7 +1064,7 @@ dependencies = [
  "url",
  "wit-bindgen",
  "wit-bindgen-rust",
- "wit-parser 0.248.0",
+ "wit-parser 0.249.0",
  "wstd",
 ]
 
@@ -1161,9 +1161,9 @@ dependencies = [
 
 [[package]]
 name = "wit-parser"
-version = "0.248.0"
+version = "0.249.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "247ad505da2915a082fe13204c5ba8788425aea1de54f43b284818cf82637856"
+checksum = "50840f2e2cf170d910858089d7dfb3e97c6f9a0d6ec7bff7f7cc28f5aeacc15f"
 dependencies = [
  "anyhow",
  "hashbrown",
@@ -1175,7 +1175,7 @@ dependencies = [
  "serde_derive",
  "serde_json",
  "unicode-xid",
- "wasmparser 0.248.0",
+ "wasmparser 0.249.0",
 ]
 
 [[package]]
@@ -1185,7 +1185,7 @@ dependencies = [
  "anyhow",
  "wit-bindgen",
  "wit-bindgen-rust",
- "wit-parser 0.248.0",
+ "wit-parser 0.249.0",
 ]
 
 [[package]]
@@ -1257,9 +1257,9 @@ dependencies = [
 
 [[package]]
 name = "zerofrom"
-version = "0.1.7"
+version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69faa1f2a1ea75661980b013019ed6687ed0e83d069bc1114e2cc74c6c04c4df"
+checksum = "0ec05a11813ea801ff6d75110ad09cd0824ddba17dfe17128ea0d5f68e6c5272"
 dependencies = [
  "zerofrom-derive",
 ]
