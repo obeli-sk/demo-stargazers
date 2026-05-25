@@ -1,9 +1,13 @@
 // Native JS implementation of stargazers:workflow/workflow.star-added-parallel
 // Fetches account info and LLM settings concurrently using join sets.
 
+import { accountInfoSubmit, accountInfoAwaitNext } from 'stargazers:github-obelisk-ext/account';
+import { getSettingsJsonSubmit, getSettingsJsonAwaitNext } from 'stargazers:db-obelisk-ext/llm';
+import { addStarGetDescription, updateUserDescription } from 'stargazers:db/user';
+import { respond as llmRespond } from 'stargazers:llm/llm';
+
 export default function star_added_parallel(login, repo) {
-    const existingDescription = obelisk.call(
-        'stargazers:db/user.add-star-get-description', [login, repo]);
+    const existingDescription = addStarGetDescription(login, repo);
 
     if (existingDescription !== null && existingDescription !== undefined) {
         console.log(`Description already exists for ${login} on ${repo}.`);
@@ -14,27 +18,22 @@ export default function star_added_parallel(login, repo) {
 
     // Submit account-info and get-settings-json concurrently.
     const jsInfo = obelisk.createJoinSet({ name: `info_${login}` });
-    const infoExecId = jsInfo.submit('stargazers:github/account.account-info', [login]);
+    accountInfoSubmit(jsInfo, login);
 
     const jsSettings = obelisk.createJoinSet({ name: `settings_${login}` });
-    const settingsExecId = jsSettings.submit('stargazers:db/llm.get-settings-json', []);
+    getSettingsJsonSubmit(jsSettings);
 
     // Await account info.
-    jsInfo.joinNext();
-    const infoResult = obelisk.getResult(infoExecId);
-    if (infoResult.err !== undefined) throw infoResult.err;
+    const infoResult = accountInfoAwaitNext(jsInfo);
 
     // Await settings.
-    jsSettings.joinNext();
-    const settingsResult = obelisk.getResult(settingsExecId);
-    if (settingsResult.err !== undefined) throw settingsResult.err;
+    const settingsResult = getSettingsJsonAwaitNext(jsSettings);
 
     console.log(`Got info and settings for ${login}, generating description...`);
 
     // Generate and persist the description sequentially.
-    const description = obelisk.call('stargazers:llm/llm.respond',
-        [infoResult.ok, settingsResult.ok]);
-    obelisk.call('stargazers:db/user.update-user-description', [login, description]);
+    const description = llmRespond(infoResult, settingsResult);
+    updateUserDescription(login, description);
 
     console.log(`Generated and saved description in parallel for ${login}`);
 }

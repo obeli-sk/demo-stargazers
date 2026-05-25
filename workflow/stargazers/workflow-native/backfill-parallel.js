@@ -2,14 +2,16 @@
 // Pages through all stargazers and submits star-added-parallel for each login
 // concurrently within each page.
 
+import { listStargazers } from 'stargazers:github/account';
+import { starAddedParallelSubmit } from 'stargazers:workflow-obelisk-ext/workflow';
+
 export default function backfill_parallel(repo) {
     console.log(`Starting parallel backfill for ${repo}...`);
     const pageSize = 5;
     let cursor = null;
 
     while (true) {
-        const resp = obelisk.call(
-            'stargazers:github/account.list-stargazers', [repo, pageSize, cursor]);
+        const resp = listStargazers(repo, pageSize, cursor);
 
         if (!resp) {
             console.log('No more stargazers found.');
@@ -24,7 +26,7 @@ export default function backfill_parallel(repo) {
         for (const login of resp.logins) {
             console.log(`Submitting task for ${login}...`);
             const js = obelisk.createJoinSet({ name: login });
-            js.submit('stargazers:workflow/workflow.star-added-parallel', [login, repo]);
+            starAddedParallelSubmit(js, login, repo);
             joinSets.push(js);
         }
 
