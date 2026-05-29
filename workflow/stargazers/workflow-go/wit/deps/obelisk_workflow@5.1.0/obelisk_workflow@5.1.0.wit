@@ -1,4 +1,4 @@
-package obelisk:workflow@5.0.0;
+package obelisk:workflow@5.1.0;
 
 @since(version = 4.0.0)
 interface workflow-support {
@@ -61,6 +61,11 @@ interface workflow-support {
         /// Write conflict — a different result was already stubbed.
         conflict,
     }
+
+    /// Get the execution ID of the current webhook handler invocation.
+    /// Returns the ID assigned to this workflow execution.
+    @since(version = 5.1.0)
+    execution-id-current: func() -> execution-id;
 
     /// Returns a random u64 in the range [min, max).
     @since(version = 3.0.0)
@@ -163,7 +168,12 @@ interface workflow-support {
 
     /// Like `sleep` but records the call site backtrace.
     @since(version = 5.0.0)
+    @deprecated(version = 5.0.0)
     sleep-bt: func(schedule-at: schedule-at, backtrace: option<wasm-backtrace>) -> result<datetime>;
+
+    /// Like `sleep` but records the call site backtrace and optionally names the one-off join set.
+    @since(version = 5.1.0)
+    sleep-named-bt: func(schedule-at: schedule-at, name: option<string>, backtrace: option<wasm-backtrace>) -> result<datetime>;
 
     /// Like `join-set-create` but records the call site backtrace.
     @since(version = 5.0.0)
