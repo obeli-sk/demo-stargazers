@@ -4,6 +4,9 @@
 // Set the environment variable GITHUB_WEBHOOK_SECRET to the webhook secret,
 // or set GITHUB_WEBHOOK_INSECURE=true to skip verification (development only).
 
+import { starAddedSchedule, starRemovedSchedule } from 'stargazers:workflow-obelisk-schedule/workflow';
+import { listStargazers } from 'stargazers:db/user';
+
 const HTTP_HEADER_SIGNATURE = 'X-Hub-Signature-256';
 const ENV_GITHUB_WEBHOOK_INSECURE = 'GITHUB_WEBHOOK_INSECURE';
 const ENV_GITHUB_WEBHOOK_SECRET = 'GITHUB_WEBHOOK_SECRET';
@@ -123,14 +126,10 @@ async function handlePost(request) {
     let execId;
     if (event.action === 'created') {
         console.info(`Scheduling star_added for ${senderLogin} on ${repoFullName}`);
-        execId = obelisk.executionIdGenerate();
-        obelisk.schedule(execId, 'stargazers:workflow/workflow.star-added',
-            [senderLogin, repoFullName]);
+        execId = starAddedSchedule(null, senderLogin, repoFullName);
     } else if (event.action === 'deleted') {
         console.info(`Scheduling star_removed for ${senderLogin} on ${repoFullName}`);
-        execId = obelisk.executionIdGenerate();
-        obelisk.schedule(execId, 'stargazers:workflow/workflow.star-removed',
-            [senderLogin, repoFullName]);
+        execId = starRemovedSchedule(null, senderLogin, repoFullName);
     } else {
         console.error(`Unknown action: ${event.action}`);
         return new Response(`Unknown action: ${event.action}`, { status: 400 });
@@ -179,6 +178,6 @@ function handleGet(request) {
 
     // list-stargazers: func(last: u8, repo: option<string>, ordering: ordering)
     //                  -> result<list<stargazer>, string>
-    const list = obelisk.call('stargazers:db/user.list-stargazers', [limit, repo, ordering]);
+    const list = listStargazers(limit, repo, ordering);
     return Response.json(list);
 }

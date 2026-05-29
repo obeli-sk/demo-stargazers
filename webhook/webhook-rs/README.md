@@ -83,7 +83,7 @@ the user, repo, their relation, and the user should have a generated description
 
 To obtain a list of 5 last updated stargazers, run
 ```sh
-curl -v http://127.0.0.1:9090
+curl -v http://127.0.0.1:9090?repo=obeli-sk/obelisk
 ```
 
 For testing the hash signature see the script in the next section.

@@ -1,6 +1,9 @@
 // Native JS implementation of stargazers:workflow/workflow.backfill
 // Pages through all stargazers of a repo and calls star-added for each.
 
+import { listStargazers } from 'stargazers:github/account';
+import { starAdded } from 'stargazers:workflow/workflow';
+
 export default function backfill(repo) {
     console.log(`Starting backfill for ${repo}...`);
     const pageSize = 5;
@@ -10,8 +13,7 @@ export default function backfill(repo) {
         // list-stargazers: func(repo: string, page-size: u8, cursor: option<string>)
         //                  -> result<option<stargazers>, string>
         // Returns null (option None) when there are no more pages.
-        const resp = obelisk.call(
-            'stargazers:github/account.list-stargazers', [repo, pageSize, cursor]);
+        const resp = listStargazers(repo, pageSize, cursor);
 
         if (!resp) {
             console.log('No more stargazers found.');
@@ -23,8 +25,7 @@ export default function backfill(repo) {
 
         for (const login of resp.logins) {
             console.log(`Processing ${login}...`);
-            // star-added: func(login: string, repo: string) -> result<_, string>
-            obelisk.call('stargazers:workflow/workflow.star-added', [login, repo]);
+            starAdded(login, repo);
         }
 
         if (!gotWholePage) {
