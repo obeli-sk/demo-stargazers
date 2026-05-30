@@ -1,5 +1,5 @@
 {
-  "name": "workflow-js",
+  "name": "openai-legacy-componentizejs",
   "type": "module",
   "devDependencies": {
     "@bytecodealliance/componentize-js": "0.19.0",
@@ -9,15 +9,12 @@
     "build:esbuild": "node esbuild.config.js",
     "build:componentize": "node call-componentize.js",
     "build": "npm run build:esbuild && npm run build:componentize",
-    "test:submit": "obelisk execution submit --follow stargazers:workflow/workflow.star-added-parallel '[\"tomasol\",\"obeli-sk/obelisk\"]'"
+    "test:submit": "obelisk execution submit --follow stargazers:llm/llm.respond '[\"Tell me about Rust programming\", \"{\\\"model\\\": \\\"gpt-3.5-turbo\\\", \\\"max_tokens\\\": 50}\"]'"
+  },
+  "dependencies": {
+    "axios": "^1.9.0"
   },
   "componentMeta": {
-    "disableFeatures": [
-      "clocks",
-      "fetch-event",
-      "http",
-      "random",
-      "stdio"
-    ]
+    "disableFeatures": []
   }
 }

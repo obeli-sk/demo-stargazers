@@ -34,8 +34,8 @@ env_vars = ["TURSO_TOKEN"]
 replace_in = ["headers"]
 
 [[workflow_wasm]]
-name = "workflow_js"
-location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-js/dist/workflow-js.wasm"
+name = "workflow_legacy_componentizejs"
+location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-legacy-componentizejs/dist/workflow-legacy-componentizejs.wasm"
 
 [[webhook_endpoint_wasm]]
 name = "webhook"

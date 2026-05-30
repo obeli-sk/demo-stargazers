@@ -1,7 +1,7 @@
 # GitHub Activity
 
 Activity that queries GitHub.
-It implements the [`stargazers:github/account` WIT interface](../interface/github.wit).
+It implements the [`stargazers:github/account` WIT interface](../wit-interface/stargazers_github/github.wit).
 The `account` interface fetches basic info like repositories, contributions etc. for a given account.
 
 ## Prerequisites

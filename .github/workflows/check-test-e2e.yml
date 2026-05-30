@@ -62,9 +62,6 @@ jobs:
         run: |
           nix develop --command ./scripts/test-e2e.sh obelisk-oci.toml truncate
 
-      - name: Build JavaScript WASM components
-        run: nix develop --command ./scripts/build-components-js.sh
-
       - name: Verify obelisk-local-js-all.toml
         env:
           GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
@@ -73,6 +70,18 @@ jobs:
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
         run: |
           nix develop --command ./scripts/test-e2e.sh ./obelisk-local-js-all.toml truncate
+
+      - name: Build legacy ComponentizeJS WASM components
+        run: nix develop --command just legacy-componentizejs
+
+      - name: Verify obelisk-local-legacy-componentizejs-all.toml
+        env:
+          GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
+          TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
+          TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
+          TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
+        run: |
+          nix develop --command ./scripts/test-e2e.sh ./obelisk-local-legacy-componentizejs-all.toml truncate
 
       - name: Build Go WASM components
         run: nix develop --command ./scripts/build-components-go.sh
@@ -85,12 +94,3 @@ jobs:
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
         run: |
           nix develop --command ./scripts/test-e2e.sh ./obelisk-local-go-all.toml truncate
-
-      - name: Verify obelisk-local-native-all.toml
-        env:
-          GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
-          TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
-          TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
-          TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
-        run: |
-          nix develop --command ./scripts/test-e2e.sh obelisk-local-native-all.toml truncate

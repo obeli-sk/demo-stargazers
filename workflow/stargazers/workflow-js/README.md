@@ -1,25 +1,20 @@
-# Workflow-js
+# workflow-js
 
-Go reimplementation of the [Stargazers workflow](../worflow-rs/).
+JavaScript reimplementation of the [Stargazers workflow](../workflow-rs/).
 
-
-## Building
-```sh
-npm install
-npm run build # produces dist/workflow-js.wasm
-```
-
-## Deplying and running with Obelisk
+## Running with Obelisk
 
 ```sh
 # in repo root
-obelisk server run --config obelisk-local-js-workflow.toml
+obelisk server run --config obelisk-local-js-all.toml
 ```
 
 ## Executing `star-added-parallel` workflow
+
 ```sh
-npm run test:submit
+obelisk execution submit --follow stargazers:workflow/workflow.star-added-parallel '["tomasol","obeli-sk/obelisk"]'
 ```
 
 ## Testing
+
 See [workflow readme](../workflow-rs/README.md).

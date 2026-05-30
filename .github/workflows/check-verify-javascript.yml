@@ -44,12 +44,15 @@ jobs:
       - name: Build Rust Components
         run: nix develop --command just rust
 
-      - name: Build JavaScript Components
-        run: nix develop --command just js
-
-      - name: Verify obelisk-local-js variants
+      - name: Verify obelisk-local-js-all.toml
         run: |
-          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-js-activity.toml
-          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-js-workflow.toml
-          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-js-webhook.toml
-          # obelisk-local-js-all.toml is verified by e2e workflow
+          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-js-all.toml
+
+      - name: Build legacy ComponentizeJS Components
+        run: nix develop --command just legacy-componentizejs
+
+      - name: Verify obelisk-local-legacy-componentizejs variants
+        run: |
+          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-legacy-componentizejs-activity.toml
+          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-legacy-componentizejs-workflow.toml
+          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-legacy-componentizejs-webhook.toml

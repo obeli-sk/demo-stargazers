@@ -1,4 +1,4 @@
-// Native JS implementation of stargazers:workflow/workflow.star-added-parallel
+// JavaScript implementation of stargazers:workflow/workflow.star-added-parallel
 // Fetches account info and LLM settings concurrently using join sets.
 
 import { accountInfoSubmit, accountInfoAwaitNext } from 'stargazers:github-obelisk-ext/account';

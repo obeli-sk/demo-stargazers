@@ -1,7 +1,7 @@
 # Webhook Endpoint for GitHub
 
 This webook endpoint receives Star events of a configured repository, triggers
-`star-added` or `star-removed` [workflows](wit/deps/workflow-interface/workflow.wit).
+`star-added` or `star-removed` [workflows](wit/deps/stargazers_workflow/workflow.wit).
 
 ## Prerequisites
 
@@ -59,7 +59,7 @@ cargo test --target=x86_64-unknown-linux-gnu
 
 ## Manual end-to-end testing
 Disable the request verification using `GITHUB_WEBHOOK_INSECURE` as mentioned above.
-Start the `obelisk` server according to the root [README](../README.md).
+Start the `obelisk` server according to the root [README](../../README.md).
 Execute a request locally:
 ```sh
 export TEST_GITHUB_LOGIN="..."

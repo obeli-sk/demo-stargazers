@@ -1,6 +1,6 @@
 [[activity_wasm]]
-name = "openai_js"
-location = "${DEPLOYMENT_DIR}/activity/llm/openai-js/dist/openai-js.wasm"
+name = "openai_legacy_componentizejs"
+location = "${DEPLOYMENT_DIR}/activity/llm/openai-legacy-componentizejs/dist/openai-legacy-componentizejs.wasm"
 exec.lock_expiry.seconds = 10
 env_vars = [{key="OPENAI_API_BASE_URL", value="${OPENAI_API_BASE_URL:-https://api.openai.com}"}]
 [[activity_wasm.allowed_host]]

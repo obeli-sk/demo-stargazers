@@ -1,5 +1,5 @@
 {
-  "name": "webhook-js",
+  "name": "webhook-legacy-componentizejs",
   "type": "module",
   "scripts": {
     "build:esbuild": "node esbuild.config.js",

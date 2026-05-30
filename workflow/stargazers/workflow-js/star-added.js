@@ -1,4 +1,4 @@
-// Native JS implementation of stargazers:workflow/workflow.star-added
+// JavaScript implementation of stargazers:workflow/workflow.star-added
 
 import { accountInfo } from 'stargazers:github/account';
 import { getSettingsJson } from 'stargazers:db/llm';

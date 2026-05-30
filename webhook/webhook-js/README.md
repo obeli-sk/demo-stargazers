@@ -1,18 +1,14 @@
 # webhook-js
 
-JavaScript reimplementation of [webhook](../webhook/)
+JavaScript reimplementation of [webhook](../webhook-rs/).
 
-## Building
-```sh
-npm install
-npm run build # produces dist/webhook-js.wasm
-```
+## Running with Obelisk
 
-## Deplying and running with Obelisk
 ```sh
 # in repo root
-obelisk server run --config obelisk-local-js-webhook.toml
+obelisk server run --config obelisk-local-js-all.toml
 ```
 
 ## Testing
-See [webhook readme](../webhook/README.md).
+
+See [webhook readme](../webhook-rs/README.md).

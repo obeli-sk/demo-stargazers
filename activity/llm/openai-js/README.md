@@ -1,24 +1,17 @@
 # openai-js Activity
 
-JavaScript reimplementation of [openai](../openai/) activity.
+JavaScript reimplementation of the [openai](../openai/) activity.
 
-## Building
-```sh
-npm install
-npm run build # produces dist/openai-js.wasm
-```
+## Running with Obelisk
 
-## Deplying and running with Obelisk
 ```sh
 # in repo root
-obelisk server run --config obelisk-local-js-activity.toml
+obelisk server run --config obelisk-local-js-all.toml
 ```
 
 ## Testing
+
 ```sh
-npm run test:submit
+obelisk execution submit --follow stargazers:llm/llm.respond \
+    '["Tell me about Rust programming", "{\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 50}"]'
 ```
-
-## TODOs, quirks
-
-* TODO: Switch to `process.env[ENV_OPENAI_API_KEY]` when https://github.com/bytecodealliance/ComponentizeJS/issues/190 is resolved.
