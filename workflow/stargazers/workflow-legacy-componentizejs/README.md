@@ -13,7 +13,7 @@ npm run build # produces dist/workflow-legacy-componentizejs.wasm
 
 ```sh
 # in repo root
-obelisk server run --config obelisk-local-legacy-componentizejs-workflow.toml
+obelisk server run --config obelisk-local-legacy-componentizejs-all.toml
 ```
 
 ## Executing `star-added-parallel` workflow

@@ -11,7 +11,7 @@ npm run build # produces dist/openai-legacy-componentizejs.wasm
 ## Deplying and running with Obelisk
 ```sh
 # in repo root
-obelisk server run --config obelisk-local-legacy-componentizejs-activity.toml
+obelisk server run --config obelisk-local-legacy-componentizejs-all.toml
 ```
 
 ## Testing

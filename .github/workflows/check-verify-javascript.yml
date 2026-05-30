@@ -51,8 +51,6 @@ jobs:
       - name: Build legacy ComponentizeJS Components
         run: nix develop --command just legacy-componentizejs
 
-      - name: Verify obelisk-local-legacy-componentizejs variants
+      - name: Verify obelisk-local-legacy-componentizejs-all.toml
         run: |
-          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-legacy-componentizejs-activity.toml
-          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-legacy-componentizejs-workflow.toml
-          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-legacy-componentizejs-webhook.toml
+          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-legacy-componentizejs-all.toml
