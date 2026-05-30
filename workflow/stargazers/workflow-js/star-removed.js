@@ -1,4 +1,4 @@
-// Native JS implementation of stargazers:workflow/workflow.star-removed
+// JavaScript implementation of stargazers:workflow/workflow.star-removed
 
 import { removeStar } from 'stargazers:db/user';
 

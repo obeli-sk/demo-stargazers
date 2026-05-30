@@ -2,7 +2,7 @@
 
 Activity that sends a JSON request to `https://api.openai.com/v1/chat/completions`
 and responds with the first generated response.
-It implements the [`stargazers:llm/llm` WIT interface](../interface/llm.wit).
+It implements the [`stargazers:llm/llm` WIT interface](../wit-interface/stargazers_llm/llm.wit).
 
 ## Prerequisites
 OpenAI token is required. Navigate to [API Tokens](https://platform.openai.com/api-keys) and
@@ -18,7 +18,7 @@ The second argument of `respond` WIT function is `settings`, which is JSON encod
 The corresponding `Settings` struct in [lib.rs](src/lib.rs) provides the details on the structure,
 and the `request_should_succeed` integration test shows how to set up a model,
 send a system message and restrict the number of tokens returned by the service.
-Those settings could be encoded directly in [llm.wit](../interface/llm.wit),
+Those settings could be encoded directly in [llm.wit](../wit-interface/stargazers_llm/llm.wit),
 but were omitted for simplicity.
 
 ## Running the activity

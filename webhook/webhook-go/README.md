@@ -1,9 +1,9 @@
 # webhook-go
 
-Go reimplementation of [webhook](../webhook/).
+Go reimplementation of [webhook](../webhook-rs/).
 
 ## Setting up
-Required versions of `tinygo`, `wit-bindgen-go-cli`, `wasm-tools` can be found in [dev-deps.txt](../dev-deps.txt).
+Required versions of `tinygo`, `wit-bindgen-go-cli`, `wasm-tools` can be found in [dev-deps.txt](../../dev-deps.txt).
 See [Go tooling](https://component-model.bytecodealliance.org/language-support/go.html) for more information.
 
 ```sh
@@ -23,4 +23,4 @@ obelisk server run --config obelisk-local-go-webhook.toml
 ```
 
 ## Testing
-See [webhook readme](../webhook/README.md).
+See [webhook readme](../webhook-rs/README.md).

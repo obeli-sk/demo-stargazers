@@ -24,7 +24,7 @@ fn star_added(login: String, repo: String) -> Result<(), String> {
 ```
 
 Here is the complete [workflow source](./workflow/stargazers/workflow-rs/src/lib.rs) and the
-[WIT file](./workflow/stargazers/wit/stargazers_workflow/workflow.wit) describing the interface.
+[WIT file](./workflow/stargazers/wit-interface/stargazers_workflow/workflow.wit) describing the interface.
 
 [![Watch the Demo Video](assets/images/screencast.gif)](https://obeli.sk/screencast.webm)
 
@@ -55,18 +55,18 @@ Generates description based on user's repositories and organizations.
 
 Follow the prerequisites section of the [activity-llm-openai README](./activity/llm/openai/README.md).
 
-Reimplementation in [JavaScript](./activity/llm/openai-js/) and [Go](./activity/llm/openai-go/) is available for comparison.
+Reimplementations in [JavaScript](./activity/llm/openai-js/), [legacy ComponentizeJS](./activity/llm/openai-legacy-componentizejs/), and [Go](./activity/llm/openai-go/) are available for comparison.
 
 #### GitHub webhook endpoint
 The webhook collects events sent by GitHub when a user stars one of the configured repositories, then triggers the workflow execution.
 
 Follow the prerequisites section of the [webhook README](./webhook/webhook-rs/README.md).
-Reimplementation in [JavaScript](./webhook/webhook-js/) and [Go](./webhook/webhook-go/) is available for comparison.
+Reimplementations in [JavaScript](./webhook/webhook-js/), [legacy ComponentizeJS](./webhook/webhook-legacy-componentizejs/), and [Go](./webhook/webhook-go/) are available for comparison.
 
 #### Workflow
 [Workflow](./workflow/stargazers/workflow-rs/) orchestrates all the activities, is triggered by the webhook.
 
-Reimplementation in [JavaScript](./workflow/stargazers/workflow-js/) and [Go](./workflow/stargazers/workflow-go/) is available for comparison.
+Reimplementations in [JavaScript](./workflow/stargazers/workflow-js/), [legacy ComponentizeJS](./workflow/stargazers/workflow-legacy-componentizejs/), and [Go](./workflow/stargazers/workflow-go/) are available for comparison.
 
 ### Running
 
@@ -100,7 +100,7 @@ Server is ready
 
 The workflow can be started using the Web UI.
 The webhook endpoint can be triggered using `curl` or by seting up the webhook
-in a GitHub repo. See the [webhook documentation](webhook/README.md) for details
+in a GitHub repo. See the [webhook documentation](webhook/webhook-rs/README.md) for details
 on how to set up GitHub and a https tunnel to the local instance.
 
 ### Building the WASM components locally
@@ -111,9 +111,14 @@ just rust
 obelisk server run --deployment ./obelisk-local.toml
 ```
 
-To build JavaScript components use
+JavaScript components are loaded directly by Obelisk and do not need a build step:
 ```sh
 just js
+```
+
+To build legacy ComponentizeJS components use
+```sh
+just legacy-componentizejs
 ```
 
 To build Go components use

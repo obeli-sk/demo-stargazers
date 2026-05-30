@@ -1,6 +1,6 @@
 [[activity_wasm]]
-name = "openai_js"
-location = "${DEPLOYMENT_DIR}/activity/llm/openai-js/dist/openai-js.wasm"
+name = "openai_legacy_componentizejs"
+location = "${DEPLOYMENT_DIR}/activity/llm/openai-legacy-componentizejs/dist/openai-legacy-componentizejs.wasm"
 exec.lock_expiry.seconds = 10
 env_vars = [{key="OPENAI_API_BASE_URL", value="${OPENAI_API_BASE_URL:-https://api.openai.com}"}]
 [[activity_wasm.allowed_host]]
@@ -34,16 +34,14 @@ env_vars = ["TURSO_TOKEN"]
 replace_in = ["headers"]
 
 [[workflow_wasm]]
-name = "workflow"
-location = "${DEPLOYMENT_DIR}/target/wasm32-unknown-unknown/release/workflow.wasm"
-backtrace.sources = { ".../src/lib.rs" = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-rs/src/lib.rs" }
+name = "workflow_legacy_componentizejs"
+location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-legacy-componentizejs/dist/workflow-legacy-componentizejs.wasm"
 
 [[webhook_endpoint_wasm]]
 name = "webhook"
-location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/webhook.wasm"
+location = "${DEPLOYMENT_DIR}/webhook/webhook-legacy-componentizejs/dist/webhook-legacy-componentizejs.wasm"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 env_vars = [
     "GITHUB_WEBHOOK_SECRET",
     # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
 ]
-backtrace.sources = { ".../src/lib.rs" = "${DEPLOYMENT_DIR}/webhook/webhook-rs/src/lib.rs" }

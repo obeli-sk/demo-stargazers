@@ -1,4 +1,4 @@
-// Native JS implementation of the stargazers webhook endpoint.
+// JavaScript implementation of the stargazers webhook endpoint.
 //
 // GitHub webhook signature verification uses crypto.subtle (HMAC-SHA256).
 // Set the environment variable GITHUB_WEBHOOK_SECRET to the webhook secret,

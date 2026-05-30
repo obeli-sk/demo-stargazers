@@ -1,4 +1,4 @@
-// Native JS implementation of stargazers:workflow/workflow.backfill
+// JavaScript implementation of stargazers:workflow/workflow.backfill
 // Pages through all stargazers of a repo and calls star-added for each.
 
 import { listStargazers } from 'stargazers:github/account';

@@ -1,4 +1,4 @@
-// Native JS implementation of stargazers:llm/llm.respond
+// JavaScript implementation of stargazers:llm/llm.respond
 export default async function respond(userPrompt, settingsString) {
     const apiKey = getEnv('OPENAI_API_KEY');
     const baseUrl = getEnv('OPENAI_API_BASE_URL');

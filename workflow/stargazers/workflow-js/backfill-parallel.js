@@ -1,4 +1,4 @@
-// Native JS implementation of stargazers:workflow/workflow.backfill-parallel
+// JavaScript implementation of stargazers:workflow/workflow.backfill-parallel
 // Pages through all stargazers and submits star-added-parallel for each login
 // concurrently within each page.
 

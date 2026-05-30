@@ -1,5 +1,5 @@
 # Turso Activity
-Implements the [`stargazers:db/user` and `stargazers:db/llm` WIT interface](../interface/db.wit) using [Turso](https://turso.tech/).
+Implements the [`stargazers:db/user` and `stargazers:db/llm` WIT interface](../wit-interface/stargazers_db/db.wit) using [Turso](https://turso.tech/).
 
 ## Prerequisites
 Database domain and token with read and write permission is required.
@@ -50,7 +50,7 @@ generate_json $DDL | curl -X POST "https://${TURSO_LOCATION}/v2/pipeline" \
 
 ### Inserting initial data
 
-Configure the LLM system prompt, which will be read by the `get-settings-json` [WIT function](./wit/deps/db-interface/db.wit):
+Configure the LLM system prompt, which will be read by the `get-settings-json` [WIT function](./wit/deps/stargazers_db/db.wit):
 ```sh
 SETTINGS_JSON='{
     "messages": [
