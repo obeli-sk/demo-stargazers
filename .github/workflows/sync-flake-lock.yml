@@ -26,7 +26,7 @@ jobs:
           CHANNEL=$(curl -fsSL "$UPSTREAM" | grep '^channel =')
           sed -i "s/^channel =.*/$CHANNEL/" rust-toolchain.toml
 
-      - uses: nixbuild/nix-quick-install-action@v34
+      - uses: nixbuild/nix-quick-install-action@v35
         with:
           github_access_token: ${{ secrets.GITHUB_TOKEN }}
           nix_conf: |
