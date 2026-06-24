@@ -36,7 +36,7 @@ replace_in = ["headers"]
 [[workflow_wasm]]
 name = "workflow"
 location = "oci://docker.io/getobelisk/demo_stargazers_workflow:2026-04-08@sha256:78caee35dab856009460b012e69e3407edf9f50b4031909cb003f223f9039d8f"
-backtrace.sources = { "/home/runner/work/demo-stargazers/demo-stargazers/workflow/stargazers/workflow-rs/src/lib.rs" = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-rs/src/lib.rs" }
+backtrace.sources = { ".../src/lib.rs" = "workflow/stargazers/workflow-rs/src/lib.rs" }
 
 [[webhook_endpoint_wasm]]
 name = "webhook"
@@ -46,5 +46,4 @@ env_vars = [
     "GITHUB_WEBHOOK_SECRET",
     # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
 ]
-backtrace.sources = { "/home/runner/work/demo-stargazers/demo-stargazers/webhook/webhook-rs/src/lib.rs" = "${DEPLOYMENT_DIR}/webhook/webhook-rs/src/lib.rs" }
-
+backtrace.sources = { ".../src/lib.rs" = "webhook/webhook-rs/src/lib.rs" }

@@ -1,6 +1,6 @@
 [[activity_wasm]]
 name = "activity_llm_openai_go"
-location = "${DEPLOYMENT_DIR}/activity/llm/openai-go/dist/openai-go.wasm"
+location = "activity/llm/openai-go/dist/openai-go.wasm"
 exec.lock_expiry.seconds = 10
 env_vars = [{key="OPENAI_API_BASE_URL", value="${OPENAI_API_BASE_URL:-https://api.openai.com}"}]
 [[activity_wasm.allowed_host]]
@@ -12,7 +12,7 @@ replace_in = ["headers"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
-location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/activity_github_impl.wasm"
+location = "target/wasm32-wasip2/release/activity_github_impl.wasm"
 exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
 pattern = "https://api.github.com"
@@ -23,7 +23,7 @@ replace_in = ["headers"]
 
 [[activity_wasm]]
 name = "activity_db_turso"
-location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/activity_db_turso.wasm"
+location = "target/wasm32-wasip2/release/activity_db_turso.wasm"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
@@ -35,15 +35,15 @@ replace_in = ["headers"]
 
 [[workflow_wasm]]
 name = "workflow"
-location = "${DEPLOYMENT_DIR}/target/wasm32-unknown-unknown/release/workflow.wasm"
-backtrace.sources = { ".../src/lib.rs" = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-rs/src/lib.rs" }
+location = "target/wasm32-unknown-unknown/release/workflow.wasm"
+backtrace.sources = { ".../src/lib.rs" = "workflow/stargazers/workflow-rs/src/lib.rs" }
 
 [[webhook_endpoint_wasm]]
 name = "webhook"
-location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/webhook.wasm"
+location = "target/wasm32-wasip2/release/webhook.wasm"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 env_vars = [
     "GITHUB_WEBHOOK_SECRET",
     # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
 ]
-backtrace.sources = { ".../src/lib.rs" = "${DEPLOYMENT_DIR}/webhook/webhook-rs/src/lib.rs" }
+backtrace.sources = { ".../src/lib.rs" = "webhook/webhook-rs/src/lib.rs" }
