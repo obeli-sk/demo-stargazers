@@ -1,6 +1,6 @@
 [[activity_js]]
 name = "openai_js"
-location = "${DEPLOYMENT_DIR}/activity/llm/openai-js/openai.js"
+location = "activity/llm/openai-js/openai.js"
 ffqn = "stargazers:llm/llm.respond"
 params = [
   { name = "user-prompt", type = "string" },
@@ -18,7 +18,7 @@ replace_in = ["headers"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
-location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/activity_github_impl.wasm"
+location = "target/wasm32-wasip2/release/activity_github_impl.wasm"
 exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
 pattern = "https://api.github.com"
@@ -29,7 +29,7 @@ replace_in = ["headers"]
 
 [[activity_wasm]]
 name = "activity_db_turso"
-location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/activity_db_turso.wasm"
+location = "target/wasm32-wasip2/release/activity_db_turso.wasm"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
@@ -42,7 +42,7 @@ replace_in = ["headers"]
 
 [[workflow_js]]
 name = "workflow_js_star_added"
-location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-js/star-added.js"
+location = "workflow/stargazers/workflow-js/star-added.js"
 ffqn = "stargazers:workflow/workflow.star-added"
 params = [
   { name = "login", type = "string" },
@@ -52,7 +52,7 @@ return_type = "result<_, string>"
 
 [[workflow_js]]
 name = "workflow_js_star_added_parallel"
-location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-js/star-added-parallel.js"
+location = "workflow/stargazers/workflow-js/star-added-parallel.js"
 ffqn = "stargazers:workflow/workflow.star-added-parallel"
 params = [
   { name = "login", type = "string" },
@@ -62,7 +62,7 @@ return_type = "result<_, string>"
 
 [[workflow_js]]
 name = "workflow_js_star_removed"
-location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-js/star-removed.js"
+location = "workflow/stargazers/workflow-js/star-removed.js"
 ffqn = "stargazers:workflow/workflow.star-removed"
 params = [
   { name = "login", type = "string" },
@@ -72,7 +72,7 @@ return_type = "result<_, string>"
 
 [[workflow_js]]
 name = "workflow_js_backfill"
-location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-js/backfill.js"
+location = "workflow/stargazers/workflow-js/backfill.js"
 ffqn = "stargazers:workflow/workflow.backfill"
 params = [
   { name = "repo", type = "string" },
@@ -81,7 +81,7 @@ return_type = "result<_, string>"
 
 [[workflow_js]]
 name = "workflow_js_backfill_parallel"
-location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-js/backfill-parallel.js"
+location = "workflow/stargazers/workflow-js/backfill-parallel.js"
 ffqn = "stargazers:workflow/workflow.backfill-parallel"
 params = [
   { name = "repo", type = "string" },
@@ -92,7 +92,7 @@ return_type = "result<_, string>"
 # For development without a secret, set GITHUB_WEBHOOK_INSECURE=true instead.
 [[webhook_endpoint_js]]
 name = "webhook_js"
-location = "${DEPLOYMENT_DIR}/webhook/webhook-js/webhook.js"
+location = "webhook/webhook-js/webhook.js"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 env_vars = [
     "GITHUB_WEBHOOK_SECRET",

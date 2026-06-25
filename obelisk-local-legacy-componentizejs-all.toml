@@ -1,6 +1,6 @@
 [[activity_wasm]]
 name = "openai_legacy_componentizejs"
-location = "${DEPLOYMENT_DIR}/activity/llm/openai-legacy-componentizejs/dist/openai-legacy-componentizejs.wasm"
+location = "activity/llm/openai-legacy-componentizejs/dist/openai-legacy-componentizejs.wasm"
 exec.lock_expiry.seconds = 10
 env_vars = [{key="OPENAI_API_BASE_URL", value="${OPENAI_API_BASE_URL:-https://api.openai.com}"}]
 [[activity_wasm.allowed_host]]
@@ -12,7 +12,7 @@ replace_in = ["headers"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
-location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/activity_github_impl.wasm"
+location = "target/wasm32-wasip2/release/activity_github_impl.wasm"
 exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
 pattern = "https://api.github.com"
@@ -23,7 +23,7 @@ replace_in = ["headers"]
 
 [[activity_wasm]]
 name = "activity_db_turso"
-location = "${DEPLOYMENT_DIR}/target/wasm32-wasip2/release/activity_db_turso.wasm"
+location = "target/wasm32-wasip2/release/activity_db_turso.wasm"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
@@ -35,11 +35,11 @@ replace_in = ["headers"]
 
 [[workflow_wasm]]
 name = "workflow_legacy_componentizejs"
-location = "${DEPLOYMENT_DIR}/workflow/stargazers/workflow-legacy-componentizejs/dist/workflow-legacy-componentizejs.wasm"
+location = "workflow/stargazers/workflow-legacy-componentizejs/dist/workflow-legacy-componentizejs.wasm"
 
 [[webhook_endpoint_wasm]]
 name = "webhook"
-location = "${DEPLOYMENT_DIR}/webhook/webhook-legacy-componentizejs/dist/webhook-legacy-componentizejs.wasm"
+location = "webhook/webhook-legacy-componentizejs/dist/webhook-legacy-componentizejs.wasm"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 env_vars = [
     "GITHUB_WEBHOOK_SECRET",
