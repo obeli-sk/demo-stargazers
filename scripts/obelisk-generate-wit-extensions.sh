@@ -12,7 +12,7 @@ generate() {
   if [ ! -d "$path" ]; then
     return 0
   fi
-  find "$path" -maxdepth 1 -type d -name "wit-interface" | while read -r dir; do
+  find "$path" -maxdepth 2 -type d -name "wit-interface" | while read -r dir; do
     echo "Updating $dir"
     (
       cd "$dir"

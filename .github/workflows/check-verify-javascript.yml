@@ -46,11 +46,11 @@ jobs:
 
       - name: Verify obelisk-local-js-all.toml
         run: |
-          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-js-all.toml
+          nix develop --command obelisk server verify --allow-unavailable-runtime-config --deployment obelisk-local-js-all.toml
 
       - name: Build legacy ComponentizeJS Components
         run: nix develop --command just legacy-componentizejs
 
       - name: Verify obelisk-local-legacy-componentizejs-all.toml
         run: |
-          nix develop --command obelisk server verify --ignore-missing-env-vars --deployment obelisk-local-legacy-componentizejs-all.toml
+          nix develop --command obelisk server verify --allow-unavailable-runtime-config --deployment obelisk-local-legacy-componentizejs-all.toml

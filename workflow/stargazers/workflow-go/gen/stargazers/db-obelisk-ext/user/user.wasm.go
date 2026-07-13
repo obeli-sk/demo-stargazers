@@ -14,7 +14,7 @@ func wasmimport_AddStarGetDescriptionSubmit(joinSet0 uint32, login0 *uint8, logi
 
 //go:wasmimport stargazers:db-obelisk-ext/user add-star-get-description-await-next
 //go:noescape
-func wasmimport_AddStarGetDescriptionAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[OptionStringShape, cm.Option[string], string]], AwaitNextExtensionError])
+func wasmimport_AddStarGetDescriptionAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Result[OptionStringShape, cm.Option[string], string], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:db-obelisk-ext/user add-star-get-description-get
 //go:noescape
@@ -26,7 +26,7 @@ func wasmimport_RemoveStarSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, 
 
 //go:wasmimport stargazers:db-obelisk-ext/user remove-star-await-next
 //go:noescape
-func wasmimport_RemoveStarAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError])
+func wasmimport_RemoveStarAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:db-obelisk-ext/user remove-star-get
 //go:noescape
@@ -38,7 +38,7 @@ func wasmimport_UpdateUserDescriptionSubmit(joinSet0 uint32, username0 *uint8, u
 
 //go:wasmimport stargazers:db-obelisk-ext/user update-user-description-await-next
 //go:noescape
-func wasmimport_UpdateUserDescriptionAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError])
+func wasmimport_UpdateUserDescriptionAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:db-obelisk-ext/user update-user-description-get
 //go:noescape
@@ -50,7 +50,7 @@ func wasmimport_ListStargazersSubmit(joinSet0 uint32, last0 uint32, repo0 uint32
 
 //go:wasmimport stargazers:db-obelisk-ext/user list-stargazers-await-next
 //go:noescape
-func wasmimport_ListStargazersAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[cm.List[Stargazer], cm.List[Stargazer], string]], AwaitNextExtensionError])
+func wasmimport_ListStargazersAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Result[cm.List[Stargazer], cm.List[Stargazer], string], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:db-obelisk-ext/user list-stargazers-get
 //go:noescape

@@ -56,11 +56,11 @@ func AddStarGetDescriptionSubmit(joinSet JoinSet, login string, repo string) (re
 
 // AddStarGetDescriptionAwaitNext represents the imported function "add-star-get-description-await-next".
 //
-//	add-star-get-description-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
-//	result<option<string>, string>>, await-next-extension-error>
+//	add-star-get-description-await-next: func(join-set: borrow<join-set>) -> result<result<option<string>,
+//	string>, await-next-extension-error>
 //
 //go:nosplit
-func AddStarGetDescriptionAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[OptionStringShape, cm.Option[string], string]], AwaitNextExtensionError]) {
+func AddStarGetDescriptionAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Result[OptionStringShape, cm.Option[string], string], AwaitNextExtensionError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_AddStarGetDescriptionAwaitNext((uint32)(joinSet0), &result)
 	return
@@ -94,11 +94,11 @@ func RemoveStarSubmit(joinSet JoinSet, login string, repo string) (result Execut
 
 // RemoveStarAwaitNext represents the imported function "remove-star-await-next".
 //
-//	remove-star-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
-//	result<_, string>>, await-next-extension-error>
+//	remove-star-await-next: func(join-set: borrow<join-set>) -> result<result<_, string>,
+//	await-next-extension-error>
 //
 //go:nosplit
-func RemoveStarAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+func RemoveStarAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_RemoveStarAwaitNext((uint32)(joinSet0), &result)
 	return
@@ -132,11 +132,11 @@ func UpdateUserDescriptionSubmit(joinSet JoinSet, username string, description s
 
 // UpdateUserDescriptionAwaitNext represents the imported function "update-user-description-await-next".
 //
-//	update-user-description-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
-//	result<_, string>>, await-next-extension-error>
+//	update-user-description-await-next: func(join-set: borrow<join-set>) -> result<result<_,
+//	string>, await-next-extension-error>
 //
 //go:nosplit
-func UpdateUserDescriptionAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+func UpdateUserDescriptionAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_UpdateUserDescriptionAwaitNext((uint32)(joinSet0), &result)
 	return
@@ -171,11 +171,11 @@ func ListStargazersSubmit(joinSet JoinSet, last uint8, repo cm.Option[string], o
 
 // ListStargazersAwaitNext represents the imported function "list-stargazers-await-next".
 //
-//	list-stargazers-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
-//	result<list<stargazer>, string>>, await-next-extension-error>
+//	list-stargazers-await-next: func(join-set: borrow<join-set>) -> result<result<list<stargazer>,
+//	string>, await-next-extension-error>
 //
 //go:nosplit
-func ListStargazersAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[cm.List[Stargazer], cm.List[Stargazer], string]], AwaitNextExtensionError]) {
+func ListStargazersAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Result[cm.List[Stargazer], cm.List[Stargazer], string], AwaitNextExtensionError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_ListStargazersAwaitNext((uint32)(joinSet0), &result)
 	return

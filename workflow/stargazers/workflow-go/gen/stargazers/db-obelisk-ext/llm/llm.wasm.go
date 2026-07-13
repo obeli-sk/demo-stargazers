@@ -14,7 +14,7 @@ func wasmimport_GetSettingsJSONSubmit(joinSet0 uint32, result *ExecutionID)
 
 //go:wasmimport stargazers:db-obelisk-ext/llm get-settings-json-await-next
 //go:noescape
-func wasmimport_GetSettingsJSONAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError])
+func wasmimport_GetSettingsJSONAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, string, string], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:db-obelisk-ext/llm get-settings-json-get
 //go:noescape

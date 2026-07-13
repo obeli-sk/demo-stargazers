@@ -86,28 +86,26 @@ func (c *Component) StarAddedParallel(login string, repo string) cm.Result[strin
 		// Imported WIT: stargazers:db-obelisk-ext/llm.get-settings-json-submit: func(join-set-id: borrow<join-set-id>) -> execution-id
 		_ = stargazersDbObeliskExtLlm.GetSettingsJSONSubmit(joinSetSettings)
 
-		// Imported WIT: stargazers:github-obelisk-ext/account.account-info-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<string, string>>, tuple<execution-id, execution-error>>
+		// Imported WIT: stargazers:github-obelisk-ext/account.account-info-await-next: func(join-set: borrow<join-set>) -> result<result<string, string>, await-next-extension-error>
 		awaitInfoWrapped := stargazersGithubObeliskExtAccount.AccountInfoAwaitNext(joinSetInfo)
 		if awaitInfoWrapped.IsErr() {
 			errPtr := awaitInfoWrapped.Err()
 			return cm.Err[cm.Result[string, struct{}, string]](errPtr.String())
 		}
-		infoTuplePtr := awaitInfoWrapped.OK() // Tuple of (execution-id, function result)
-		innerInfoResult := infoTuplePtr.F1    // This is cm.Result[string, string]
+		innerInfoResult := awaitInfoWrapped.OK()
 
 		if innerInfoResult.IsErr() {
 			return cm.Err[cm.Result[string, struct{}, string]](*innerInfoResult.Err())
 		}
 		info := *innerInfoResult.OK()
 
-		// Imported WIT: stargazers:db-obelisk-ext/llm.get-settings-json-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<string, string>>, tuple<execution-id, execution-error>>
+		// Imported WIT: stargazers:db-obelisk-ext/llm.get-settings-json-await-next: func(join-set: borrow<join-set>) -> result<result<string, string>, await-next-extension-error>
 		awaitSettingsWrapped := stargazersDbObeliskExtLlm.GetSettingsJSONAwaitNext(joinSetSettings)
 		if awaitSettingsWrapped.IsErr() {
 			errPtr := awaitSettingsWrapped.Err()
 			return cm.Err[cm.Result[string, struct{}, string]](errPtr.String())
 		}
-		settingsTuplePtr := awaitSettingsWrapped.OK() // Tuple of (execution-id, function result)
-		innerSettingsResult := settingsTuplePtr.F1    // This is cm.Result[string, string]
+		innerSettingsResult := awaitSettingsWrapped.OK()
 
 		if innerSettingsResult.IsErr() {
 			return cm.Err[cm.Result[string, struct{}, string]](*innerSettingsResult.Err())

@@ -3,7 +3,6 @@
 package workflowsupport
 
 import (
-	"github.com/obeli-sk/demo-stargazers/workflow-go/gen/obelisk/types/backtrace"
 	"github.com/obeli-sk/demo-stargazers/workflow-go/gen/obelisk/types/execution"
 	"github.com/obeli-sk/demo-stargazers/workflow-go/gen/obelisk/types/time"
 	"go.bytecodealliance.org/cm"
@@ -53,6 +52,17 @@ func lower_ScheduleAt(v time.ScheduleAt) (f0 uint32, f1 uint64, f2 uint64) {
 	return
 }
 
+func lower_OptionString(v cm.Option[string]) (f0 uint32, f1 *uint8, f2 uint32) {
+	some := v.Some()
+	if some != nil {
+		f0 = 1
+		v1, v2 := cm.LowerString(*some)
+		f1 = (*uint8)(v1)
+		f2 = (uint32)(v2)
+	}
+	return
+}
+
 // JoinSetCreateErrorShape is used for storage in variant or result types.
 type JoinSetCreateErrorShape struct {
 	_     cm.HostLayout
@@ -71,34 +81,6 @@ func lower_Function(v execution.Function) (f0 *uint8, f1 uint32, f2 *uint8, f3 u
 	return
 }
 
-func lower_OptionDuration(v cm.Option[execution.Duration]) (f0 uint32, f1 uint32, f2 uint64) {
-	some := v.Some()
-	if some != nil {
-		f0 = 1
-		v1, v2 := lower_Duration(*some)
-		f1 = (uint32)(v1)
-		f2 = (uint64)(v2)
-	}
-	return
-}
-
-func lower_SubmitConfig(v execution.SubmitConfig) (f0 uint32, f1 uint32, f2 uint64) {
-	f0, f1, f2 = lower_OptionDuration(v.Timeout)
-	return
-}
-
-func lower_OptionSubmitConfig(v cm.Option[SubmitConfig]) (f0 uint32, f1 uint32, f2 uint32, f3 uint64) {
-	some := v.Some()
-	if some != nil {
-		f0 = 1
-		v1, v2, v3 := lower_SubmitConfig(*some)
-		f1 = (uint32)(v1)
-		f2 = (uint32)(v2)
-		f3 = (uint64)(v3)
-	}
-	return
-}
-
 // ResultOptionStringOptionStringShape is used for storage in variant or result types.
 type ResultOptionStringOptionStringShape struct {
 	_     cm.HostLayout
@@ -110,24 +92,8 @@ func lower_ExecutionID(v execution.ExecutionID) (f0 *uint8, f1 uint32) {
 	return
 }
 
-// TupleResponseIDResultShape is used for storage in variant or result types.
-type TupleResponseIDResultShape struct {
+// GetResultJSONErrorShape is used for storage in variant or result types.
+type GetResultJSONErrorShape struct {
 	_     cm.HostLayout
-	shape [unsafe.Sizeof(cm.Tuple[ResponseID, cm.BoolResult]{})]byte
-}
-
-func lower_WasmBacktrace(v backtrace.WasmBacktrace) (f0 *backtrace.FrameInfo, f1 uint32) {
-	f0, f1 = cm.LowerList(v.Frames)
-	return
-}
-
-func lower_OptionWasmBacktrace(v cm.Option[WasmBacktrace]) (f0 uint32, f1 *backtrace.FrameInfo, f2 uint32) {
-	some := v.Some()
-	if some != nil {
-		f0 = 1
-		v1, v2 := lower_WasmBacktrace(*some)
-		f1 = (*backtrace.FrameInfo)(v1)
-		f2 = (uint32)(v2)
-	}
-	return
+	shape [unsafe.Sizeof(GetResultJSONError{})]byte
 }
