@@ -34,10 +34,55 @@
         "type": "github"
       }
     },
+    "nixpkgs-tinygo": {
+      "locked": {
+        "lastModified": 1773821835,
+        "narHash": "sha256-TJ3lSQtW0E2JrznGVm8hOQGVpXjJyXY2guAxku2O9A4=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b40629efe5d6ec48dd1efba650c797ddbd39ace0",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "b40629efe5d6ec48dd1efba650c797ddbd39ace0",
+        "type": "github"
+      }
+    },
+    "obelisk": {
+      "inputs": {
+        "flake-utils": [
+          "flake-utils"
+        ],
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "rust-overlay": [
+          "rust-overlay"
+        ]
+      },
+      "locked": {
+        "lastModified": 1783945637,
+        "narHash": "sha256-/c+InnxuqmTAp63z/yeoqrkcfE1eTV5HJbqafE6UlT8=",
+        "owner": "obeli-sk",
+        "repo": "obelisk",
+        "rev": "251783196981953d60ded47e4a2434e55e817acf",
+        "type": "github"
+      },
+      "original": {
+        "owner": "obeli-sk",
+        "ref": "latest",
+        "repo": "obelisk",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-tinygo": "nixpkgs-tinygo",
+        "obelisk": "obelisk",
         "rust-overlay": "rust-overlay"
       }
     },
