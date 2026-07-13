@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 # Pushes all WASM components to the Docker Hub and updates obelisk-oci.toml
+# Usage: push-components.sh <tag>
+# Example: push-components.sh "$(date +%Y-%m-%d)"
 
 set -exuo pipefail
 cd "$(dirname "$0")/.."
