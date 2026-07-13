@@ -8,7 +8,7 @@ import { getSettingsJsonSubmit, getSettingsJsonAwaitNext } from 'stargazers:db-o
 import { addStarGetDescription, updateUserDescription, removeStar } from 'stargazers:db/user';
 import { respond as llmRespond } from 'stargazers:llm/llm';
 // Obelisk host utilities for workflows
-import { joinSetCreateNamed, joinSetClose } from 'obelisk:workflow/workflow-support@5.1.0';
+import { joinSetCreateNamed, joinSetClose } from 'obelisk:workflow/workflow-support@6.0.0';
 import { debug as log_debug, info as log_info, error as log_error } from 'obelisk:log/log@1.0.0'
 
 console.log = function (...args) {
@@ -108,13 +108,13 @@ export const workflow = {
         // WIT: get-settings-json-submit: func(join-set-id: borrow<join-set-id>) -> execution-id
         getSettingsJsonSubmit(joinSetSettings);
 
-        // WIT: account-info-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<string, string>>, tuple<execution-id, execution-error>>
-        let [_execId, info] = accountInfoAwaitNext(joinSetInfo);
+        // WIT: account-info-await-next: func(join-set: borrow<join-set>) -> result<result<string, string>, await-next-extension-error>
+        let info = accountInfoAwaitNext(joinSetInfo);
         console.debug("Got info", JSON.stringify(info));
         info = unwrap(info);
 
-        // WIT: get-settings-json-await-next: func(join-set-id: borrow<join-set-id>) -> result<tuple<execution-id, result<string, string>>, tuple<execution-id, execution-error>>
-        let [_execId2, settingsJson] = getSettingsJsonAwaitNext(joinSetSettings);
+        // WIT: get-settings-json-await-next: func(join-set: borrow<join-set>) -> result<result<string, string>, await-next-extension-error>
+        let settingsJson = getSettingsJsonAwaitNext(joinSetSettings);
         console.debug("Got settingsJson", JSON.stringify(settingsJson));
         settingsJson = unwrap(settingsJson);
 

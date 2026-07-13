@@ -45,11 +45,11 @@ func StarAddedSubmit(joinSet JoinSet, login string, repo string) (result Executi
 
 // StarAddedAwaitNext represents the imported function "star-added-await-next".
 //
-//	star-added-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
-//	result<_, string>>, await-next-extension-error>
+//	star-added-await-next: func(join-set: borrow<join-set>) -> result<result<_, string>,
+//	await-next-extension-error>
 //
 //go:nosplit
-func StarAddedAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+func StarAddedAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_StarAddedAwaitNext((uint32)(joinSet0), &result)
 	return
@@ -82,11 +82,11 @@ func StarAddedParallelSubmit(joinSet JoinSet, login string, repo string) (result
 
 // StarAddedParallelAwaitNext represents the imported function "star-added-parallel-await-next".
 //
-//	star-added-parallel-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
-//	result<_, string>>, await-next-extension-error>
+//	star-added-parallel-await-next: func(join-set: borrow<join-set>) -> result<result<_,
+//	string>, await-next-extension-error>
 //
 //go:nosplit
-func StarAddedParallelAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+func StarAddedParallelAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_StarAddedParallelAwaitNext((uint32)(joinSet0), &result)
 	return
@@ -120,11 +120,11 @@ func StarRemovedSubmit(joinSet JoinSet, login string, repo string) (result Execu
 
 // StarRemovedAwaitNext represents the imported function "star-removed-await-next".
 //
-//	star-removed-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
-//	result<_, string>>, await-next-extension-error>
+//	star-removed-await-next: func(join-set: borrow<join-set>) -> result<result<_, string>,
+//	await-next-extension-error>
 //
 //go:nosplit
-func StarRemovedAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+func StarRemovedAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_StarRemovedAwaitNext((uint32)(joinSet0), &result)
 	return
@@ -156,11 +156,11 @@ func BackfillSubmit(joinSet JoinSet, repo string) (result ExecutionID) {
 
 // BackfillAwaitNext represents the imported function "backfill-await-next".
 //
-//	backfill-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
-//	result<_, string>>, await-next-extension-error>
+//	backfill-await-next: func(join-set: borrow<join-set>) -> result<result<_, string>,
+//	await-next-extension-error>
 //
 //go:nosplit
-func BackfillAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+func BackfillAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_BackfillAwaitNext((uint32)(joinSet0), &result)
 	return
@@ -191,11 +191,11 @@ func BackfillParallelSubmit(joinSet JoinSet, repo string) (result ExecutionID) {
 
 // BackfillParallelAwaitNext represents the imported function "backfill-parallel-await-next".
 //
-//	backfill-parallel-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
-//	result<_, string>>, await-next-extension-error>
+//	backfill-parallel-await-next: func(join-set: borrow<join-set>) -> result<result<_,
+//	string>, await-next-extension-error>
 //
 //go:nosplit
-func BackfillParallelAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError]) {
+func BackfillParallelAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_BackfillParallelAwaitNext((uint32)(joinSet0), &result)
 	return

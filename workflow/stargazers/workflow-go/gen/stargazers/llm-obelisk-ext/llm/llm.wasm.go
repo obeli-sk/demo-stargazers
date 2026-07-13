@@ -14,7 +14,7 @@ func wasmimport_RespondSubmit(joinSet0 uint32, userPrompt0 *uint8, userPrompt1 u
 
 //go:wasmimport stargazers:llm-obelisk-ext/llm respond-await-next
 //go:noescape
-func wasmimport_RespondAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError])
+func wasmimport_RespondAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, string, string], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:llm-obelisk-ext/llm respond-get
 //go:noescape

@@ -45,11 +45,11 @@ func RespondSubmit(joinSet JoinSet, userPrompt string, settingsJSON string) (res
 
 // RespondAwaitNext represents the imported function "respond-await-next".
 //
-//	respond-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
-//	result<string, string>>, await-next-extension-error>
+//	respond-await-next: func(join-set: borrow<join-set>) -> result<result<string, string>,
+//	await-next-extension-error>
 //
 //go:nosplit
-func RespondAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError]) {
+func RespondAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, string, string], AwaitNextExtensionError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_RespondAwaitNext((uint32)(joinSet0), &result)
 	return

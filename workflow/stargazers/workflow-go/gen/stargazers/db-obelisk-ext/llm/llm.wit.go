@@ -42,11 +42,11 @@ func GetSettingsJSONSubmit(joinSet JoinSet) (result ExecutionID) {
 
 // GetSettingsJSONAwaitNext represents the imported function "get-settings-json-await-next".
 //
-//	get-settings-json-await-next: func(join-set: borrow<join-set>) -> result<tuple<execution-id,
-//	result<string, string>>, await-next-extension-error>
+//	get-settings-json-await-next: func(join-set: borrow<join-set>) -> result<result<string,
+//	string>, await-next-extension-error>
 //
 //go:nosplit
-func GetSettingsJSONAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, string, string]], AwaitNextExtensionError]) {
+func GetSettingsJSONAwaitNext(joinSet JoinSet) (result cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, string, string], AwaitNextExtensionError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_GetSettingsJSONAwaitNext((uint32)(joinSet0), &result)
 	return

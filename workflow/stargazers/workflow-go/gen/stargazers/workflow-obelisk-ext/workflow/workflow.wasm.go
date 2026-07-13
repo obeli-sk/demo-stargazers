@@ -14,7 +14,7 @@ func wasmimport_StarAddedSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, r
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-added-await-next
 //go:noescape
-func wasmimport_StarAddedAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError])
+func wasmimport_StarAddedAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-added-get
 //go:noescape
@@ -26,7 +26,7 @@ func wasmimport_StarAddedParallelSubmit(joinSet0 uint32, login0 *uint8, login1 u
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-added-parallel-await-next
 //go:noescape
-func wasmimport_StarAddedParallelAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError])
+func wasmimport_StarAddedParallelAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-added-parallel-get
 //go:noescape
@@ -38,7 +38,7 @@ func wasmimport_StarRemovedSubmit(joinSet0 uint32, login0 *uint8, login1 uint32,
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-removed-await-next
 //go:noescape
-func wasmimport_StarRemovedAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError])
+func wasmimport_StarRemovedAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-removed-get
 //go:noescape
@@ -50,7 +50,7 @@ func wasmimport_BackfillSubmit(joinSet0 uint32, repo0 *uint8, repo1 uint32, resu
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow backfill-await-next
 //go:noescape
-func wasmimport_BackfillAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError])
+func wasmimport_BackfillAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow backfill-get
 //go:noescape
@@ -62,7 +62,7 @@ func wasmimport_BackfillParallelSubmit(joinSet0 uint32, repo0 *uint8, repo1 uint
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow backfill-parallel-await-next
 //go:noescape
-func wasmimport_BackfillParallelAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Tuple[ExecutionID, cm.Result[string, struct{}, string]], AwaitNextExtensionError])
+func wasmimport_BackfillParallelAwaitNext(joinSet0 uint32, result *cm.Result[AwaitNextExtensionErrorShape, cm.Result[string, struct{}, string], AwaitNextExtensionError])
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow backfill-parallel-get
 //go:noescape
