@@ -49,10 +49,9 @@ impl Guest for Component {
             account_info_submit(&join_set_info, &login);
             get_settings_json_submit(&join_set_settings);
             // Await the results.
-            let info = account_info_await_next(&join_set_info)
-                .map_err(err_to_string)??;
-            let settings_json = get_settings_json_await_next(&join_set_settings)
-                .map_err(err_to_string)??;
+            let info = account_info_await_next(&join_set_info).map_err(err_to_string)??;
+            let settings_json =
+                get_settings_json_await_next(&join_set_settings).map_err(err_to_string)??;
             // Generate the user's description.
             let description = llm::respond(&info, &settings_json)?;
             // Persist the generated description.
