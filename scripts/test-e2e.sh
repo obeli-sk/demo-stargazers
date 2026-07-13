@@ -18,6 +18,7 @@ MOCK_OPENAI_PORT=18080
 MOCK_PID=""
 MOCK_OPENAI_API_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
 
+export OBELISK__API__TOKEN=$(obelisk generate token --json | jq -r .token)
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
 
 # Use mock server unless OPENAI_API_KEY is already set
