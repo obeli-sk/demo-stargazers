@@ -1,8 +1,6 @@
 name: scheduled-bump-cargo-lock
 
 on:
-  schedule:
-    - cron: '0 0 * * 0'  # Runs every Sunday at 00:00 UTC
   workflow_dispatch:
 
 defaults:
