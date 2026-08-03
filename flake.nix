@@ -63,7 +63,6 @@
             python3
             # javascript support
             nodejs_22
-            wizer
             # Go
             go_1_25
             pkgsTinyGo.tinygo

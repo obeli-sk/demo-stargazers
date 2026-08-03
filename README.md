@@ -55,18 +55,18 @@ Generates description based on user's repositories and organizations.
 
 Follow the prerequisites section of the [activity-llm-openai README](./activity/llm/openai/README.md).
 
-Reimplementations in [JavaScript](./activity/llm/openai-js/), [legacy ComponentizeJS](./activity/llm/openai-legacy-componentizejs/), and [Go](./activity/llm/openai-go/) are available for comparison.
+Reimplementations in [JavaScript](./activity/llm/openai-js/) and [Go](./activity/llm/openai-go/) are available for comparison.
 
 #### GitHub webhook endpoint
 The webhook collects events sent by GitHub when a user stars one of the configured repositories, then triggers the workflow execution.
 
 Follow the prerequisites section of the [webhook README](./webhook/webhook-rs/README.md).
-Reimplementations in [JavaScript](./webhook/webhook-js/), [legacy ComponentizeJS](./webhook/webhook-legacy-componentizejs/), and [Go](./webhook/webhook-go/) are available for comparison.
+Reimplementations in [JavaScript](./webhook/webhook-js/) and [Go](./webhook/webhook-go/) are available for comparison.
 
 #### Workflow
 [Workflow](./workflow/stargazers/workflow-rs/) orchestrates all the activities, is triggered by the webhook.
 
-Reimplementations in [JavaScript](./workflow/stargazers/workflow-js/), [legacy ComponentizeJS](./workflow/stargazers/workflow-legacy-componentizejs/), and [Go](./workflow/stargazers/workflow-go/) are available for comparison.
+Reimplementations in [JavaScript](./workflow/stargazers/workflow-js/) and [Go](./workflow/stargazers/workflow-go/) are available for comparison.
 
 ### Running
 
@@ -114,11 +114,6 @@ obelisk server run --server-config ./server.toml --deployment ./obelisk-local.to
 JavaScript components are loaded directly by Obelisk and do not need a build step:
 ```sh
 just js
-```
-
-To build legacy ComponentizeJS components use
-```sh
-just legacy-componentizejs
 ```
 
 To build Go components use

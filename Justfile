@@ -1,5 +1,5 @@
-# Build all components (Rust, legacy ComponentizeJS, Go)
-build: rust legacy-componentizejs go
+# Build all components (Rust and Go)
+build: rust go
 
 # Build Rust components
 rust:
@@ -12,10 +12,6 @@ rust:
 # Direct JavaScript components are loaded by Obelisk and do not need a build.
 js:
 	@echo "JavaScript components do not need a build step"
-
-# Build legacy ComponentizeJS components
-legacy-componentizejs:
-	./scripts/build-components-legacy-componentizejs.sh
 
 # Build Go components
 go:
@@ -32,7 +28,5 @@ test-e2e: rust
 	./scripts/test-e2e.sh ./obelisk-local.toml truncate
 test-e2e-js: rust js
 	./scripts/test-e2e.sh ./obelisk-local-js-all.toml truncate
-test-e2e-legacy-componentizejs: rust legacy-componentizejs
-	./scripts/test-e2e.sh ./obelisk-local-legacy-componentizejs-all.toml truncate
 test-e2e-go: go
 	./scripts/test-e2e.sh ./obelisk-local-go-all.toml truncate
