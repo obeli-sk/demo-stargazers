@@ -49,9 +49,5 @@ jobs:
       - name: Build Go Components
         run: nix develop --command just go
 
-      - name: Verify obelisk-local-go variants
-        run: |
-          nix develop --command obelisk deployment verify --server-config server.toml --allow-unavailable-runtime-config --deployment obelisk-local-go-activity.toml
-          nix develop --command obelisk deployment verify --server-config server.toml --allow-unavailable-runtime-config --deployment obelisk-local-go-workflow.toml
-          nix develop --command obelisk deployment verify --server-config server.toml --allow-unavailable-runtime-config --deployment obelisk-local-go-webhook.toml
-          # obelisk-local-go-all.toml is verified by e2e workflow
+      - name: Verify obelisk-local-go-all.toml
+        run: nix develop --command obelisk deployment verify --server-config server.toml --allow-unavailable-runtime-config --deployment obelisk-local-go-all.toml
