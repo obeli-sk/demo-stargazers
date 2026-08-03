@@ -26,6 +26,8 @@ defaults:
 jobs:
   verify:
     runs-on: ubuntu-24.04
+    env:
+      TURSO_LOCATION: example.com
     steps:
       - uses: actions/checkout@v7
         with:
