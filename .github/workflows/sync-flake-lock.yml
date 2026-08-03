@@ -21,8 +21,8 @@ jobs:
 
       - name: Sync flake.lock and rust-toolchain.toml from upstream
         run: |
-          curl https://raw.githubusercontent.com/obeli-sk/obelisk/refs/heads/latest/flake.lock -o flake.lock
-          UPSTREAM=https://raw.githubusercontent.com/obeli-sk/obelisk/refs/heads/latest/rust-toolchain.toml
+          curl https://raw.githubusercontent.com/obeli-sk/obelisk/refs/heads/latest-pre/flake.lock -o flake.lock
+          UPSTREAM=https://raw.githubusercontent.com/obeli-sk/obelisk/refs/heads/latest-pre/rust-toolchain.toml
           CHANNEL=$(curl -fsSL "$UPSTREAM" | grep '^channel =')
           sed -i "s/^channel =.*/$CHANNEL/" rust-toolchain.toml
 
@@ -79,4 +79,3 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN_PR_RW }}
-

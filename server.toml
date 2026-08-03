@@ -1,0 +1,22 @@
+[secrets]
+OPENAI_API_KEY = { env = "OPENAI_API_KEY" }
+GITHUB_TOKEN_STARGAZERS = { env = "GITHUB_TOKEN_STARGAZERS" }
+TURSO_TOKEN = { env = "TURSO_TOKEN" }
+
+[[outbound_http.allowed_host]]
+pattern = "${OPENAI_API_BASE_URL:-https://api.openai.com}"
+methods = ["POST"]
+secrets = ["OPENAI_API_KEY"]
+replace_in = ["headers"]
+
+[[outbound_http.allowed_host]]
+pattern = "https://api.github.com"
+methods = ["POST"]
+secrets = ["GITHUB_TOKEN_STARGAZERS"]
+replace_in = ["headers"]
+
+[[outbound_http.allowed_host]]
+pattern = "${TURSO_LOCATION}"
+methods = ["POST"]
+secrets = ["TURSO_TOKEN"]
+replace_in = ["headers"]

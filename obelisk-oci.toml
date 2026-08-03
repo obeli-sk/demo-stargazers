@@ -6,8 +6,7 @@ env_vars = [{key="OPENAI_API_BASE_URL", value="${OPENAI_API_BASE_URL:-https://ap
 [[activity_wasm.allowed_host]]
 pattern = "${OPENAI_API_BASE_URL:-https://api.openai.com}"
 methods = ["POST"]
-[activity_wasm.allowed_host.secrets]
-env_vars = ["OPENAI_API_KEY"]
+secrets = ["OPENAI_API_KEY"]
 replace_in = ["headers"]
 
 [[activity_wasm]]
@@ -17,8 +16,7 @@ exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
 pattern = "https://api.github.com"
 methods = ["POST"]
-[activity_wasm.allowed_host.secrets]
-env_vars = ["GITHUB_TOKEN_STARGAZERS"]
+secrets = ["GITHUB_TOKEN_STARGAZERS"]
 replace_in = ["headers"]
 
 [[activity_wasm]]
@@ -29,8 +27,7 @@ exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
 pattern = "${TURSO_LOCATION}"
 methods = ["POST"]
-[activity_wasm.allowed_host.secrets]
-env_vars = ["TURSO_TOKEN"]
+secrets = ["TURSO_TOKEN"]
 replace_in = ["headers"]
 
 [[workflow_wasm]]

@@ -85,7 +85,7 @@ Otherwise install the following:
 The exact versions of dependencies used for development and testing are in [dev-deps.txt](./dev-deps.txt).
 
 ```sh
-obelisk server run --deployment ./obelisk-oci.toml
+obelisk server run --server-config ./server.toml --deployment ./obelisk-oci.toml
 ```
 
 The server will start downloading the WASM components from the Docker Hub. Wait for the following
@@ -108,7 +108,7 @@ The configuration above downloads the WASM Components from the Docker Hub.
 To build all the Rust components locally run
 ```sh
 just rust
-obelisk server run --deployment ./obelisk-local.toml
+obelisk server run --server-config ./server.toml --deployment ./obelisk-local.toml
 ```
 
 JavaScript components are loaded directly by Obelisk and do not need a build step:

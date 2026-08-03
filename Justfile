@@ -22,7 +22,7 @@ go:
 	./scripts/build-components-go.sh
 
 serve:
-	obelisk server run --deployment ./obelisk-local.toml
+	obelisk server run --server-config ./server.toml --deployment ./obelisk-local.toml
 
 test-unit:
 	./scripts/test-unit.sh
