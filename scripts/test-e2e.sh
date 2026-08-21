@@ -135,8 +135,18 @@ while ! obelisk component list 2>/dev/null; do
     sleep 1
 done
 
+dump_executions() {
+    while read -r execution_id _; do
+        obelisk execution get "$execution_id" || true
+        obelisk execution logs --level trace "$execution_id" || true
+    done < <(obelisk execution list --show-derived)
+}
+
 # Make sure this repo has no stars
-JSON=$(curl --fail "http://127.0.0.1:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1")
+if ! JSON=$(curl --fail "http://127.0.0.1:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1"); then
+    dump_executions
+    exit 1
+fi
 if [[ "$JSON" != "[]" ]]; then
     echo "The repo ${STAR_ACCOUNT}/${STAR_REPO} already has star gazers"
     exit 1
@@ -167,7 +177,10 @@ EXECUTION_ID=$(curl --fail -X POST http://127.0.0.1:9090 \
 obelisk execution get --follow $EXECUTION_ID
 
 # Get the first and only user back from the database.
-JSON=$(curl --fail "http://127.0.0.1:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1")
+if ! JSON=$(curl --fail "http://127.0.0.1:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1"); then
+    dump_executions
+    exit 1
+fi
 LOGIN=$(python3 -c 'import json, sys; print(json.load(sys.stdin)[0]["login"])' <<< "$JSON")
 if [[ "$LOGIN" != ${TEST_GITHUB_LOGIN} ]]; then
     echo "Error: First stargazer should be '${TEST_GITHUB_LOGIN}', got '$LOGIN'" >&2

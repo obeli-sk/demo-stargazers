@@ -169,24 +169,37 @@ impl TursoClient {
         &self,
         request: &PipelineRequest,
     ) -> Result<Vec<response::Response>, anyhow::Error> {
-        assert_eq!(
-            Some(&PipelineAction::Close),
-            request.requests.last(),
-            "last action must be close"
-        );
-        let body = serde_json::to_vec(request)?;
-        let req = self
-            .post()
-            .header("Content-Length", body.len())
-            .body(Body::from(body))?;
-        let mut resp = Client::new().send(req).await?;
-        if resp.status() != StatusCode::OK {
-            bail!("Unexpected status code: {}", resp.status());
-        }
-        let resp: PipelineResponse = resp.body_mut().json().await?;
+        let result = async {
+            assert_eq!(
+                Some(&PipelineAction::Close),
+                request.requests.last(),
+                "last action must be close"
+            );
+            let body = serde_json::to_vec(request)?;
+            let req = self
+                .post()
+                .header("Content-Length", body.len())
+                .body(Body::from(body))?;
+            let mut resp = Client::new().send(req).await?;
+            let status = resp.status();
+            let body = resp.body_mut().contents().await?;
+            if status != StatusCode::OK {
+                bail!(
+                    "Unexpected status code {status}: {}",
+                    String::from_utf8_lossy(body)
+                );
+            }
+            let resp: PipelineResponse = serde_json::from_slice(body)
+                .context("cannot deserialize the Turso pipeline response")?;
 
-        // Make sure there are no errors
-        resp.ok_responses()
+            // Make sure there are no errors
+            resp.ok_responses()
+        }
+        .await;
+        if let Err(err) = &result {
+            eprintln!("Turso request failed: {err:#}");
+        }
+        result
     }
 }
 
