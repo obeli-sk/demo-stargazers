@@ -143,7 +143,13 @@ impl TursoClient {
         let turso_location = std::env::var(ENV_TURSO_LOCATION).with_context(|| {
             format!("{ENV_TURSO_LOCATION} must be set as an environment variable")
         })?;
-        let url = format!("https://{turso_location}/v2/pipeline");
+        let base_url =
+            if turso_location.starts_with("http://") || turso_location.starts_with("https://") {
+                turso_location
+            } else {
+                format!("https://{turso_location}")
+            };
+        let url = format!("{base_url}/v2/pipeline");
         Ok(Self { url, token })
     }
 
@@ -168,7 +174,11 @@ impl TursoClient {
             request.requests.last(),
             "last action must be close"
         );
-        let req = self.post().body(Body::from_json(request)?)?;
+        let body = serde_json::to_vec(request)?;
+        let req = self
+            .post()
+            .header("Content-Length", body.len())
+            .body(Body::from(body))?;
         let mut resp = Client::new().send(req).await?;
         if resp.status() != StatusCode::OK {
             bail!("Unexpected status code: {}", resp.status());

@@ -13,8 +13,9 @@ replace_in = ["headers"]
 name = "activity_github_impl"
 location = "oci://docker.io/getobelisk/demo_stargazers_activity_github_impl:2026-07-13@sha256:254a9ec5557262337b323b20e9b00e8dd4c042135bda177de32a5f528e961f47"
 exec.lock_expiry.seconds = 5
+env_vars = [{key="GITHUB_API_BASE_URL", value="${GITHUB_API_BASE_URL:-https://api.github.com}"}]
 [[activity_wasm.allowed_host]]
-pattern = "https://api.github.com"
+pattern = "${GITHUB_API_BASE_URL:-https://api.github.com}"
 methods = ["POST"]
 secrets = ["GITHUB_TOKEN_STARGAZERS"]
 replace_in = ["headers"]

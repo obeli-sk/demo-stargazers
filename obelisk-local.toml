@@ -13,8 +13,9 @@ replace_in = ["headers"]
 name = "activity_github_impl"
 location = "target/wasm32-wasip2/release/activity_github_impl.wasm"
 exec.lock_expiry.seconds = 5
+env_vars = [{key="GITHUB_API_BASE_URL", value="${GITHUB_API_BASE_URL:-https://api.github.com}"}]
 [[activity_wasm.allowed_host]]
-pattern = "https://api.github.com"
+pattern = "${GITHUB_API_BASE_URL:-https://api.github.com}"
 methods = ["POST"]
 secrets = ["GITHUB_TOKEN_STARGAZERS"]
 replace_in = ["headers"]

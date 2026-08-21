@@ -25,8 +25,8 @@ test-unit:
 test-integration:
 	./scripts/test-integration.sh
 test-e2e: rust
-	./scripts/test-e2e.sh ./obelisk-local.toml truncate
+	./scripts/test-e2e.sh ./obelisk-local.toml
 test-e2e-js: rust js
-	./scripts/test-e2e.sh ./obelisk-local-js-all.toml truncate
+	./scripts/test-e2e.sh ./obelisk-local-js-all.toml
 test-e2e-go: go
-	./scripts/test-e2e.sh ./obelisk-local-go-all.toml truncate
+	./scripts/test-e2e.sh ./obelisk-local-go-all.toml
