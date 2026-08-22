@@ -10,7 +10,7 @@ secrets = ["OPENAI_API_KEY"]
 replace_in = ["headers"]
 
 [[outbound_http.allowed_host]]
-pattern = "https://api.github.com"
+pattern = "${GITHUB_API_BASE_URL:-https://api.github.com}"
 methods = ["POST"]
 secrets = ["GITHUB_TOKEN_STARGAZERS"]
 replace_in = ["headers"]

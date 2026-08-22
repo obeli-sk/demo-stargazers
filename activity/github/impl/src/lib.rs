@@ -14,6 +14,7 @@ use wstd::{
 mod stargazers;
 
 const ENV_GITHUB_TOKEN: &str = "GITHUB_TOKEN_STARGAZERS";
+const ENV_GITHUB_API_BASE_URL: &str = "GITHUB_API_BASE_URL";
 
 mod generated {
     #![allow(clippy::empty_line_after_outer_attr)]
@@ -33,12 +34,14 @@ struct GraphQLRequest {
 async fn send_query<T: Serialize, R: serde::de::DeserializeOwned>(query: T) -> Result<R, String> {
     let github_token = std::env::var(ENV_GITHUB_TOKEN)
         .map_err(|_| format!("{ENV_GITHUB_TOKEN} must be passed as environment variable"))?;
+    let github_api_base_url = std::env::var(ENV_GITHUB_API_BASE_URL)
+        .unwrap_or_else(|_| "https://api.github.com".to_string());
     let req = Request::builder()
         .header("Authorization", &format!("Bearer {github_token}"))
         .header("Content-Type", "application/json")
         .header("User-Agent", "test")
         .method(Method::POST)
-        .uri("https://api.github.com/graphql")
+        .uri(format!("{github_api_base_url}/graphql"))
         .body(
             Body::from_json(&query)
                 .map_err(|err| format!("cannot serialize the request - {err:?}"))?,
@@ -166,7 +169,9 @@ pub struct UserArguments {
 mod tests {
     use crate::Component;
     use crate::generated::exports::stargazers::github::account::Guest;
-    use crate::{ENV_GITHUB_TOKEN, extract_stargazers, stargazers::QueryStargazers};
+    use crate::{
+        ENV_GITHUB_API_BASE_URL, ENV_GITHUB_TOKEN, extract_stargazers, stargazers::QueryStargazers,
+    };
     use cynic::GraphQlResponse;
 
     fn set_up() {
@@ -174,6 +179,9 @@ mod tests {
             panic!("TEST_{ENV_GITHUB_TOKEN} must be set as an environment variable")
         });
         unsafe { std::env::set_var(ENV_GITHUB_TOKEN, test_token) };
+        if let Ok(base_url) = std::env::var(format!("TEST_{ENV_GITHUB_API_BASE_URL}")) {
+            unsafe { std::env::set_var(ENV_GITHUB_API_BASE_URL, base_url) };
+        }
     }
 
     #[test]
