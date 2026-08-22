@@ -334,7 +334,7 @@ impl UserGuest for Component {
                             FROM users u \
                             INNER JOIN stars s ON u.name = s.user_name \
                             {where}
-                            ORDER BY u.updated_at {ordering} LIMIT {last}",
+                            ORDER BY u.updated_at {ordering}, s.rowid {ordering} LIMIT {last}",
                             where = if repo.is_some() {
                                 format!("WHERE s.repo_name=:{PARAM_REPO}")
                             } else {
