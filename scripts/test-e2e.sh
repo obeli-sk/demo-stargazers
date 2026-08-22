@@ -5,6 +5,12 @@
 # sends a "star-added" HTTP request to the webhook endpoint,
 # waits for the scheduled execution to complete,
 # and verifies that the user is stored in the database along with the generated description.
+#
+# GitHub and Turso are exercised against the real services, so the following
+# credentials must be set in the environment:
+#   TURSO_TOKEN, TURSO_LOCATION
+#   GITHUB_TOKEN_STARGAZERS, TEST_GITHUB_LOGIN
+# OpenAI is the only paid dependency, so it is always mocked.
 
 set -exo pipefail
 cd "$(dirname "$0")/.."
@@ -13,39 +19,22 @@ OBELISK_TOML="$1"
 STAR_ACCOUNT="someghaccount"
 STAR_REPO="someghrepo"
 MOCK_OPENAI_PORT=18080
-MOCK_TURSO_PORT=18081
-MOCK_GITHUB_PORT=18082
 MOCK_OPENAI_PID=""
-MOCK_TURSO_PID=""
-MOCK_GITHUB_PID=""
 PID=""
-TEST_DEPLOYMENT=""
-MOCK_OPENAI_API_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
-MOCK_TURSO_LOCATION="http://127.0.0.1:$MOCK_TURSO_PORT"
-MOCK_GITHUB_API_BASE_URL="http://127.0.0.1:$MOCK_GITHUB_PORT"
 
 export OBELISK__API__TOKEN=$(obelisk generate token --json | python3 -c 'import json, sys; print(json.load(sys.stdin)["token"])')
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
-USE_MOCK_OPENAI=false
-USE_MOCK_TURSO=false
-USE_MOCK_GITHUB=false
 
-if [[ -z "${OPENAI_API_KEY:-}" ]]; then
-    USE_MOCK_OPENAI=true
-    export OPENAI_API_KEY="mock-api-key-for-testing"
-    export OPENAI_API_BASE_URL="$MOCK_OPENAI_API_BASE_URL"
-fi
-if [[ -z "${TURSO_TOKEN:-}" || -z "${TURSO_LOCATION:-}" ]]; then
-    USE_MOCK_TURSO=true
-    export TURSO_TOKEN="mock-token-for-testing"
-    export TURSO_LOCATION="$MOCK_TURSO_LOCATION"
-fi
-if [[ -z "${GITHUB_TOKEN_STARGAZERS:-}" || -z "${TEST_GITHUB_LOGIN:-}" ]]; then
-    USE_MOCK_GITHUB=true
-    export GITHUB_TOKEN_STARGAZERS="mock-token-for-testing"
-    export GITHUB_API_BASE_URL="$MOCK_GITHUB_API_BASE_URL"
-    export TEST_GITHUB_LOGIN="test-stargazer"
-fi
+for var in TURSO_TOKEN TURSO_LOCATION GITHUB_TOKEN_STARGAZERS TEST_GITHUB_LOGIN; do
+    if [[ -z "${!var:-}" ]]; then
+        echo "Error: $var must be set; end-to-end tests run against the real service" >&2
+        exit 1
+    fi
+done
+
+# OpenAI is the only paid service, so always point it at the local mock.
+export OPENAI_API_KEY="mock-api-key-for-testing"
+export OPENAI_API_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
 
 cleanup() {
     if [[ -n "$PID" ]]; then
@@ -64,62 +53,31 @@ cleanup() {
         sleep 1
     done
 
-    for mock_pid in "$MOCK_OPENAI_PID" "$MOCK_TURSO_PID" "$MOCK_GITHUB_PID"; do
-        if [[ -n "$mock_pid" ]]; then
-            kill "$mock_pid" 2>/dev/null || true
-        fi
-    done
-    if [[ -n "$TEST_DEPLOYMENT" ]]; then
-        rm -f "$TEST_DEPLOYMENT"
+    if [[ -n "$MOCK_OPENAI_PID" ]]; then
+        kill "$MOCK_OPENAI_PID" 2>/dev/null || true
     fi
 }
 
 trap cleanup EXIT
 
-if $USE_MOCK_OPENAI; then
-    python3 ./scripts/mock-openai-server.py "$MOCK_OPENAI_PORT" &
-    MOCK_OPENAI_PID=$!
-fi
-if $USE_MOCK_TURSO; then
-    python3 ./scripts/mock-turso-server.py "$MOCK_TURSO_PORT" &
-    MOCK_TURSO_PID=$!
-fi
-if $USE_MOCK_GITHUB; then
-    python3 ./scripts/mock-github-server.py "$MOCK_GITHUB_PORT" &
-    MOCK_GITHUB_PID=$!
-fi
+python3 ./scripts/mock-openai-server.py "$MOCK_OPENAI_PORT" &
+MOCK_OPENAI_PID=$!
 
 SECONDS=0
-until { ! $USE_MOCK_OPENAI || curl -sf -X POST "$MOCK_OPENAI_API_BASE_URL/v1/chat/completions" -d '{}' >/dev/null; } \
-    && { ! $USE_MOCK_TURSO || curl -sf -X POST "$MOCK_TURSO_LOCATION/v2/pipeline" \
-        -H 'Content-Type: application/json' -d '{"requests":[{"type":"close"}]}' >/dev/null; } \
-    && { ! $USE_MOCK_GITHUB || curl -sf -X POST "$MOCK_GITHUB_API_BASE_URL/graphql" \
-        -H 'Content-Type: application/json' -d '{}' >/dev/null; }; do
+until curl -sf -X POST "$OPENAI_API_BASE_URL/v1/chat/completions" -d '{}' >/dev/null; do
     if [[ $SECONDS -ge 5 ]]; then
-        echo "Mock services failed to start"
+        echo "Mock OpenAI server failed to start"
         exit 1
     fi
     sleep 0.5
 done
 
-if { $USE_MOCK_TURSO || $USE_MOCK_GITHUB; } \
-    && [[ "$OBELISK_TOML" == "obelisk-oci.toml" || "$OBELISK_TOML" == "./obelisk-oci.toml" ]]; then
-    TEST_DEPLOYMENT=$(mktemp ./obelisk-oci-e2e-XXXXXX.toml)
-    sed \
-        -e 's|oci://docker.io/getobelisk/demo_stargazers_activity_github_impl:[^" ]*|target/wasm32-wasip2/release/activity_github_impl.wasm|' \
-        -e 's|oci://docker.io/getobelisk/demo_stargazers_activity_db_turso:[^" ]*|target/wasm32-wasip2/release/activity_db_turso.wasm|' \
-        "$OBELISK_TOML" > "$TEST_DEPLOYMENT"
-    OBELISK_TOML="$TEST_DEPLOYMENT"
-fi
-
-if ! $USE_MOCK_TURSO; then
-    for table in stars users repos; do
-        curl --fail -X POST "https://${TURSO_LOCATION}/v2/pipeline" \
-            -H "Authorization: Bearer ${TURSO_TOKEN}" \
-            -H "Content-Type: application/json" \
-            -d '{"requests":[{"type":"execute","stmt":{"sql":"DELETE FROM '${table}'"}},{"type":"close"}]}'
-    done
-fi
+for table in stars users repos; do
+    curl --fail -X POST "https://${TURSO_LOCATION}/v2/pipeline" \
+        -H "Authorization: Bearer ${TURSO_TOKEN}" \
+        -H "Content-Type: application/json" \
+        -d '{"requests":[{"type":"execute","stmt":{"sql":"DELETE FROM '${table}'"}},{"type":"close"}]}'
+done
 
 obelisk deployment verify --server-config ./server.toml --deployment "$OBELISK_TOML"
 obelisk server run --server-config ./server.toml --deployment "$OBELISK_TOML" &
