@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import datetime
+import itertools
 import json
 import sqlite3
 import sys
@@ -20,6 +22,23 @@ def read_body(handler):
     while handler.rfile.readline().strip():
         pass
     return bytes(body)
+
+
+# The activity generates `updated_at` client-side at millisecond resolution.
+# Against real Turso, network latency spaces successive calls more than a
+# millisecond apart, so writes always get strictly increasing timestamps and
+# `ORDER BY updated_at` is unambiguous. This local mock answers sub-millisecond,
+# so consecutive writes would tie and sort by rowid instead. Hand out a
+# monotonic timestamp for the `now` argument to reproduce Turso's ordering.
+_mock_clock = itertools.count()
+
+
+def mock_now():
+    tick = next(_mock_clock)
+    stamp = datetime.datetime(2026, 1, 1, tzinfo=datetime.timezone.utc) + datetime.timedelta(
+        milliseconds=tick
+    )
+    return stamp.strftime("%Y-%m-%dT%H:%M:%S.") + f"{stamp.microsecond // 1000:03d}Z"
 
 
 def turso_value(value):
@@ -67,6 +86,8 @@ class MockTursoHandler(BaseHTTPRequestHandler):
                     arg["name"]: arg["value"].get("value")
                     for arg in statement.get("named_args", [])
                 }
+                if "now" in parameters:
+                    parameters["now"] = mock_now()
                 cursor = self.database.execute(statement["sql"], parameters)
                 rows = [[turso_value(value) for value in row] for row in cursor.fetchall()]
                 columns = [
