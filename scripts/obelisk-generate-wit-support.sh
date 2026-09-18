@@ -22,7 +22,22 @@ generate() {
   done
 }
 
+generate_interface() {
+  local path="$1"
+  local component_type="$2"
+
+  if [ ! -d "$path" ]; then
+    return 0
+  fi
+  (
+    cd "$path"
+    rm -rf deps/obelisk_*
+    obelisk generate wit-support "$component_type" deps
+  )
+}
+
 # generate "activity" "activity_wasm" # blocked by process api dependency on wasi:io
 generate "activity-stub" "activity_stub"
 generate "workflow" "workflow"
+generate_interface "workflow/stargazers/wit-interface" "workflow"
 generate "webhook" "webhook_endpoint"

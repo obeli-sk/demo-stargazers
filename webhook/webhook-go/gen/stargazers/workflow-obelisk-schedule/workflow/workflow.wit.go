@@ -19,13 +19,18 @@ type ExecutionID = execution.ExecutionID
 // See [time.ScheduleAt] for more information.
 type ScheduleAt = time.ScheduleAt
 
+// ScheduleJSONError represents the type alias "stargazers:workflow-obelisk-schedule/workflow#schedule-json-error".
+//
+// See [execution.ScheduleJSONError] for more information.
+type ScheduleJSONError = execution.ScheduleJSONError
+
 // StarAddedSchedule represents the imported function "star-added-schedule".
 //
 //	star-added-schedule: func(schedule-at: schedule-at, login: string, repo: string)
-//	-> execution-id
+//	-> result<execution-id, schedule-json-error>
 //
 //go:nosplit
-func StarAddedSchedule(scheduleAt ScheduleAt, login string, repo string) (result ExecutionID) {
+func StarAddedSchedule(scheduleAt ScheduleAt, login string, repo string) (result cm.Result[ScheduleJSONErrorShape, ExecutionID, ScheduleJSONError]) {
 	scheduleAt0, scheduleAt1, scheduleAt2 := lower_ScheduleAt(scheduleAt)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
@@ -36,10 +41,10 @@ func StarAddedSchedule(scheduleAt ScheduleAt, login string, repo string) (result
 // StarAddedParallelSchedule represents the imported function "star-added-parallel-schedule".
 //
 //	star-added-parallel-schedule: func(schedule-at: schedule-at, login: string, repo:
-//	string) -> execution-id
+//	string) -> result<execution-id, schedule-json-error>
 //
 //go:nosplit
-func StarAddedParallelSchedule(scheduleAt ScheduleAt, login string, repo string) (result ExecutionID) {
+func StarAddedParallelSchedule(scheduleAt ScheduleAt, login string, repo string) (result cm.Result[ScheduleJSONErrorShape, ExecutionID, ScheduleJSONError]) {
 	scheduleAt0, scheduleAt1, scheduleAt2 := lower_ScheduleAt(scheduleAt)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
@@ -50,10 +55,10 @@ func StarAddedParallelSchedule(scheduleAt ScheduleAt, login string, repo string)
 // StarRemovedSchedule represents the imported function "star-removed-schedule".
 //
 //	star-removed-schedule: func(schedule-at: schedule-at, login: string, repo: string)
-//	-> execution-id
+//	-> result<execution-id, schedule-json-error>
 //
 //go:nosplit
-func StarRemovedSchedule(scheduleAt ScheduleAt, login string, repo string) (result ExecutionID) {
+func StarRemovedSchedule(scheduleAt ScheduleAt, login string, repo string) (result cm.Result[ScheduleJSONErrorShape, ExecutionID, ScheduleJSONError]) {
 	scheduleAt0, scheduleAt1, scheduleAt2 := lower_ScheduleAt(scheduleAt)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
@@ -63,10 +68,11 @@ func StarRemovedSchedule(scheduleAt ScheduleAt, login string, repo string) (resu
 
 // BackfillSchedule represents the imported function "backfill-schedule".
 //
-//	backfill-schedule: func(schedule-at: schedule-at, repo: string) -> execution-id
+//	backfill-schedule: func(schedule-at: schedule-at, repo: string) -> result<execution-id,
+//	schedule-json-error>
 //
 //go:nosplit
-func BackfillSchedule(scheduleAt ScheduleAt, repo string) (result ExecutionID) {
+func BackfillSchedule(scheduleAt ScheduleAt, repo string) (result cm.Result[ScheduleJSONErrorShape, ExecutionID, ScheduleJSONError]) {
 	scheduleAt0, scheduleAt1, scheduleAt2 := lower_ScheduleAt(scheduleAt)
 	repo0, repo1 := cm.LowerString(repo)
 	wasmimport_BackfillSchedule((uint32)(scheduleAt0), (uint64)(scheduleAt1), (uint64)(scheduleAt2), (*uint8)(repo0), (uint32)(repo1), &result)
@@ -75,10 +81,11 @@ func BackfillSchedule(scheduleAt ScheduleAt, repo string) (result ExecutionID) {
 
 // BackfillParallelSchedule represents the imported function "backfill-parallel-schedule".
 //
-//	backfill-parallel-schedule: func(schedule-at: schedule-at, repo: string) -> execution-id
+//	backfill-parallel-schedule: func(schedule-at: schedule-at, repo: string) -> result<execution-id,
+//	schedule-json-error>
 //
 //go:nosplit
-func BackfillParallelSchedule(scheduleAt ScheduleAt, repo string) (result ExecutionID) {
+func BackfillParallelSchedule(scheduleAt ScheduleAt, repo string) (result cm.Result[ScheduleJSONErrorShape, ExecutionID, ScheduleJSONError]) {
 	scheduleAt0, scheduleAt1, scheduleAt2 := lower_ScheduleAt(scheduleAt)
 	repo0, repo1 := cm.LowerString(repo)
 	wasmimport_BackfillParallelSchedule((uint32)(scheduleAt0), (uint64)(scheduleAt1), (uint64)(scheduleAt2), (*uint8)(repo0), (uint32)(repo1), &result)

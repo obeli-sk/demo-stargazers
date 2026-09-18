@@ -82,9 +82,15 @@ func (c *Component) StarAddedParallel(login string, repo string) cm.Result[strin
 		joinSetSettings := *joinSetSettingsWrapped.OK()
 
 		// Imported WIT: stargazers:github-obelisk-ext/account.account-info-submit: func(join-set-id: borrow<join-set-id>, login: string) -> execution-id
-		_ = stargazersGithubObeliskExtAccount.AccountInfoSubmit(joinSetInfo, login)
+		accountInfoSubmit := stargazersGithubObeliskExtAccount.AccountInfoSubmit(joinSetInfo, login)
+		if accountInfoSubmit.IsErr() {
+			return cm.Err[cm.Result[string, struct{}, string]](accountInfoSubmit.Err().String())
+		}
 		// Imported WIT: stargazers:db-obelisk-ext/llm.get-settings-json-submit: func(join-set-id: borrow<join-set-id>) -> execution-id
-		_ = stargazersDbObeliskExtLlm.GetSettingsJSONSubmit(joinSetSettings)
+		settingsSubmit := stargazersDbObeliskExtLlm.GetSettingsJSONSubmit(joinSetSettings)
+		if settingsSubmit.IsErr() {
+			return cm.Err[cm.Result[string, struct{}, string]](settingsSubmit.Err().String())
+		}
 
 		// Imported WIT: stargazers:github-obelisk-ext/account.account-info-await-next: func(join-set: borrow<join-set>) -> result<result<string, string>, await-next-extension-error>
 		awaitInfoWrapped := stargazersGithubObeliskExtAccount.AccountInfoAwaitNext(joinSetInfo)
@@ -206,7 +212,10 @@ func (c *Component) BackfillParallel(repo string) (result cm.Result[string, stru
 			joinSetForChild := *joinSetForChildWrapped.OK()
 
 			// Imported WIT: stargazers:workflow-obelisk-ext/workflow.star-added-parallel-submit: func(join-set-id: borrow<join-set-id>, login: string, repo: string) -> execution-id
-			_ = stargazersWorkflowObeliskExtWorkflow.StarAddedParallelSubmit(joinSetForChild, stargazeLogin, repo)
+			childSubmit := stargazersWorkflowObeliskExtWorkflow.StarAddedParallelSubmit(joinSetForChild, stargazeLogin, repo)
+			if childSubmit.IsErr() {
+				return cm.Err[cm.Result[string, struct{}, string]](childSubmit.Err().String())
+			}
 			joinSetList = append(joinSetList, joinSetForChild)
 		}
 		for _, joinSet := range joinSetList {

@@ -10,7 +10,7 @@ import (
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-added-submit
 //go:noescape
-func wasmimport_StarAddedSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, repo0 *uint8, repo1 uint32, result *ExecutionID)
+func wasmimport_StarAddedSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, repo0 *uint8, repo1 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-added-await-next
 //go:noescape
@@ -22,7 +22,7 @@ func wasmimport_StarAddedGet(executionId0 *uint8, executionId1 uint32, result *c
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-added-parallel-submit
 //go:noescape
-func wasmimport_StarAddedParallelSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, repo0 *uint8, repo1 uint32, result *ExecutionID)
+func wasmimport_StarAddedParallelSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, repo0 *uint8, repo1 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-added-parallel-await-next
 //go:noescape
@@ -34,7 +34,7 @@ func wasmimport_StarAddedParallelGet(executionId0 *uint8, executionId1 uint32, r
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-removed-submit
 //go:noescape
-func wasmimport_StarRemovedSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, repo0 *uint8, repo1 uint32, result *ExecutionID)
+func wasmimport_StarRemovedSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, repo0 *uint8, repo1 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow star-removed-await-next
 //go:noescape
@@ -46,7 +46,7 @@ func wasmimport_StarRemovedGet(executionId0 *uint8, executionId1 uint32, result 
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow backfill-submit
 //go:noescape
-func wasmimport_BackfillSubmit(joinSet0 uint32, repo0 *uint8, repo1 uint32, result *ExecutionID)
+func wasmimport_BackfillSubmit(joinSet0 uint32, repo0 *uint8, repo1 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow backfill-await-next
 //go:noescape
@@ -58,7 +58,7 @@ func wasmimport_BackfillGet(executionId0 *uint8, executionId1 uint32, result *cm
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow backfill-parallel-submit
 //go:noescape
-func wasmimport_BackfillParallelSubmit(joinSet0 uint32, repo0 *uint8, repo1 uint32, result *ExecutionID)
+func wasmimport_BackfillParallelSubmit(joinSet0 uint32, repo0 *uint8, repo1 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:workflow-obelisk-ext/workflow backfill-parallel-await-next
 //go:noescape

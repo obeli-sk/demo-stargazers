@@ -10,7 +10,7 @@
       };
     };
     obelisk = {
-      url = "github:obeli-sk/obelisk/latest";
+      url = "github:obeli-sk/obelisk/latest-rc";
       inputs = {
         nixpkgs.follows = "nixpkgs";
         flake-utils.follows = "flake-utils";
@@ -51,12 +51,15 @@
             cargo-generate
             cargo-nextest
             cargo-deny
+            gh
             just
+            jq
             nixpkgs-fmt
             pkg-config
             rustToolchain
             wasm-tools
             wasmtime.out
+            yq-go
             # e2e tests
             openssl
             curlMinimal
@@ -64,7 +67,7 @@
             # javascript support
             nodejs_22
             # Go
-            go_1_25
+            go
             pkgsTinyGo.tinygo
             wit-bindgen-go-cli
           ];

@@ -6,16 +6,16 @@ import (
 	"go.bytecodealliance.org/cm"
 )
 
-// This file contains wasmimport and wasmexport declarations for "obelisk:types@5.0.0".
+// This file contains wasmimport and wasmexport declarations for "obelisk:types@6.0.0".
 
-//go:wasmimport obelisk:types/join-set@5.0.0 [resource-drop]join-set
+//go:wasmimport obelisk:types/join-set@6.0.0 [resource-drop]join-set
 //go:noescape
 func wasmimport_JoinSetResourceDrop(self0 uint32)
 
-//go:wasmimport obelisk:types/join-set@5.0.0 [method]join-set.id
+//go:wasmimport obelisk:types/join-set@6.0.0 [method]join-set.id
 //go:noescape
 func wasmimport_JoinSetID(self0 uint32, result *string)
 
-//go:wasmimport obelisk:types/join-set@5.0.0 [method]join-set.last-id
+//go:wasmimport obelisk:types/join-set@6.0.0 [method]join-set.last-id
 //go:noescape
 func wasmimport_JoinSetLastID(self0 uint32, result *cm.Option[ResponseID])

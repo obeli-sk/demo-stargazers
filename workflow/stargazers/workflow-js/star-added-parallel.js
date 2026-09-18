@@ -5,6 +5,7 @@ import { accountInfoSubmit, accountInfoAwaitNext } from 'stargazers:github-obeli
 import { getSettingsJsonSubmit, getSettingsJsonAwaitNext } from 'stargazers:db-obelisk-ext/llm';
 import { addStarGetDescription, updateUserDescription } from 'stargazers:db/user';
 import { respond as llmRespond } from 'stargazers:llm/llm';
+import * as obelisk from 'obelisk:workflow@1.0.0';
 
 export default function star_added_parallel(login, repo) {
     const existingDescription = addStarGetDescription(login, repo);

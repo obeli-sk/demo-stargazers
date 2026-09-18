@@ -29,12 +29,18 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
+// ChildExecutionRequestError represents the type alias "stargazers:db-obelisk-ext/llm#child-execution-request-error".
+//
+// See [execution.ChildExecutionRequestError] for more information.
+type ChildExecutionRequestError = execution.ChildExecutionRequestError
+
 // GetSettingsJSONSubmit represents the imported function "get-settings-json-submit".
 //
-//	get-settings-json-submit: func(join-set: borrow<join-set>) -> execution-id
+//	get-settings-json-submit: func(join-set: borrow<join-set>) -> result<execution-id,
+//	child-execution-request-error>
 //
 //go:nosplit
-func GetSettingsJSONSubmit(joinSet JoinSet) (result ExecutionID) {
+func GetSettingsJSONSubmit(joinSet JoinSet) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	wasmimport_GetSettingsJSONSubmit((uint32)(joinSet0), &result)
 	return

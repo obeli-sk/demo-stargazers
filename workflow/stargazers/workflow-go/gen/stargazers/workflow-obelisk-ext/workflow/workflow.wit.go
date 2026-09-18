@@ -29,13 +29,18 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
+// ChildExecutionRequestError represents the type alias "stargazers:workflow-obelisk-ext/workflow#child-execution-request-error".
+//
+// See [execution.ChildExecutionRequestError] for more information.
+type ChildExecutionRequestError = execution.ChildExecutionRequestError
+
 // StarAddedSubmit represents the imported function "star-added-submit".
 //
 //	star-added-submit: func(join-set: borrow<join-set>, login: string, repo: string)
-//	-> execution-id
+//	-> result<execution-id, child-execution-request-error>
 //
 //go:nosplit
-func StarAddedSubmit(joinSet JoinSet, login string, repo string) (result ExecutionID) {
+func StarAddedSubmit(joinSet JoinSet, login string, repo string) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
@@ -69,10 +74,10 @@ func StarAddedGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorSh
 // StarAddedParallelSubmit represents the imported function "star-added-parallel-submit".
 //
 //	star-added-parallel-submit: func(join-set: borrow<join-set>, login: string, repo:
-//	string) -> execution-id
+//	string) -> result<execution-id, child-execution-request-error>
 //
 //go:nosplit
-func StarAddedParallelSubmit(joinSet JoinSet, login string, repo string) (result ExecutionID) {
+func StarAddedParallelSubmit(joinSet JoinSet, login string, repo string) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
@@ -107,10 +112,10 @@ func StarAddedParallelGet(executionID ExecutionID) (result cm.Result[GetExtensio
 // StarRemovedSubmit represents the imported function "star-removed-submit".
 //
 //	star-removed-submit: func(join-set: borrow<join-set>, login: string, repo: string)
-//	-> execution-id
+//	-> result<execution-id, child-execution-request-error>
 //
 //go:nosplit
-func StarRemovedSubmit(joinSet JoinSet, login string, repo string) (result ExecutionID) {
+func StarRemovedSubmit(joinSet JoinSet, login string, repo string) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
@@ -144,10 +149,11 @@ func StarRemovedGet(executionID ExecutionID) (result cm.Result[GetExtensionError
 
 // BackfillSubmit represents the imported function "backfill-submit".
 //
-//	backfill-submit: func(join-set: borrow<join-set>, repo: string) -> execution-id
+//	backfill-submit: func(join-set: borrow<join-set>, repo: string) -> result<execution-id,
+//	child-execution-request-error>
 //
 //go:nosplit
-func BackfillSubmit(joinSet JoinSet, repo string) (result ExecutionID) {
+func BackfillSubmit(joinSet JoinSet, repo string) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	repo0, repo1 := cm.LowerString(repo)
 	wasmimport_BackfillSubmit((uint32)(joinSet0), (*uint8)(repo0), (uint32)(repo1), &result)
@@ -179,10 +185,11 @@ func BackfillGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorSha
 
 // BackfillParallelSubmit represents the imported function "backfill-parallel-submit".
 //
-//	backfill-parallel-submit: func(join-set: borrow<join-set>, repo: string) -> execution-id
+//	backfill-parallel-submit: func(join-set: borrow<join-set>, repo: string) -> result<execution-id,
+//	child-execution-request-error>
 //
 //go:nosplit
-func BackfillParallelSubmit(joinSet JoinSet, repo string) (result ExecutionID) {
+func BackfillParallelSubmit(joinSet JoinSet, repo string) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	repo0, repo1 := cm.LowerString(repo)
 	wasmimport_BackfillParallelSubmit((uint32)(joinSet0), (*uint8)(repo0), (uint32)(repo1), &result)

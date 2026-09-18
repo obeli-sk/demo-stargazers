@@ -4,6 +4,7 @@
 
 import { listStargazers } from 'stargazers:github/account';
 import { starAddedParallelSubmit } from 'stargazers:workflow-obelisk-ext/workflow';
+import * as obelisk from 'obelisk:workflow@1.0.0';
 
 export default function backfill_parallel(repo) {
     console.log(`Starting parallel backfill for ${repo}...`);
