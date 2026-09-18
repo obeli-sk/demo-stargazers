@@ -5,7 +5,14 @@ package workflow
 import (
 	"github.com/obeli-sk/demo-stargazers/webhook-go/gen/obelisk/types/time"
 	"go.bytecodealliance.org/cm"
+	"unsafe"
 )
+
+// ScheduleJSONErrorShape is used for storage in variant or result types.
+type ScheduleJSONErrorShape struct {
+	_     cm.HostLayout
+	shape [unsafe.Sizeof(ScheduleJSONError{})]byte
+}
 
 func lower_DateTime(v time.DateTime) (f0 uint64, f1 uint32) {
 	f0 = (uint64)(v.Seconds)

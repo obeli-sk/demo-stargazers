@@ -35,12 +35,18 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
+// ChildExecutionRequestError represents the type alias "stargazers:github-obelisk-ext/account#child-execution-request-error".
+//
+// See [execution.ChildExecutionRequestError] for more information.
+type ChildExecutionRequestError = execution.ChildExecutionRequestError
+
 // AccountInfoSubmit represents the imported function "account-info-submit".
 //
-//	account-info-submit: func(join-set: borrow<join-set>, login: string) -> execution-id
+//	account-info-submit: func(join-set: borrow<join-set>, login: string) -> result<execution-id,
+//	child-execution-request-error>
 //
 //go:nosplit
-func AccountInfoSubmit(joinSet JoinSet, login string) (result ExecutionID) {
+func AccountInfoSubmit(joinSet JoinSet, login string) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	login0, login1 := cm.LowerString(login)
 	wasmimport_AccountInfoSubmit((uint32)(joinSet0), (*uint8)(login0), (uint32)(login1), &result)
@@ -74,10 +80,10 @@ func AccountInfoGet(executionID ExecutionID) (result cm.Result[GetExtensionError
 // ListStargazersSubmit represents the imported function "list-stargazers-submit".
 //
 //	list-stargazers-submit: func(join-set: borrow<join-set>, repo: string, page-size:
-//	u8, cursor: option<string>) -> execution-id
+//	u8, cursor: option<string>) -> result<execution-id, child-execution-request-error>
 //
 //go:nosplit
-func ListStargazersSubmit(joinSet JoinSet, repo string, pageSize uint8, cursor cm.Option[string]) (result ExecutionID) {
+func ListStargazersSubmit(joinSet JoinSet, repo string, pageSize uint8, cursor cm.Option[string]) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	repo0, repo1 := cm.LowerString(repo)
 	pageSize0 := (uint32)(pageSize)

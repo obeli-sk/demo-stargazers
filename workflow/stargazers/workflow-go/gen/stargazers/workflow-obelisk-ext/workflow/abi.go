@@ -8,6 +8,12 @@ import (
 	"unsafe"
 )
 
+// ChildExecutionRequestErrorShape is used for storage in variant or result types.
+type ChildExecutionRequestErrorShape struct {
+	_     cm.HostLayout
+	shape [unsafe.Sizeof(ChildExecutionRequestError{})]byte
+}
+
 // AwaitNextExtensionErrorShape is used for storage in variant or result types.
 type AwaitNextExtensionErrorShape struct {
 	_     cm.HostLayout

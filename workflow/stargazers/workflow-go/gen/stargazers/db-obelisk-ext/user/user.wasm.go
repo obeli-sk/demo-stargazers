@@ -10,7 +10,7 @@ import (
 
 //go:wasmimport stargazers:db-obelisk-ext/user add-star-get-description-submit
 //go:noescape
-func wasmimport_AddStarGetDescriptionSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, repo0 *uint8, repo1 uint32, result *ExecutionID)
+func wasmimport_AddStarGetDescriptionSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, repo0 *uint8, repo1 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:db-obelisk-ext/user add-star-get-description-await-next
 //go:noescape
@@ -22,7 +22,7 @@ func wasmimport_AddStarGetDescriptionGet(executionId0 *uint8, executionId1 uint3
 
 //go:wasmimport stargazers:db-obelisk-ext/user remove-star-submit
 //go:noescape
-func wasmimport_RemoveStarSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, repo0 *uint8, repo1 uint32, result *ExecutionID)
+func wasmimport_RemoveStarSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, repo0 *uint8, repo1 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:db-obelisk-ext/user remove-star-await-next
 //go:noescape
@@ -34,7 +34,7 @@ func wasmimport_RemoveStarGet(executionId0 *uint8, executionId1 uint32, result *
 
 //go:wasmimport stargazers:db-obelisk-ext/user update-user-description-submit
 //go:noescape
-func wasmimport_UpdateUserDescriptionSubmit(joinSet0 uint32, username0 *uint8, username1 uint32, description0 *uint8, description1 uint32, result *ExecutionID)
+func wasmimport_UpdateUserDescriptionSubmit(joinSet0 uint32, username0 *uint8, username1 uint32, description0 *uint8, description1 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:db-obelisk-ext/user update-user-description-await-next
 //go:noescape
@@ -46,7 +46,7 @@ func wasmimport_UpdateUserDescriptionGet(executionId0 *uint8, executionId1 uint3
 
 //go:wasmimport stargazers:db-obelisk-ext/user list-stargazers-submit
 //go:noescape
-func wasmimport_ListStargazersSubmit(joinSet0 uint32, last0 uint32, repo0 uint32, repo1 *uint8, repo2 uint32, ordering0 uint32, result *ExecutionID)
+func wasmimport_ListStargazersSubmit(joinSet0 uint32, last0 uint32, repo0 uint32, repo1 *uint8, repo2 uint32, ordering0 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:db-obelisk-ext/user list-stargazers-await-next
 //go:noescape

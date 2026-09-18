@@ -10,7 +10,7 @@ import (
 
 //go:wasmimport stargazers:github-obelisk-ext/account account-info-submit
 //go:noescape
-func wasmimport_AccountInfoSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, result *ExecutionID)
+func wasmimport_AccountInfoSubmit(joinSet0 uint32, login0 *uint8, login1 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:github-obelisk-ext/account account-info-await-next
 //go:noescape
@@ -22,7 +22,7 @@ func wasmimport_AccountInfoGet(executionId0 *uint8, executionId1 uint32, result 
 
 //go:wasmimport stargazers:github-obelisk-ext/account list-stargazers-submit
 //go:noescape
-func wasmimport_ListStargazersSubmit(joinSet0 uint32, repo0 *uint8, repo1 uint32, pageSize0 uint32, cursor0 uint32, cursor1 *uint8, cursor2 uint32, result *ExecutionID)
+func wasmimport_ListStargazersSubmit(joinSet0 uint32, repo0 *uint8, repo1 uint32, pageSize0 uint32, cursor0 uint32, cursor1 *uint8, cursor2 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:github-obelisk-ext/account list-stargazers-await-next
 //go:noescape

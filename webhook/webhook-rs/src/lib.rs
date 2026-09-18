@@ -107,7 +107,8 @@ async fn handle_webhook(req: Request<Body>) -> Result<Response<Body>, Error> {
     let execution_id = match event.action {
         Action::Created => star_added_schedule(Now, &event.sender.login, &repo),
         Action::Deleted => star_removed_schedule(Now, &event.sender.login, &repo),
-    };
+    }
+    .expect("workflow scheduling failed");
     let resp = Response::builder();
     let resp = resp.header("execution-id", execution_id.id);
     Ok(resp.body(Body::empty()).unwrap()) // Send response: 200 OK

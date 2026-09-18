@@ -6,84 +6,76 @@ import (
 	"go.bytecodealliance.org/cm"
 )
 
-// This file contains wasmimport and wasmexport declarations for "obelisk:workflow@6.0.0".
+// This file contains wasmimport and wasmexport declarations for "obelisk:workflow@7.0.0".
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 execution-id-current
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 execution-id-current
 //go:noescape
 func wasmimport_ExecutionIDCurrent(result *ExecutionID)
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 random-u64
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 random-u64
 //go:noescape
 func wasmimport_RandomU64(min0 uint64, maxExclusive0 uint64) (result0 uint64)
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 random-u64-inclusive
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 random-u64-inclusive
 //go:noescape
 func wasmimport_RandomU64Inclusive(min0 uint64, maxInclusive0 uint64) (result0 uint64)
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 random-string
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 random-string
 //go:noescape
 func wasmimport_RandomString(minLength0 uint32, maxLengthExclusive0 uint32, result *string)
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 sleep
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 sleep
 //go:noescape
 func wasmimport_Sleep(scheduleAt0 uint32, scheduleAt1 uint64, scheduleAt2 uint64, name0 uint32, name1 *uint8, name2 uint32, result *cm.Result[DateTime, DateTime, struct{}])
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 join-set-create
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 join-set-create
 //go:noescape
 func wasmimport_JoinSetCreate() (result0 uint32)
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 join-set-create-named
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 join-set-create-named
 //go:noescape
 func wasmimport_JoinSetCreateNamed(name0 *uint8, name1 uint32, result *cm.Result[JoinSetCreateErrorShape, JoinSet, JoinSetCreateError])
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 join-set-close
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 join-set-close
 //go:noescape
 func wasmimport_JoinSetClose(self0 uint32)
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 submit-json
-//go:noescape
-func wasmimport_SubmitJSON(joinSet0 uint32, function0 *uint8, function1 uint32, function2 *uint8, function3 uint32, params0 *uint8, params1 uint32, result *cm.Result[SubmitJSONErrorShape, ExecutionID, SubmitJSONError])
-
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 get-result-json
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 get-result-json
 //go:noescape
 func wasmimport_GetResultJSON(executionId0 *uint8, executionId1 uint32, result *cm.Result[ResultOptionStringOptionStringShape, cm.Result[cm.Option[string], cm.Option[string], cm.Option[string]], GetResultJSONError])
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 get-execution-failure-kind
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 get-execution-failure-kind
 //go:noescape
 func wasmimport_GetExecutionFailureKind(executionId0 *uint8, executionId1 uint32, result *cm.Result[GetResultJSONErrorShape, cm.Option[ExecutionFailureKind], GetResultJSONError])
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 last-direct-call-id
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 last-direct-call-id
 //go:noescape
 func wasmimport_LastDirectCallID(result *cm.Option[ExecutionID])
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 last-oneoff-id
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 last-oneoff-id
 //go:noescape
 func wasmimport_LastOneoffID(result *cm.Option[ResponseID])
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 submit-delay
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 submit-delay
 //go:noescape
 func wasmimport_SubmitDelay(joinSet0 uint32, timeout0 uint32, timeout1 uint64, timeout2 uint64, result *DelayID)
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 join-next
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 join-next
 //go:noescape
 func wasmimport_JoinNext(joinSet0 uint32, result *cm.Result[ResultOptionStringOptionStringShape, cm.Result[cm.Option[string], cm.Option[string], cm.Option[string]], JoinNextError])
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 join-next-try
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 join-next-for
+//go:noescape
+func wasmimport_JoinNextFor(joinSet0 uint32, function0 *uint8, function1 uint32, function2 *uint8, function3 uint32, result *cm.Result[JoinNextForErrorShape, cm.Result[cm.Option[string], cm.Option[string], cm.Option[string]], JoinNextForError])
+
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 join-next-try
 //go:noescape
 func wasmimport_JoinNextTry(joinSet0 uint32, result *cm.Result[ResultOptionStringOptionStringShape, cm.Result[cm.Option[string], cm.Option[string], cm.Option[string]], JoinNextTryError])
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 execution-id-generate
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 execution-id-generate
 //go:noescape
 func wasmimport_ExecutionIDGenerate(result *ExecutionID)
 
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 schedule-json
-//go:noescape
-func wasmimport_ScheduleJSON(executionId0 *uint8, executionId1 uint32, scheduleAt0 uint32, scheduleAt1 uint64, scheduleAt2 uint64, function0 *uint8, function1 uint32, function2 *uint8, function3 uint32, params0 *uint8, params1 uint32, result *cm.Result[ScheduleJSONError, struct{}, ScheduleJSONError])
-
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 call-json
-//go:noescape
-func wasmimport_CallJSON(function0 *uint8, function1 uint32, function2 *uint8, function3 uint32, params0 *uint8, params1 uint32, result *cm.Result[ResultOptionStringOptionStringShape, cm.Result[cm.Option[string], cm.Option[string], cm.Option[string]], ScheduleJSONError])
-
-//go:wasmimport obelisk:workflow/workflow-support@6.0.0 stub-json
+//go:wasmimport obelisk:workflow/workflow-support@7.0.0 stub-json
 //go:noescape
 func wasmimport_StubJSON(executionId0 *uint8, executionId1 uint32, resultJson0 *uint8, resultJson1 uint32, result *cm.Result[StubJSONError, struct{}, StubJSONError])

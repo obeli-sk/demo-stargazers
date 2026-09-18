@@ -10,7 +10,7 @@ import (
 
 //go:wasmimport stargazers:llm-obelisk-ext/llm respond-submit
 //go:noescape
-func wasmimport_RespondSubmit(joinSet0 uint32, userPrompt0 *uint8, userPrompt1 uint32, settingsJson0 *uint8, settingsJson1 uint32, result *ExecutionID)
+func wasmimport_RespondSubmit(joinSet0 uint32, userPrompt0 *uint8, userPrompt1 uint32, settingsJson0 *uint8, settingsJson1 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:llm-obelisk-ext/llm respond-await-next
 //go:noescape

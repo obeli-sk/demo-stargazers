@@ -29,13 +29,18 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
+// ChildExecutionRequestError represents the type alias "stargazers:llm-obelisk-ext/llm#child-execution-request-error".
+//
+// See [execution.ChildExecutionRequestError] for more information.
+type ChildExecutionRequestError = execution.ChildExecutionRequestError
+
 // RespondSubmit represents the imported function "respond-submit".
 //
 //	respond-submit: func(join-set: borrow<join-set>, user-prompt: string, settings-json:
-//	string) -> execution-id
+//	string) -> result<execution-id, child-execution-request-error>
 //
 //go:nosplit
-func RespondSubmit(joinSet JoinSet, userPrompt string, settingsJSON string) (result ExecutionID) {
+func RespondSubmit(joinSet JoinSet, userPrompt string, settingsJSON string) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	userPrompt0, userPrompt1 := cm.LowerString(userPrompt)
 	settingsJson0, settingsJson1 := cm.LowerString(settingsJSON)

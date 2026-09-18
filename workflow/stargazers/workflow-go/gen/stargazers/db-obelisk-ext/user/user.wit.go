@@ -40,13 +40,18 @@ type AwaitNextExtensionError = execution.AwaitNextExtensionError
 // See [execution.GetExtensionError] for more information.
 type GetExtensionError = execution.GetExtensionError
 
+// ChildExecutionRequestError represents the type alias "stargazers:db-obelisk-ext/user#child-execution-request-error".
+//
+// See [execution.ChildExecutionRequestError] for more information.
+type ChildExecutionRequestError = execution.ChildExecutionRequestError
+
 // AddStarGetDescriptionSubmit represents the imported function "add-star-get-description-submit".
 //
 //	add-star-get-description-submit: func(join-set: borrow<join-set>, login: string,
-//	repo: string) -> execution-id
+//	repo: string) -> result<execution-id, child-execution-request-error>
 //
 //go:nosplit
-func AddStarGetDescriptionSubmit(joinSet JoinSet, login string, repo string) (result ExecutionID) {
+func AddStarGetDescriptionSubmit(joinSet JoinSet, login string, repo string) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
@@ -81,10 +86,10 @@ func AddStarGetDescriptionGet(executionID ExecutionID) (result cm.Result[GetExte
 // RemoveStarSubmit represents the imported function "remove-star-submit".
 //
 //	remove-star-submit: func(join-set: borrow<join-set>, login: string, repo: string)
-//	-> execution-id
+//	-> result<execution-id, child-execution-request-error>
 //
 //go:nosplit
-func RemoveStarSubmit(joinSet JoinSet, login string, repo string) (result ExecutionID) {
+func RemoveStarSubmit(joinSet JoinSet, login string, repo string) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	login0, login1 := cm.LowerString(login)
 	repo0, repo1 := cm.LowerString(repo)
@@ -119,10 +124,10 @@ func RemoveStarGet(executionID ExecutionID) (result cm.Result[GetExtensionErrorS
 // UpdateUserDescriptionSubmit represents the imported function "update-user-description-submit".
 //
 //	update-user-description-submit: func(join-set: borrow<join-set>, username: string,
-//	description: string) -> execution-id
+//	description: string) -> result<execution-id, child-execution-request-error>
 //
 //go:nosplit
-func UpdateUserDescriptionSubmit(joinSet JoinSet, username string, description string) (result ExecutionID) {
+func UpdateUserDescriptionSubmit(joinSet JoinSet, username string, description string) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	username0, username1 := cm.LowerString(username)
 	description0, description1 := cm.LowerString(description)
@@ -157,10 +162,10 @@ func UpdateUserDescriptionGet(executionID ExecutionID) (result cm.Result[GetExte
 // ListStargazersSubmit represents the imported function "list-stargazers-submit".
 //
 //	list-stargazers-submit: func(join-set: borrow<join-set>, last: u8, repo: option<string>,
-//	ordering: ordering) -> execution-id
+//	ordering: ordering) -> result<execution-id, child-execution-request-error>
 //
 //go:nosplit
-func ListStargazersSubmit(joinSet JoinSet, last uint8, repo cm.Option[string], ordering Ordering) (result ExecutionID) {
+func ListStargazersSubmit(joinSet JoinSet, last uint8, repo cm.Option[string], ordering Ordering) (result cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError]) {
 	joinSet0 := cm.Reinterpret[uint32](joinSet)
 	last0 := (uint32)(last)
 	repo0, repo1, repo2 := lower_OptionString(repo)

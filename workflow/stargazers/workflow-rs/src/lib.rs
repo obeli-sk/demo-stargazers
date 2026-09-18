@@ -46,8 +46,8 @@ impl Guest for Component {
                 workflow_support::join_set_create_named(&format!("settings_{login}"))
                     .expect("github login does not contain illegal characters");
             // Submit the two child executions asynchronously.
-            account_info_submit(&join_set_info, &login);
-            get_settings_json_submit(&join_set_settings);
+            account_info_submit(&join_set_info, &login).map_err(|err| format!("{err:?}"))?;
+            get_settings_json_submit(&join_set_settings).map_err(|err| format!("{err:?}"))?;
             // Await the results.
             let info = account_info_await_next(&join_set_info).map_err(err_to_string)??;
             let settings_json =
@@ -97,7 +97,8 @@ impl Guest for Component {
                 let join_set = workflow_support::join_set_create_named(login)
                     .expect("github login does not contain illegal characters");
                 // `-submit`-ting child executions without `-await`-ing results
-                imported_workflow_ext::star_added_parallel_submit(&join_set, login, &repo);
+                imported_workflow_ext::star_added_parallel_submit(&join_set, login, &repo)
+                    .map_err(|err| format!("{err:?}"))?;
                 join_set_batch.push(join_set);
             }
             if resp.logins.len() < usize::from(page_size) {

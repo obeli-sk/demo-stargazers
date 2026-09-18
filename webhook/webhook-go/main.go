@@ -115,19 +115,24 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 
 	scheduleAt := timebindings.ScheduleAtNow()
 
-	var executionID workflowbindings.ExecutionID
+	var scheduleResult cm.Result[workflowbindings.ScheduleJSONErrorShape, workflowbindings.ExecutionID, workflowbindings.ScheduleJSONError]
 	switch event.Action {
 	case ActionCreated:
 		// WIT: star-added-schedule: func(schedule-at: schedule-at, login: string, repo: string) -> execution-id;
-		executionID = workflowbindings.StarAddedSchedule(scheduleAt, event.Sender.Login, repoFullName)
+		scheduleResult = workflowbindings.StarAddedSchedule(scheduleAt, event.Sender.Login, repoFullName)
 	case ActionDeleted:
 		// WIT: star-removed-schedule: func(schedule-at: schedule-at, login: string, repo: string) -> execution-id;
-		executionID = workflowbindings.StarRemovedSchedule(scheduleAt, event.Sender.Login, repoFullName)
+		scheduleResult = workflowbindings.StarRemovedSchedule(scheduleAt, event.Sender.Login, repoFullName)
 	default:
 		fmt.Printf("Unknown action: %s\n", event.Action)
 		http.Error(w, fmt.Sprintf("Unknown action: %s", event.Action), http.StatusBadRequest)
 		return
 	}
+	if scheduleResult.IsErr() {
+		http.Error(w, scheduleResult.Err().String(), http.StatusInternalServerError)
+		return
+	}
+	executionID := scheduleResult.OK()
 
 	w.Header().Set("execution-id", executionID.ID)
 	w.WriteHeader(http.StatusOK)

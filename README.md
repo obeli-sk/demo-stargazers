@@ -85,11 +85,11 @@ Otherwise install the following:
 The exact versions of dependencies used for development and testing are in [dev-deps.txt](./dev-deps.txt).
 
 ```sh
-obelisk server run --server-config ./server.toml --deployment ./obelisk-oci.toml
+just rust
+obelisk server run --server-config ./server.toml --deployment ./obelisk-local.toml
 ```
 
-The server will start downloading the WASM components from the Docker Hub. Wait for the following
-lines in the process output:
+Wait for the following lines in the process output:
 
 ```log
 HTTP server `external` is listening on http://127.0.0.1:9090

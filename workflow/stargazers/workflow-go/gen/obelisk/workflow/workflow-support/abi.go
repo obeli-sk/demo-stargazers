@@ -4,6 +4,7 @@ package workflowsupport
 
 import (
 	"github.com/obeli-sk/demo-stargazers/workflow-go/gen/obelisk/types/execution"
+	"github.com/obeli-sk/demo-stargazers/workflow-go/gen/obelisk/types/function"
 	"github.com/obeli-sk/demo-stargazers/workflow-go/gen/obelisk/types/time"
 	"go.bytecodealliance.org/cm"
 	"unsafe"
@@ -69,18 +70,6 @@ type JoinSetCreateErrorShape struct {
 	shape [unsafe.Sizeof(JoinSetCreateError{})]byte
 }
 
-// SubmitJSONErrorShape is used for storage in variant or result types.
-type SubmitJSONErrorShape struct {
-	_     cm.HostLayout
-	shape [unsafe.Sizeof(SubmitJSONError{})]byte
-}
-
-func lower_Function(v execution.Function) (f0 *uint8, f1 uint32, f2 *uint8, f3 uint32) {
-	f0, f1 = cm.LowerString(v.InterfaceName)
-	f2, f3 = cm.LowerString(v.FunctionName)
-	return
-}
-
 // ResultOptionStringOptionStringShape is used for storage in variant or result types.
 type ResultOptionStringOptionStringShape struct {
 	_     cm.HostLayout
@@ -96,4 +85,16 @@ func lower_ExecutionID(v execution.ExecutionID) (f0 *uint8, f1 uint32) {
 type GetResultJSONErrorShape struct {
 	_     cm.HostLayout
 	shape [unsafe.Sizeof(GetResultJSONError{})]byte
+}
+
+// JoinNextForErrorShape is used for storage in variant or result types.
+type JoinNextForErrorShape struct {
+	_     cm.HostLayout
+	shape [unsafe.Sizeof(JoinNextForError{})]byte
+}
+
+func lower_Function(v function.Function) (f0 *uint8, f1 uint32, f2 *uint8, f3 uint32) {
+	f0, f1 = cm.LowerString(v.InterfaceName)
+	f2, f3 = cm.LowerString(v.FunctionName)
+	return
 }

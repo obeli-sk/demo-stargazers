@@ -10,7 +10,7 @@ import (
 
 //go:wasmimport stargazers:db-obelisk-ext/llm get-settings-json-submit
 //go:noescape
-func wasmimport_GetSettingsJSONSubmit(joinSet0 uint32, result *ExecutionID)
+func wasmimport_GetSettingsJSONSubmit(joinSet0 uint32, result *cm.Result[ChildExecutionRequestErrorShape, ExecutionID, ChildExecutionRequestError])
 
 //go:wasmimport stargazers:db-obelisk-ext/llm get-settings-json-await-next
 //go:noescape
