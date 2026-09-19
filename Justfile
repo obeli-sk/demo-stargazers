@@ -3,11 +3,11 @@ build: rust go
 
 # Build Rust components
 rust:
-	(cd activity/github/impl && cargo build --release)
-	(cd activity/db/turso && cargo build --release)
-	(cd activity/llm/openai && cargo build --release)
-	(cd webhook/webhook-rs && cargo build --release)
-	(cd workflow/stargazers/workflow-rs && cargo build --release)
+	(cd activity/github/impl && env -u CARGO_TARGET_DIR cargo build --release)
+	(cd activity/db/turso && env -u CARGO_TARGET_DIR cargo build --release)
+	(cd activity/llm/openai && env -u CARGO_TARGET_DIR cargo build --release)
+	(cd webhook/webhook-rs && env -u CARGO_TARGET_DIR cargo build --release)
+	(cd workflow/stargazers/workflow-rs && env -u CARGO_TARGET_DIR cargo build --release)
 
 # Direct JavaScript components are loaded by Obelisk and do not need a build.
 js:
