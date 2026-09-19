@@ -40,8 +40,6 @@ backtrace.sources = { ".../src/lib.rs" = "workflow/stargazers/workflow-rs/src/li
 name = "webhook"
 location = "target/wasm32-wasip2/release/webhook.wasm"
 routes = [{ methods = ["POST", "GET"], route = "" }]
-env_vars = [
-    "GITHUB_WEBHOOK_SECRET",
-    # "GITHUB_WEBHOOK_INSECURE=true" # to disable signature verification
-]
+exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
+# env_vars = ["GITHUB_WEBHOOK_INSECURE=true"] # to disable signature verification
 backtrace.sources = { ".../src/lib.rs" = "webhook/webhook-rs/src/lib.rs" }

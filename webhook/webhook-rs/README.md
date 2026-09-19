@@ -11,11 +11,12 @@ Set up the shared secret and export it as an environemnt variable:
 ```sh
 export GITHUB_WEBHOOK_SECRET="..."
 ```
-Then in your `obelisk.toml` make sure that the variable is forwarded to the WASM instance:
+Register it in `server.toml`, request it in the deployment, then generate and add the
+digest-bound `exposed_to` grant printed by `obelisk generate secret-config-digest`:
 ```toml
 [[webhook_endpoint_wasm]]
 name = "webhook"
-env_vars = ["GITHUB_WEBHOOK_SECRET"]
+exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
 ```
 
 The verification can be turned off for testing purposes in your `obelisk.toml`:

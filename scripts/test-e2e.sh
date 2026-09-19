@@ -21,8 +21,10 @@ STAR_REPO="someghrepo"
 MOCK_OPENAI_PORT=18080
 MOCK_OPENAI_PID=""
 PID=""
+SERVER_TOML="$(mktemp)"
+cp ./server.toml "$SERVER_TOML"
 
-export OBELISK__API__TOKEN=$(obelisk generate token --json | python3 -c 'import json, sys; print(json.load(sys.stdin)["token"])')
+export OBELISK_API_TOKEN=$(obelisk generate token --json | python3 -c 'import json, sys; print(json.load(sys.stdin)["token"])')
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
 
 for var in TURSO_TOKEN TURSO_LOCATION GITHUB_TOKEN_STARGAZERS TEST_GITHUB_LOGIN; do
@@ -56,6 +58,8 @@ cleanup() {
     if [[ -n "$MOCK_OPENAI_PID" ]]; then
         kill "$MOCK_OPENAI_PID" 2>/dev/null || true
     fi
+
+    rm -f "$SERVER_TOML"
 }
 
 trap cleanup EXIT
@@ -79,8 +83,8 @@ for table in stars users repos; do
         -d '{"requests":[{"type":"execute","stmt":{"sql":"DELETE FROM '${table}'"}},{"type":"close"}]}'
 done
 
-obelisk deployment verify --server-config ./server.toml --deployment "$OBELISK_TOML"
-obelisk server run --server-config ./server.toml --deployment "$OBELISK_TOML" &
+obelisk deployment verify --fix --server-config "$SERVER_TOML" --deployment "$OBELISK_TOML"
+obelisk server run --server-config "$SERVER_TOML" --deployment "$OBELISK_TOML" &
 PID=$!
 
 # Wait for obelisk to start responding
