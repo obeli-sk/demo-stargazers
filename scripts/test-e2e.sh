@@ -22,7 +22,7 @@ MOCK_OPENAI_PORT=18080
 MOCK_OPENAI_PID=""
 PID=""
 
-export OBELISK__API__TOKEN=$(obelisk generate token --json | python3 -c 'import json, sys; print(json.load(sys.stdin)["token"])')
+export OBELISK_API_TOKEN=$(obelisk generate token --json | python3 -c 'import json, sys; print(json.load(sys.stdin)["token"])')
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
 
 for var in TURSO_TOKEN TURSO_LOCATION GITHUB_TOKEN_STARGAZERS TEST_GITHUB_LOGIN; do

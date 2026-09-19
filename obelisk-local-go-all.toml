@@ -45,9 +45,7 @@ stub_wasi = true
 name = "webhook_go"
 location = "webhook/webhook-go/dist/webhook-go.wasm"
 routes = [{ methods = ["POST", "GET"], route = "" }]
-env_vars = [
-    "GITHUB_WEBHOOK_SECRET",
-    # "GITHUB_WEBHOOK_INSECURE=true", # to disable signature verification
-]
+exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
+# env_vars = ["GITHUB_WEBHOOK_INSECURE=true"] # to disable signature verification
 [webhook_endpoint_wasm.backtrace.sources]
 "webhook/webhook-go/main.go" = "webhook/webhook-go/main.go"
