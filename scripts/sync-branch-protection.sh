@@ -1,12 +1,25 @@
 #!/usr/bin/env bash
-# Applies branch protection for `main`, deriving required checks from PR workflows.
+# Applies branch protection for `main` and enables repository auto-merge, so
+# these rules live in git instead of only existing as manual GitHub UI clicks
+# that can drift silently.
+#
+# Required status checks are derived from every .github/workflows/*.yml file
+# that triggers on `pull_request`, rather than hardcoded here — add/rename/
+# remove a job in one of those workflows and the required checks follow
+# automatically. Matrix jobs are expanded (e.g. `strategy.matrix.backend:
+# [rs, js]` turns one job into one context per matrix value).
+#
+# Usage: ./scripts/sync-branch-protection.sh [branch]
+# Requires: gh (authenticated with repo admin rights), yq, jq
+#   (both available via `nix develop`)
 
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 BRANCH="${1:-main}"
-REPO="$(gh repo view --json nameWithOwner -q .nameWithOwner)"
 
+# Expands a workflow's `.jobs` into one required-check name per job, per
+# matrix combination, substituting `${{ matrix.<key> }}` in job names.
 JOB_NAMES_JQ='
 def cartesian(m):
   (m | to_entries) as $entries
@@ -45,16 +58,20 @@ derive_required_checks() {
 
 REQUIRED_CHECKS="$(derive_required_checks)"
 if [ -z "$REQUIRED_CHECKS" ]; then
-    echo "No workflow jobs found that trigger on pull_request" >&2
+    echo "!!! No workflow jobs found that trigger on pull_request under .github/workflows/" >&2
     exit 1
 fi
 
-echo "Required status checks:"
-echo "$REQUIRED_CHECKS" | sed 's/^/  - /'
+echo ">>> Required status checks derived from .github/workflows/*.yml:"
+echo "$REQUIRED_CHECKS" | sed 's/^/    - /'
 
 CONTEXTS_JSON="$(echo "$REQUIRED_CHECKS" | jq -R . | jq -s .)"
+
 PAYLOAD="$(jq -n --argjson contexts "$CONTEXTS_JSON" '{
-    required_status_checks: {strict: true, contexts: $contexts},
+    required_status_checks: {
+        strict: true,
+        contexts: $contexts
+    },
     enforce_admins: false,
     required_pull_request_reviews: null,
     restrictions: null,
@@ -64,7 +81,13 @@ PAYLOAD="$(jq -n --argjson contexts "$CONTEXTS_JSON" '{
     required_conversation_resolution: true
 }')"
 
-echo "Applying branch protection to $REPO@$BRANCH"
+if [ "${DRY_RUN:-}" = "1" ]; then
+    echo "$PAYLOAD"
+    exit 0
+fi
+
+REPO="$(gh repo view --json nameWithOwner -q .nameWithOwner)"
+echo ">>> Applying branch protection to $REPO@$BRANCH"
 echo "$PAYLOAD" | gh api \
     --method PUT \
     -H "Accept: application/vnd.github+json" \
@@ -72,5 +95,15 @@ echo "$PAYLOAD" | gh api \
     --input - \
     > /dev/null
 
-echo "Current protection:"
+# Auto-merge is a repository setting, not part of branch protection: enable it so
+# a PR can be queued to merge automatically once the required checks above pass.
+echo ">>> Enabling auto-merge on $REPO"
+gh api \
+    --method PATCH \
+    -H "Accept: application/vnd.github+json" \
+    "repos/$REPO" \
+    -F allow_auto_merge=true \
+    > /dev/null
+
+echo ">>> Done. Current protection:"
 gh api "repos/$REPO/branches/$BRANCH/protection" | jq .
