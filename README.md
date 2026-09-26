@@ -86,7 +86,7 @@ The exact versions of dependencies used for development and testing are in [dev-
 
 ```sh
 just rust
-obelisk server run --server-config ./server.toml --deployment ./obelisk-local.toml
+obelisk server run --server-config ./server.toml --app-config ./app.toml --deployment ./obelisk-local.toml
 ```
 
 Wait for the following lines in the process output:
@@ -108,7 +108,7 @@ The configuration above downloads the WASM Components from the Docker Hub.
 To build all the Rust components locally run
 ```sh
 just rust
-obelisk server run --server-config ./server.toml --deployment ./obelisk-local.toml
+obelisk server run --server-config ./server.toml --app-config ./app.toml --deployment ./obelisk-local.toml
 ```
 
 JavaScript components are loaded directly by Obelisk and do not need a build step:

@@ -32,7 +32,7 @@ go mod init ...
 ## Deplying and running with Obelisk
 ```sh
 # in repo root
-obelisk server run --config obelisk-local-go-all.toml
+obelisk server run --server-config server.toml --app-config app.toml --deployment obelisk-local-go-all.toml
 ```
 
 ## Testing

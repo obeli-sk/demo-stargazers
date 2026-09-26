@@ -23,6 +23,8 @@ MOCK_OPENAI_PID=""
 PID=""
 SERVER_TOML="$(mktemp)"
 cp ./server.toml "$SERVER_TOML"
+APP_TOML="$(mktemp)"
+cp ./app.toml "$APP_TOML"
 
 export OBELISK_API_TOKEN=$(obelisk generate token --json | python3 -c 'import json, sys; print(json.load(sys.stdin)["token"])')
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
@@ -59,7 +61,7 @@ cleanup() {
         kill "$MOCK_OPENAI_PID" 2>/dev/null || true
     fi
 
-    rm -f "$SERVER_TOML"
+    rm -f "$SERVER_TOML" "$APP_TOML"
 }
 
 trap cleanup EXIT
@@ -83,8 +85,8 @@ for table in stars users repos; do
         -d '{"requests":[{"type":"execute","stmt":{"sql":"DELETE FROM '${table}'"}},{"type":"close"}]}'
 done
 
-obelisk deployment verify --fix --server-config "$SERVER_TOML" --deployment "$OBELISK_TOML"
-obelisk server run --server-config "$SERVER_TOML" --deployment "$OBELISK_TOML" &
+obelisk deployment verify --server-config "$SERVER_TOML" --app-config "$APP_TOML" --deployment "$OBELISK_TOML"
+obelisk server run --server-config "$SERVER_TOML" --app-config "$APP_TOML" --deployment "$OBELISK_TOML" &
 PID=$!
 
 # Wait for obelisk to start responding

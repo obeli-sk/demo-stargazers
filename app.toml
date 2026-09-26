@@ -1,0 +1,37 @@
+app_name = "demo-stargazers"
+
+[secrets]
+OPENAI_API_KEY = {}
+GITHUB_TOKEN_STARGAZERS = {}
+TURSO_TOKEN = {}
+
+[secrets.GITHUB_WEBHOOK_SECRET]
+
+[secrets.GITHUB_WEBHOOK_SECRET.exposed_to]
+webhook = "sha256:db2aa846a20fd4e8d441599c5f04212a7b9b1df36752fdc3dc92f1304a8cd70f"
+webhook_js = "sha256:da55ca27fe664621fc7f229c72494b932d43deab0faba66969631da281b06744"
+webhook_go = "sha256:ff1f119ef925f6f7e97cdfc0de3ddc16980cf568cd994a19bf81c23ebbdf350d"
+
+[public_env]
+GITHUB_API_BASE_URL = { optional = true }
+GITHUB_WEBHOOK_INSECURE = { optional = true }
+OPENAI_API_BASE_URL = { optional = true }
+TURSO_LOCATION = {}
+
+[[outbound_http.allowed_host]]
+pattern = "${OPENAI_API_BASE_URL:-https://api.openai.com}"
+methods = ["POST"]
+secrets = ["OPENAI_API_KEY"]
+replace_in = ["headers"]
+
+[[outbound_http.allowed_host]]
+pattern = "${GITHUB_API_BASE_URL:-https://api.github.com}"
+methods = ["POST"]
+secrets = ["GITHUB_TOKEN_STARGAZERS"]
+replace_in = ["headers"]
+
+[[outbound_http.allowed_host]]
+pattern = "${TURSO_LOCATION}"
+methods = ["POST"]
+secrets = ["TURSO_TOKEN"]
+replace_in = ["headers"]
