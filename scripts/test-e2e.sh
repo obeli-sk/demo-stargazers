@@ -85,7 +85,8 @@ for table in stars users repos; do
         -d '{"requests":[{"type":"execute","stmt":{"sql":"DELETE FROM '${table}'"}},{"type":"close"}]}'
 done
 
-obelisk deployment verify --server-config "$SERVER_TOML" --app-config "$APP_TOML" --deployment "$OBELISK_TOML"
+# Approve this build's exposure digests in the temporary app policy.
+obelisk deployment verify --fix --server-config "$SERVER_TOML" --app-config "$APP_TOML" --deployment "$OBELISK_TOML"
 obelisk server run --server-config "$SERVER_TOML" --app-config "$APP_TOML" --deployment "$OBELISK_TOML" &
 PID=$!
 
