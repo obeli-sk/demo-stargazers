@@ -6,7 +6,7 @@ JavaScript reimplementation of [webhook](../webhook-rs/).
 
 ```sh
 # in repo root
-obelisk server run --config obelisk-local-js-all.toml
+obelisk server run --server-config server.toml --app-config app.toml --deployment obelisk-local-js-all.toml
 ```
 
 ## Testing

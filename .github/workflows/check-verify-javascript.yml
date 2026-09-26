@@ -48,4 +48,4 @@ jobs:
 
       - name: Verify obelisk-local-js-all.toml
         run: |
-          nix develop --command obelisk deployment verify --server-config server.toml --allow-unavailable-runtime-config --deployment obelisk-local-js-all.toml
+          nix develop --command obelisk deployment verify --server-config server.toml --app-config app.toml --allow-unavailable-runtime-config --deployment obelisk-local-js-all.toml
