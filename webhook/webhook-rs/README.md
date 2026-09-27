@@ -11,7 +11,7 @@ Set up the shared secret and export it as an environemnt variable:
 ```sh
 export GITHUB_WEBHOOK_SECRET="..."
 ```
-Register it in `server.toml`, request it in the deployment, then generate and add the
+Register it in `app.toml`, request it in the deployment, then generate and add the
 digest-bound `exposed_to` grant printed by `obelisk generate secret-config-digest`:
 ```toml
 [[webhook_endpoint_wasm]]
@@ -19,7 +19,7 @@ name = "webhook"
 exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
 ```
 
-The verification can be turned off for testing purposes in your `obelisk.toml`:
+The verification can be turned off for testing purposes in your `deployment-rs.toml`:
 ```toml
 [[webhook_endpoint_wasm]]
 name = "webhook"
@@ -27,7 +27,7 @@ env_vars = ["GITHUB_WEBHOOK_INSECURE=true"]
 ```
 
 ### Creating a tunnel to expose the local HTTP server
-The webhook server configured in `obelisk.toml` must be publicly available
+The webhook server configured in `deployment-rs.toml` must be publicly available
 so that GitHub can start sending the events.
 
 To create a tunnel with a public address,

@@ -4,10 +4,10 @@ This workflow implements the following [WIT interface](../wit-interface/stargaze
 
 
 ## Running the workflow
-Build the workflow and run Obelisk with `obelisk-local.toml` configuration in the root of the repository.
+Build the workflow and run Obelisk with `deployment-rs.toml` configuration in the root of the repository.
 ```sh
 cargo build --release
-obelisk server run --server-config ./server.toml --app-config ./app.toml --deployment ./obelisk-local.toml
+obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
 ```
 In another terminal run the activity.
 ```sh

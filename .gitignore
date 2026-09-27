@@ -2,4 +2,3 @@
 /.envrc
 target
 node_modules/
-/.gopath/
