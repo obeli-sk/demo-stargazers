@@ -6,7 +6,7 @@ JavaScript reimplementation of the [openai](../openai/) activity.
 
 ```sh
 # in repo root
-obelisk server run --server-config server.toml --app-config app.toml --deployment obelisk-local-js-all.toml
+obelisk server run --app-config app.toml --deployment deployment-js.toml
 ```
 
 ## Testing

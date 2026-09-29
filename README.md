@@ -55,18 +55,18 @@ Generates description based on user's repositories and organizations.
 
 Follow the prerequisites section of the [activity-llm-openai README](./activity/llm/openai/README.md).
 
-Reimplementations in [JavaScript](./activity/llm/openai-js/) and [Go](./activity/llm/openai-go/) are available for comparison.
+Reimplementations in [JavaScript](./activity/llm/openai-js/) is available for comparison.
 
 #### GitHub webhook endpoint
 The webhook collects events sent by GitHub when a user stars one of the configured repositories, then triggers the workflow execution.
 
 Follow the prerequisites section of the [webhook README](./webhook/webhook-rs/README.md).
-Reimplementations in [JavaScript](./webhook/webhook-js/) and [Go](./webhook/webhook-go/) are available for comparison.
+Reimplementations in [JavaScript](./webhook/webhook-js/) is available for comparison.
 
 #### Workflow
 [Workflow](./workflow/stargazers/workflow-rs/) orchestrates all the activities, is triggered by the webhook.
 
-Reimplementations in [JavaScript](./workflow/stargazers/workflow-js/) and [Go](./workflow/stargazers/workflow-go/) are available for comparison.
+Reimplementations in [JavaScript](./workflow/stargazers/workflow-js/) is available for comparison.
 
 ### Running
 
@@ -86,7 +86,7 @@ The exact versions of dependencies used for development and testing are in [dev-
 
 ```sh
 just rust
-obelisk server run --server-config ./server.toml --app-config ./app.toml --deployment ./obelisk-local.toml
+obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
 ```
 
 Wait for the following lines in the process output:
@@ -108,17 +108,14 @@ The configuration above downloads the WASM Components from the Docker Hub.
 To build all the Rust components locally run
 ```sh
 just rust
-obelisk server run --server-config ./server.toml --app-config ./app.toml --deployment ./obelisk-local.toml
+obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
 ```
 
-JavaScript components are loaded directly by Obelisk and do not need a build step:
+JavaScript components are loaded directly by Obelisk and do not need a build step.
+The JS deployment still uses the Rust GitHub and Turso activities:
 ```sh
-just js
-```
-
-To build Go components use
-```sh
-just go
+just rust
+obelisk server run --app-config ./app.toml --deployment ./deployment-js.toml
 ```
 
 Make sure to use tools and versions as specified in [dev-deps.txt](./dev-deps.txt).

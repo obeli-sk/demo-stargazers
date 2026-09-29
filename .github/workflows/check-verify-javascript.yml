@@ -46,6 +46,6 @@ jobs:
       - name: Build Rust Components
         run: nix develop --command just rust
 
-      - name: Verify obelisk-local-js-all.toml
+      - name: Verify deployment-js.toml
         run: |
-          nix develop --command obelisk deployment verify --server-config server.toml --app-config app.toml --allow-unavailable-runtime-config --deployment obelisk-local-js-all.toml
+          nix develop --command obelisk deployment verify --app-config app.toml --allow-unavailable-runtime-config --deployment deployment-js.toml

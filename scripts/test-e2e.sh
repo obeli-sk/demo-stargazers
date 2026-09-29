@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Usage: test-e2e.sh path-to-obelisk.toml
+# Usage: test-e2e.sh path-to-deployment.toml
 # This script starts Obelisk,
 # sends a "star-added" HTTP request to the webhook endpoint,
 # waits for the scheduled execution to complete,
@@ -15,14 +15,12 @@
 set -exo pipefail
 cd "$(dirname "$0")/.."
 
-OBELISK_TOML="$1"
+DEPLOYMENT_TOML="$1"
 STAR_ACCOUNT="someghaccount"
 STAR_REPO="someghrepo"
 MOCK_OPENAI_PORT=18080
 MOCK_OPENAI_PID=""
 PID=""
-SERVER_TOML="$(mktemp)"
-cp ./server.toml "$SERVER_TOML"
 APP_TOML="$(mktemp)"
 cp ./app.toml "$APP_TOML"
 
@@ -61,7 +59,7 @@ cleanup() {
         kill "$MOCK_OPENAI_PID" 2>/dev/null || true
     fi
 
-    rm -f "$SERVER_TOML" "$APP_TOML"
+    rm -f "$APP_TOML"
 }
 
 trap cleanup EXIT
@@ -86,8 +84,8 @@ for table in stars users repos; do
 done
 
 # Approve this build's exposure digests in the temporary app policy.
-obelisk deployment verify --fix --server-config "$SERVER_TOML" --app-config "$APP_TOML" --deployment "$OBELISK_TOML"
-obelisk server run --server-config "$SERVER_TOML" --app-config "$APP_TOML" --deployment "$OBELISK_TOML" &
+obelisk deployment verify --fix --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML"
+obelisk server run --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML" &
 PID=$!
 
 # Wait for obelisk to start responding

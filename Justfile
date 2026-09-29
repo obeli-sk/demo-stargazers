@@ -1,5 +1,5 @@
-# Build all components (Rust and Go)
-build: rust go
+# Build all components
+build: rust js
 
 # Build Rust components
 rust:
@@ -13,20 +13,17 @@ rust:
 js:
 	@echo "JavaScript components do not need a build step"
 
-# Build Go components
-go:
-	./scripts/build-components-go.sh
-
 serve:
-	obelisk server run --server-config ./server.toml --app-config ./app.toml --deployment ./obelisk-local.toml
+	obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
+
+serve-js: rust
+	obelisk server run --app-config ./app.toml --deployment ./deployment-js.toml
 
 test-unit:
 	./scripts/test-unit.sh
 test-integration:
 	./scripts/test-integration.sh
 test-e2e: rust
-	./scripts/test-e2e.sh ./obelisk-local.toml
+	./scripts/test-e2e.sh ./deployment-rs.toml
 test-e2e-js: rust js
-	./scripts/test-e2e.sh ./obelisk-local-js-all.toml
-test-e2e-go: go
-	./scripts/test-e2e.sh ./obelisk-local-go-all.toml
+	./scripts/test-e2e.sh ./deployment-js.toml

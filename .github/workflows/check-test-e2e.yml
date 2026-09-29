@@ -44,32 +44,21 @@ jobs:
       - name: Build Rust WASM components
         run: nix develop --command just rust
 
-      - name: Verify obelisk-local.toml
+      - name: Verify deployment-rs.toml
         env:
           GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
         run: |
-          nix develop --command ./scripts/test-e2e.sh ./obelisk-local.toml truncate
+          nix develop --command ./scripts/test-e2e.sh ./deployment-rs.toml truncate
 
-      - name: Verify obelisk-local-js-all.toml
+      - name: Verify deployment-js.toml
         env:
           GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
           TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
           TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
         run: |
-          nix develop --command ./scripts/test-e2e.sh ./obelisk-local-js-all.toml truncate
+          nix develop --command ./scripts/test-e2e.sh ./deployment-js.toml truncate
 
-      - name: Build Go WASM components
-        run: nix develop --command ./scripts/build-components-go.sh
-
-      - name: Verify obelisk-local-go-all.toml
-        env:
-          GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
-          TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
-          TURSO_TOKEN: ${{ secrets.E2E_TURSO_TOKEN }}
-          TURSO_LOCATION: ${{ secrets.E2E_TURSO_LOCATION }}
-        run: |
-          nix develop --command ./scripts/test-e2e.sh ./obelisk-local-go-all.toml truncate

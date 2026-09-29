@@ -1,7 +1,6 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-tinygo.url = "github:NixOS/nixpkgs/b40629efe5d6ec48dd1efba650c797ddbd39ace0";
     flake-utils.url = "github:numtide/flake-utils";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
@@ -18,7 +17,7 @@
       };
     };
   };
-  outputs = { self, nixpkgs, nixpkgs-tinygo, flake-utils, rust-overlay, obelisk }:
+  outputs = { self, nixpkgs, flake-utils, rust-overlay, obelisk }:
     flake-utils.lib.eachDefaultSystem
       (system:
         let
@@ -26,50 +25,20 @@
           pkgs = import nixpkgs {
             inherit system overlays;
           };
-          pkgsTinyGo = import nixpkgs-tinygo {
-            inherit system;
-          };
           rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
-          wit-bindgen-go-cli = pkgs.buildGoModule (rec {
-            pname = "wit-bindgen-go-cli";
-            version = "0.7.0"; # NB: Update version in dev-deps.sh
-            src = pkgs.fetchFromGitHub {
-              owner = "bytecodealliance";
-              repo = "go-modules";
-              rev = "v${version}";
-              hash = "sha256-bzsB0EsDNk6x1xroIQqbUy7L97JbEJHo7wASnl35X+0=";
-            };
-            modMode = "workspace";
-            subPackages = [ "cmd/wit-bindgen-go" ];
-            vendorHash = "sha256-9BLzPxLc+HoVQuUtTwLj6QZvN7BLrX5Zy4s5eWTXvwA=";
-            proxyVendor = true;
-          });
           commonDeps = with pkgs; [
-            cargo-binstall
             cargo-edit
-            cargo-expand
-            cargo-generate
             cargo-nextest
-            cargo-deny
             gh
             just
             jq
-            nixpkgs-fmt
-            pkg-config
             rustToolchain
-            wasm-tools
             wasmtime.out
             yq-go
             # e2e tests
             openssl
             curlMinimal
             python3
-            # javascript support
-            nodejs_22
-            # Go
-            go
-            pkgsTinyGo.tinygo
-            wit-bindgen-go-cli
           ];
           withObelisk = commonDeps ++ [ obelisk.packages.${system}.default ];
         in
