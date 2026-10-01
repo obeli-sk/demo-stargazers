@@ -92,10 +92,10 @@ obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
 Wait for the following lines in the process output:
 
 ```log
-HTTP server `external` is listening on http://127.0.0.1:9090
 HTTP server `webui` is listening on http://127.0.0.1:8080
-Serving gRPC requests at 127.0.0.1:5005
-Server is ready
+HTTP server `external` is listening on http://127.0.0.1:9090
+Serving HTTP, gRPC and gRPC-Web requests at 127.0.0.1:5005
+Obelisk 0.42.0-rc.9 is ready
 ```
 
 The workflow can be started using the Web UI.
@@ -104,8 +104,8 @@ in a GitHub repo. See the [webhook documentation](webhook/webhook-rs/README.md) 
 on how to set up GitHub and a https tunnel to the local instance.
 
 ### Building the WASM components locally
-The configuration above downloads the WASM Components from the Docker Hub.
-To build all the Rust components locally run
+Both deployments load the Rust components from the local `target` directory.
+To build all the Rust components run
 ```sh
 just rust
 obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
