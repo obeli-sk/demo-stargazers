@@ -95,7 +95,7 @@ Wait for the following lines in the process output:
 HTTP server `webui` is listening on http://127.0.0.1:8080
 HTTP server `external` is listening on http://127.0.0.1:9090
 Serving HTTP, gRPC and gRPC-Web requests at 127.0.0.1:5005
-Obelisk 0.42.0-rc.9 is ready
+Obelisk 0.42.0-rc.10 is ready
 ```
 
 The workflow can be started using the Web UI.
