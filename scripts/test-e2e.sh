@@ -84,7 +84,7 @@ for table in stars users repos; do
 done
 
 # Approve this build's exposure digests in the temporary app policy.
-obelisk deployment verify --fix --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML"
+obelisk server verify --skip-db --fix --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML"
 obelisk server run --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML" &
 PID=$!
 
@@ -102,7 +102,7 @@ dump_executions() {
     while read -r execution_id _; do
         obelisk execution get "$execution_id" || true
         obelisk execution logs --level trace "$execution_id" || true
-    done < <(obelisk execution list --show-derived)
+    done < <(obelisk execution list --show-derived 2>&1)
 }
 
 # Make sure this repo has no stars
