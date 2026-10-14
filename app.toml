@@ -8,7 +8,7 @@ TURSO_TOKEN = {}
 [secrets.GITHUB_WEBHOOK_SECRET]
 
 [secrets.GITHUB_WEBHOOK_SECRET.exposed_to]
-webhook = "sha256:db2aa846a20fd4e8d441599c5f04212a7b9b1df36752fdc3dc92f1304a8cd70f"
+webhook = "sha256:27e4b18ea2c626fd70426ea7da3bb5a98890caf7fbcc3be86895ef29bf520bfa"
 webhook_js = "sha256:da55ca27fe664621fc7f229c72494b932d43deab0faba66969631da281b06744"
 
 [public_env]
