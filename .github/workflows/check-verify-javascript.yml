@@ -7,6 +7,7 @@ permissions:
 
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
     inputs:
@@ -27,7 +28,7 @@ jobs:
   verify-javascript:
     runs-on: ubuntu-24.04
     env:
-      TURSO_LOCATION: example.com
+      TURSO_LOCATION: https://example.com
     steps:
       - uses: actions/checkout@v7
         with:
