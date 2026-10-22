@@ -10,8 +10,9 @@ return_type = "result<string, string>"
 exec.lock_expiry.seconds = 10
 env_vars = [{key="OPENAI_API_BASE_URL", value="${OPENAI_API_BASE_URL:-https://api.openai.com}"}]
 [[activity_js.allowed_host]]
-pattern = "${OPENAI_API_BASE_URL:-https://api.openai.com}"
+url_prefix = "${OPENAI_API_BASE_URL:-https://api.openai.com}"
 methods = ["POST"]
+url_regex_suffix = "/v1/chat/completions$"
 secrets = ["OPENAI_API_KEY"]
 replace_in = ["headers"]
 
@@ -21,8 +22,9 @@ location = "target/wasm32-wasip2/release/activity_github_impl.wasm"
 exec.lock_expiry.seconds = 5
 env_vars = [{key="GITHUB_API_BASE_URL", value="${GITHUB_API_BASE_URL:-https://api.github.com}"}]
 [[activity_wasm.allowed_host]]
-pattern = "${GITHUB_API_BASE_URL:-https://api.github.com}"
+url_prefix = "${GITHUB_API_BASE_URL:-https://api.github.com}"
 methods = ["POST"]
+url_regex_suffix = "/graphql$"
 secrets = ["GITHUB_TOKEN_STARGAZERS"]
 replace_in = ["headers"]
 
@@ -32,8 +34,9 @@ location = "target/wasm32-wasip2/release/activity_db_turso.wasm"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
-pattern = "${TURSO_LOCATION}"
+url_prefix = "https://${TURSO_LOCATION}"
 methods = ["POST"]
+url_regex_suffix = "/v2/pipeline$"
 secrets = ["TURSO_TOKEN"]
 replace_in = ["headers"]
 

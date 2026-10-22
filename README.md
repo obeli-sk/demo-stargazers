@@ -39,6 +39,10 @@ export TURSO_TOKEN="..."
 export GITHUB_WEBHOOK_SECRET="some-secret"
 export TURSO_LOCATION="[yourdb].turso.io"
 ```
+`TURSO_LOCATION` is the database host name without a scheme; requests always use HTTPS.
+Optionally set `OPENAI_API_BASE_URL` (default `https://api.openai.com`) to use an OpenAI-compatible
+endpoint, and `GITHUB_API_BASE_URL` (default `https://api.github.com`). Both base URLs may include
+a path; the outbound HTTP rules allow only `<base>/v1/chat/completions` and `<base>/graphql`.
 
 #### Turso activity
 This activity is responsible for persistence of users and their generated descriptions.
@@ -94,8 +98,8 @@ Wait for the following lines in the process output:
 ```log
 HTTP server `webui` is listening on http://127.0.0.1:8080
 HTTP server `external` is listening on http://127.0.0.1:9090
-Serving HTTP, gRPC and gRPC-Web requests at 127.0.0.1:5005
-Obelisk 0.43.0-rc.6 is ready
+Serving API requests at 127.0.0.1:5005
+Obelisk 0.43.0-rc.8 is ready
 ```
 
 The workflow can be started using the Web UI.

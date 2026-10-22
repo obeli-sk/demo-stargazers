@@ -18,19 +18,22 @@ OPENAI_API_BASE_URL = { optional = true }
 TURSO_LOCATION = {}
 
 [[outbound_http.allowed_host]]
-pattern = "${OPENAI_API_BASE_URL:-https://api.openai.com}"
+url_prefix = "${OPENAI_API_BASE_URL:-https://api.openai.com}"
 methods = ["POST"]
+url_regex_suffix = "/v1/chat/completions$"
 secrets = ["OPENAI_API_KEY"]
 replace_in = ["headers"]
 
 [[outbound_http.allowed_host]]
-pattern = "${GITHUB_API_BASE_URL:-https://api.github.com}"
+url_prefix = "${GITHUB_API_BASE_URL:-https://api.github.com}"
 methods = ["POST"]
+url_regex_suffix = "/graphql$"
 secrets = ["GITHUB_TOKEN_STARGAZERS"]
 replace_in = ["headers"]
 
 [[outbound_http.allowed_host]]
-pattern = "${TURSO_LOCATION}"
+url_prefix = "https://${TURSO_LOCATION}"
 methods = ["POST"]
+url_regex_suffix = "/v2/pipeline$"
 secrets = ["TURSO_TOKEN"]
 replace_in = ["headers"]
