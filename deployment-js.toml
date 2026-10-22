@@ -34,7 +34,7 @@ location = "target/wasm32-wasip2/release/activity_db_turso.wasm"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 [[activity_wasm.allowed_host]]
-url_prefix = "https://${TURSO_LOCATION}"
+url_prefix = "${TURSO_LOCATION}"
 methods = ["POST"]
 url_regex_suffix = "/v2/pipeline$"
 secrets = ["TURSO_TOKEN"]

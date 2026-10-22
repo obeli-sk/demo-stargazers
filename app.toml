@@ -32,7 +32,7 @@ secrets = ["GITHUB_TOKEN_STARGAZERS"]
 replace_in = ["headers"]
 
 [[outbound_http.allowed_host]]
-url_prefix = "https://${TURSO_LOCATION}"
+url_prefix = "${TURSO_LOCATION}"
 methods = ["POST"]
 url_regex_suffix = "/v2/pipeline$"
 secrets = ["TURSO_TOKEN"]

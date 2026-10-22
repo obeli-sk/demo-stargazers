@@ -37,9 +37,9 @@ export GITHUB_TOKEN_STARGAZERS="..."
 export OPENAI_API_KEY="..."
 export TURSO_TOKEN="..."
 export GITHUB_WEBHOOK_SECRET="some-secret"
-export TURSO_LOCATION="[yourdb].turso.io"
+export TURSO_LOCATION="https://[yourdb].turso.io"
 ```
-`TURSO_LOCATION` is the database host name without a scheme; requests always use HTTPS.
+`TURSO_LOCATION` is the database base URL including the scheme.
 Optionally set `OPENAI_API_BASE_URL` (default `https://api.openai.com`) to use an OpenAI-compatible
 endpoint, and `GITHUB_API_BASE_URL` (default `https://api.github.com`). Both base URLs may include
 a path; the outbound HTTP rules allow only `<base>/v1/chat/completions` and `<base>/graphql`.

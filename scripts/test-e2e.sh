@@ -77,7 +77,7 @@ until curl -sf -X POST "$OPENAI_API_BASE_URL/v1/chat/completions" -d '{}' >/dev/
 done
 
 for table in stars users repos; do
-    curl --fail -X POST "https://${TURSO_LOCATION}/v2/pipeline" \
+    curl --fail -X POST "${TURSO_LOCATION}/v2/pipeline" \
         -H "Authorization: Bearer ${TURSO_TOKEN}" \
         -H "Content-Type: application/json" \
         -d '{"requests":[{"type":"execute","stmt":{"sql":"DELETE FROM '${table}'"}},{"type":"close"}]}'

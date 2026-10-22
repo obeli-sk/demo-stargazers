@@ -143,13 +143,7 @@ impl TursoClient {
         let turso_location = std::env::var(ENV_TURSO_LOCATION).with_context(|| {
             format!("{ENV_TURSO_LOCATION} must be set as an environment variable")
         })?;
-        let base_url =
-            if turso_location.starts_with("http://") || turso_location.starts_with("https://") {
-                turso_location
-            } else {
-                format!("https://{turso_location}")
-            };
-        let url = format!("{base_url}/v2/pipeline");
+        let url = format!("{turso_location}/v2/pipeline");
         Ok(Self { url, token })
     }
 
