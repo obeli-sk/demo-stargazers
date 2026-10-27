@@ -44,9 +44,6 @@ jobs:
         run: |
           nix develop --command echo
 
-      - name: Build Rust Components
-        run: nix develop --command just rust
-
       - name: Verify deployment-js.toml
         run: |
           nix develop --command obelisk deployment verify --deployment deployment-js.toml

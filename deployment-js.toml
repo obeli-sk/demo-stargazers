@@ -16,30 +16,103 @@ url_regex_suffix = "/v1/chat/completions$"
 secrets = ["OPENAI_API_KEY"]
 replace_in = ["headers"]
 
-[[activity_wasm]]
-name = "activity_github_impl"
-location = "target/wasm32-wasip2/release/activity_github_impl.wasm"
+[[activity_js]]
+name = "github_account_info"
+location = "activity/github/github-js/account-info.js"
+ffqn = "stargazers:github/account.account-info"
+wit = "activity/github/wit-interface/stargazers_github"
 exec.lock_expiry.seconds = 5
 env_vars = [{key="GITHUB_API_BASE_URL", value="${GITHUB_API_BASE_URL:-https://api.github.com}"}]
-[[activity_wasm.allowed_host]]
+[[activity_js.allowed_host]]
 url_prefix = "${GITHUB_API_BASE_URL:-https://api.github.com}"
 methods = ["POST"]
 url_regex_suffix = "/graphql$"
 secrets = ["GITHUB_TOKEN_STARGAZERS"]
 replace_in = ["headers"]
 
-[[activity_wasm]]
-name = "activity_db_turso"
-location = "target/wasm32-wasip2/release/activity_db_turso.wasm"
+[[activity_js]]
+name = "github_list_stargazers"
+location = "activity/github/github-js/list-stargazers.js"
+ffqn = "stargazers:github/account.list-stargazers"
+wit = "activity/github/wit-interface/stargazers_github"
+exec.lock_expiry.seconds = 5
+env_vars = [{key="GITHUB_API_BASE_URL", value="${GITHUB_API_BASE_URL:-https://api.github.com}"}]
+[[activity_js.allowed_host]]
+url_prefix = "${GITHUB_API_BASE_URL:-https://api.github.com}"
+methods = ["POST"]
+url_regex_suffix = "/graphql$"
+secrets = ["GITHUB_TOKEN_STARGAZERS"]
+replace_in = ["headers"]
+
+[[activity_js]]
+name = "db_add_star_get_description"
+location = "activity/db/turso-js/add-star-get-description.js"
+ffqn = "stargazers:db/user.add-star-get-description"
+wit = "activity/db/wit-interface/stargazers_db"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
-[[activity_wasm.allowed_host]]
+[[activity_js.allowed_host]]
 url_prefix = "${TURSO_LOCATION}"
 methods = ["POST"]
 url_regex_suffix = "/v2/pipeline$"
 secrets = ["TURSO_TOKEN"]
 replace_in = ["headers"]
 
+[[activity_js]]
+name = "db_remove_star"
+location = "activity/db/turso-js/remove-star.js"
+ffqn = "stargazers:db/user.remove-star"
+wit = "activity/db/wit-interface/stargazers_db"
+env_vars = ["TURSO_LOCATION"]
+exec.lock_expiry.seconds = 5
+[[activity_js.allowed_host]]
+url_prefix = "${TURSO_LOCATION}"
+methods = ["POST"]
+url_regex_suffix = "/v2/pipeline$"
+secrets = ["TURSO_TOKEN"]
+replace_in = ["headers"]
+
+[[activity_js]]
+name = "db_update_user_description"
+location = "activity/db/turso-js/update-user-description.js"
+ffqn = "stargazers:db/user.update-user-description"
+wit = "activity/db/wit-interface/stargazers_db"
+env_vars = ["TURSO_LOCATION"]
+exec.lock_expiry.seconds = 5
+[[activity_js.allowed_host]]
+url_prefix = "${TURSO_LOCATION}"
+methods = ["POST"]
+url_regex_suffix = "/v2/pipeline$"
+secrets = ["TURSO_TOKEN"]
+replace_in = ["headers"]
+
+[[activity_js]]
+name = "db_list_stargazers"
+location = "activity/db/turso-js/list-stargazers.js"
+ffqn = "stargazers:db/user.list-stargazers"
+wit = "activity/db/wit-interface/stargazers_db"
+env_vars = ["TURSO_LOCATION"]
+exec.lock_expiry.seconds = 5
+[[activity_js.allowed_host]]
+url_prefix = "${TURSO_LOCATION}"
+methods = ["POST"]
+url_regex_suffix = "/v2/pipeline$"
+secrets = ["TURSO_TOKEN"]
+replace_in = ["headers"]
+
+[[activity_js]]
+name = "db_get_settings_json"
+location = "activity/db/turso-js/get-settings-json.js"
+ffqn = "stargazers:db/llm.get-settings-json"
+wit = "activity/db/wit-interface/stargazers_db"
+env_vars = ["TURSO_LOCATION"]
+exec.lock_expiry.seconds = 5
+[[activity_js.allowed_host]]
+url_prefix = "${TURSO_LOCATION}"
+methods = ["POST"]
+url_regex_suffix = "/v2/pipeline$"
+secrets = ["TURSO_TOKEN"]
+replace_in = ["headers"]
 
 [[workflow_js]]
 name = "workflow_js_star_added"

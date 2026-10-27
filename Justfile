@@ -16,7 +16,7 @@ js:
 serve:
 	obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
 
-serve-js: rust
+serve-js:
 	obelisk server run --app-config ./app.toml --deployment ./deployment-js.toml
 
 test-unit:
@@ -25,5 +25,5 @@ test-integration:
 	./scripts/test-integration.sh
 test-e2e: rust
 	./scripts/test-e2e.sh ./deployment-rs.toml
-test-e2e-js: rust js
+test-e2e-js: js
 	./scripts/test-e2e.sh ./deployment-js.toml
