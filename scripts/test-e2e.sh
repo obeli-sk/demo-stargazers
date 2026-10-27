@@ -6,10 +6,10 @@
 # waits for the scheduled execution to complete,
 # and verifies that the user is stored in the database along with the generated description.
 #
-# GitHub and Turso are exercised against the real services, so the following
-# credentials must be set in the environment:
-#   TURSO_TOKEN, TURSO_LOCATION
+# GitHub is exercised against the real service, so the following must be set
+# in the environment:
 #   GITHUB_TOKEN_STARGAZERS, TEST_GITHUB_LOGIN
+# The database is a fresh local libSQL server (sqld), the server behind Turso.
 # OpenAI is the only paid dependency, so it is always mocked.
 
 set -exo pipefail
@@ -20,6 +20,9 @@ STAR_ACCOUNT="someghaccount"
 STAR_REPO="someghrepo"
 MOCK_OPENAI_PORT=18080
 MOCK_OPENAI_PID=""
+SQLD_PORT=18081
+SQLD_PID=""
+SQLD_DIR="$(mktemp -d)"
 PID=""
 APP_TOML="$(mktemp)"
 cp ./app.toml "$APP_TOML"
@@ -27,7 +30,7 @@ cp ./app.toml "$APP_TOML"
 export OBELISK_API_TOKEN=$(obelisk generate token --json | python3 -c 'import json, sys; print(json.load(sys.stdin)["token"])')
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
 
-for var in TURSO_TOKEN TURSO_LOCATION GITHUB_TOKEN_STARGAZERS TEST_GITHUB_LOGIN; do
+for var in GITHUB_TOKEN_STARGAZERS TEST_GITHUB_LOGIN; do
     if [[ -z "${!var:-}" ]]; then
         echo "Error: $var must be set; end-to-end tests run against the real service" >&2
         exit 1
@@ -37,6 +40,9 @@ done
 # OpenAI is the only paid service, so always point it at the local mock.
 export OPENAI_API_KEY="mock-api-key-for-testing"
 export OPENAI_API_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
+# sqld runs without auth, any token is accepted.
+export TURSO_TOKEN="local"
+export TURSO_LOCATION="http://127.0.0.1:$SQLD_PORT"
 
 cleanup() {
     if [[ -n "$PID" ]]; then
@@ -58,8 +64,13 @@ cleanup() {
     if [[ -n "$MOCK_OPENAI_PID" ]]; then
         kill "$MOCK_OPENAI_PID" 2>/dev/null || true
     fi
+    if [[ -n "$SQLD_PID" ]]; then
+        kill "$SQLD_PID" 2>/dev/null || true
+        wait "$SQLD_PID" 2>/dev/null || true
+    fi
 
     rm -f "$APP_TOML"
+    rm -rf "$SQLD_DIR"
 }
 
 trap cleanup EXIT
@@ -76,12 +87,32 @@ until curl -sf -X POST "$OPENAI_API_BASE_URL/v1/chat/completions" -d '{}' >/dev/
     sleep 0.5
 done
 
-for table in stars users repos; do
-    curl --fail -X POST "${TURSO_LOCATION}/v2/pipeline" \
-        -H "Authorization: Bearer ${TURSO_TOKEN}" \
-        -H "Content-Type: application/json" \
-        -d '{"requests":[{"type":"execute","stmt":{"sql":"DELETE FROM '${table}'"}},{"type":"close"}]}'
+sqld --db-path "$SQLD_DIR/data.sqld" --http-listen-addr "127.0.0.1:$SQLD_PORT" > "$SQLD_DIR/sqld.log" 2>&1 &
+SQLD_PID=$!
+
+SECONDS=0
+until curl -sf "$TURSO_LOCATION/health" >/dev/null; do
+    if [[ $SECONDS -ge 30 ]]; then
+        echo "sqld failed to start"
+        cat "$SQLD_DIR/sqld.log"
+        exit 1
+    fi
+    sleep 0.5
 done
+
+# Create the schema and the LLM settings row.
+python3 -c '
+import json, sys
+schema = open(sys.argv[1]).read()
+settings = json.dumps({"model": "mock-model", "messages": [], "max_tokens": 50})
+print(json.dumps({"requests": [
+    {"type": "sequence", "sql": schema},
+    {"type": "execute", "stmt": {"sql": "INSERT INTO llm (id, settings) VALUES (1, :settings)",
+        "named_args": [{"name": "settings", "value": {"type": "text", "value": settings}}]}},
+    {"type": "close"},
+]}))' activity/db/turso/ddl/schema.sql \
+    | curl --fail -sS -X POST "$TURSO_LOCATION/v2/pipeline" -H "Content-Type: application/json" --data @- \
+    | python3 -c 'import json, sys; errors = [r["error"] for r in json.load(sys.stdin)["results"] if r["type"] != "ok"]; sys.exit(f"cannot set up the database: {errors}" if errors else 0)'
 
 # Approve this build's exposure digests in the temporary app policy.
 obelisk server verify --skip-db --fix --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML"

@@ -39,6 +39,7 @@
             openssl
             curlMinimal
             python3
+            sqld
           ];
           withObelisk = commonDeps ++ [ obelisk.packages.${system}.default ];
         in
