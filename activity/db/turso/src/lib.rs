@@ -1,3 +1,5 @@
+#[cfg_attr(not(test), expect(dead_code, reason = "used by the upcoming migrations"))]
+mod split;
 mod turso;
 
 use generated::export;

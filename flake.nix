@@ -32,6 +32,7 @@
             gh
             just
             jq
+            nodejs
             rustToolchain
             wasmtime.out
             yq-go
