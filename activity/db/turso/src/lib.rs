@@ -14,6 +14,10 @@ use wstd::runtime::block_on;
 pub const ENV_TURSO_TOKEN: &str = "TURSO_TOKEN";
 pub const ENV_TURSO_LOCATION: &str = "TURSO_LOCATION";
 
+// `:now`, or 1ms after the latest `updated_at` when not later, so `ORDER BY updated_at` has no ties.
+const NEXT_UPDATED_AT: &str = "max(:now, coalesce(strftime('%Y-%m-%dT%H:%M:%fZ', \
+    (SELECT max(updated_at) FROM users), '+0.001 seconds'), ''))";
+
 mod generated {
     #![allow(clippy::empty_line_after_outer_attr)]
     include!(concat!(env!("OUT_DIR"), "/any.rs"));
@@ -152,10 +156,10 @@ impl UserGuest for Component {
                     PipelineAction::Execute {
                         stmt: Stmt {
                             sql: format!(
-                                "INSERT INTO users (name, updated_at) VALUES
-                                (:{PARAM_LOGIN}, :{PARAM_NOW}) \
+                                "INSERT INTO users (name, updated_at) VALUES \
+                                (:{PARAM_LOGIN}, {NEXT_UPDATED_AT}) \
                                 ON CONFLICT(name) DO UPDATE \
-                                SET updated_at = :{PARAM_NOW}"
+                                SET updated_at = excluded.updated_at"
                             ),
                             named_args: vec![
                                 NamedArg {
@@ -281,9 +285,9 @@ impl UserGuest for Component {
                     stmt: Stmt {
                         sql: format!(
                             "INSERT INTO users (name, description, updated_at) VALUES \
-                            (:{PARAM_LOGIN}, :{PARAM_DESCRIPTION}, :{PARAM_NOW}) \
+                            (:{PARAM_LOGIN}, :{PARAM_DESCRIPTION}, {NEXT_UPDATED_AT}) \
                             ON CONFLICT(name) DO UPDATE \
-                            SET description = excluded.description, updated_at = :{PARAM_NOW};"
+                            SET description = excluded.description, updated_at = excluded.updated_at;"
                         ),
                         named_args: vec![
                             NamedArg {

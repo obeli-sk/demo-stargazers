@@ -45,6 +45,10 @@ export async function transaction(...statements) {
     return results.slice(first, first + statements.length);
 }
 
+// `:now`, or 1ms after the latest `updated_at` when not later, so `ORDER BY updated_at` has no ties.
+export const NEXT_UPDATED_AT = "max(:now, coalesce(strftime('%Y-%m-%dT%H:%M:%fZ', " +
+    "(SELECT max(updated_at) FROM users), '+0.001 seconds'), ''))";
+
 // The first cell of the first row, or a null value when there are no rows.
 export function firstValue(result) {
     const row = result.rows[0];
