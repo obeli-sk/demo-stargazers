@@ -6,8 +6,8 @@ use generated::exports::stargazers::db::user::Guest as UserGuest;
 use generated::exports::stargazers::db::user::{Ordering, Stargazer};
 use humantime::format_rfc3339_millis;
 use std::time::SystemTime;
-use turso::request::{NamedArg, PipelineAction, PipelineRequest, Stmt};
-use turso::response::{QueryResult, Response, extract_first_value_from_nth_response};
+use turso::request::Stmt;
+use turso::response::{QueryResult, first_value};
 use turso::{TursoClient, TursoValue};
 use wstd::runtime::block_on;
 
@@ -26,25 +26,16 @@ mod generated {
 struct Component;
 export!(Component with_types_in generated);
 
+fn transaction(statements: Vec<Stmt>) -> Result<Vec<QueryResult>, String> {
+    block_on(async move { TursoClient::new()?.transaction(statements).await })
+        .map_err(|err| err.to_string())
+}
+
 impl LlmGuest for Component {
     fn get_settings_json() -> Result<String, String> {
-        let request_body = PipelineRequest {
-            requests: vec![
-                PipelineAction::Execute {
-                    stmt: Stmt {
-                        sql: "SELECT settings FROM llm WHERE id = 1".to_string(),
-                        ..Stmt::default()
-                    },
-                },
-                PipelineAction::Close,
-            ],
-        };
-
-        let resp = block_on(async move { TursoClient::new()?.post_json(&request_body).await })
-            .map_err(|err| err.to_string())?;
-        if let TursoValue::Text { value: first_value } =
-            extract_first_value_from_nth_response(resp, 0)?
-        {
+        let resp = transaction(vec![Stmt::new("SELECT settings FROM llm WHERE id = 1")])?;
+        let resp = resp.into_iter().next().ok_or("missing result")?;
+        if let TursoValue::Text { value: first_value } = first_value(resp)? {
             Ok(first_value)
         } else {
             Err("No text value in the first cell".to_string())
@@ -56,67 +47,25 @@ fn get_user_description_and_star_status(
     login: &str,
     repo: &str,
 ) -> Result<(Option<String>, bool), String> {
-    const PARAM_LOGIN: &str = "login";
-    const PARAM_REPO: &str = "repo";
-
-    let request_body = PipelineRequest {
-        requests: vec![
-            // Check if the user already starred the repo
-            PipelineAction::Execute {
-                stmt: Stmt {
-                    sql: format!(
-                        "SELECT 1 FROM stars WHERE user_name = :{PARAM_LOGIN} AND repo_name = :{PARAM_REPO}"
-                    ),
-                    named_args: vec![
-                        NamedArg {
-                            name: PARAM_LOGIN,
-                            value: TursoValue::Text {
-                                value: login.to_string(),
-                            },
-                        },
-                        NamedArg {
-                            name: PARAM_REPO,
-                            value: TursoValue::Text {
-                                value: repo.to_string(),
-                            },
-                        },
-                    ],
-                },
-            },
-            // Select user's description
-            PipelineAction::Execute {
-                stmt: Stmt {
-                    sql: format!("SELECT description FROM users WHERE name = :{PARAM_LOGIN}"),
-                    named_args: vec![NamedArg {
-                        name: PARAM_LOGIN,
-                        value: TursoValue::Text {
-                            value: login.to_string(),
-                        },
-                    }],
-                },
-            },
-            PipelineAction::Close,
-        ],
-    };
-
-    let resp = block_on(async move { TursoClient::new()?.post_json(&request_body).await })
-        .map_err(|err| err.to_string())?;
+    let resp = transaction(vec![
+        // Check if the user already starred the repo
+        Stmt::new("SELECT 1 FROM stars WHERE user_name = :login AND repo_name = :repo")
+            .arg("login", login)
+            .arg("repo", repo),
+        // Select user's description
+        Stmt::new("SELECT description FROM users WHERE name = :login").arg("login", login),
+    ])?;
     parse_user_description_and_star_status(resp)
 }
 
 fn parse_user_description_and_star_status(
-    mut resp: Vec<Response>,
+    resp: Vec<QueryResult>,
 ) -> Result<(Option<String>, bool), String> {
-    if resp.len() != 3 {
-        return Err(format!(
-            "unexpected responses count, expected 3, got {}",
-            resp.len()
-        ));
-    }
-    resp.pop().unwrap(); // Close
-    let description = resp.pop().unwrap(); // Select user's description
+    let Ok([star, description]) = <[QueryResult; 2]>::try_from(resp) else {
+        return Err("unexpected responses count, expected 2".to_string());
+    };
     // Check if the user already starred the repo
-    let already_starred = match extract_first_value_from_nth_response(resp, 0)? {
+    let already_starred = match first_value(star)? {
         TursoValue::Integer { .. } => true,
         TursoValue::Null => false,
         other => {
@@ -126,7 +75,7 @@ fn parse_user_description_and_star_status(
         }
     };
     // Get the user's description
-    let description = match extract_first_value_from_nth_response(vec![description], 0)? {
+    let description = match first_value(description)? {
         TursoValue::Text { value } => Some(value),
         TursoValue::Null => None,
         other => {
@@ -140,180 +89,62 @@ fn parse_user_description_and_star_status(
 
 impl UserGuest for Component {
     fn add_star_get_description(login: String, repo: String) -> Result<Option<String>, String> {
-        const PARAM_LOGIN: &str = "login";
-        const PARAM_REPO: &str = "repo";
-        const PARAM_NOW: &str = "now";
-        let now = SystemTime::now();
-        let now = format_rfc3339_millis(now).to_string();
+        let now = format_rfc3339_millis(SystemTime::now()).to_string();
 
         // If the user already starred the repo, do not update the user's `updated_at`.
         // In fact, do not update anything.
         let (description, already_starred) = get_user_description_and_star_status(&login, &repo)?;
         if !already_starred {
-            let request_body = PipelineRequest {
-                requests: vec![
-                    // Add user: if the user already exists and did not have a star relation to the repo, update the `updated_at` field.
-                    PipelineAction::Execute {
-                        stmt: Stmt {
-                            sql: format!(
-                                "INSERT INTO users (name, updated_at) VALUES \
-                                (:{PARAM_LOGIN}, {NEXT_UPDATED_AT}) \
-                                ON CONFLICT(name) DO UPDATE \
-                                SET updated_at = excluded.updated_at"
-                            ),
-                            named_args: vec![
-                                NamedArg {
-                                    name: PARAM_LOGIN,
-                                    value: TursoValue::Text {
-                                        value: login.clone(),
-                                    },
-                                },
-                                NamedArg {
-                                    name: PARAM_NOW,
-                                    value: TursoValue::Text { value: now.clone() },
-                                },
-                            ],
-                        },
-                    },
-                    // Add repo if it does not exist.
-                    PipelineAction::Execute {
-                        stmt: Stmt {
-                            sql: format!(
-                                "INSERT INTO repos (name) VALUES (:{PARAM_REPO}) ON CONFLICT DO NOTHING;"
-                            ),
-                            named_args: vec![NamedArg {
-                                name: PARAM_REPO,
-                                value: TursoValue::Text {
-                                    value: repo.clone(),
-                                },
-                            }],
-                        },
-                    },
-                    // Add the star relation
-                    PipelineAction::Execute {
-                        stmt: Stmt {
-                            sql: format!(
-                                "INSERT INTO stars (user_name, repo_name) VALUES \
-                                (:{PARAM_LOGIN}, :{PARAM_REPO}) ON CONFLICT DO NOTHING;"
-                            ),
-                            named_args: vec![
-                                NamedArg {
-                                    name: PARAM_LOGIN,
-                                    value: TursoValue::Text {
-                                        value: login.clone(),
-                                    },
-                                },
-                                NamedArg {
-                                    name: PARAM_REPO,
-                                    value: TursoValue::Text {
-                                        value: repo.clone(),
-                                    },
-                                },
-                            ],
-                        },
-                    },
-                    PipelineAction::Close,
-                ],
-            };
-            block_on(async move { TursoClient::new()?.post_json(&request_body).await })
-                .map_err(|err| err.to_string())?;
+            transaction(vec![
+                // Add user: if the user already exists and did not have a star relation to the repo, update the `updated_at` field.
+                Stmt::new(format!(
+                    "INSERT INTO users (name, updated_at) VALUES (:login, {NEXT_UPDATED_AT}) \
+                    ON CONFLICT(name) DO UPDATE SET updated_at = excluded.updated_at"
+                ))
+                .arg("login", &login)
+                .arg("now", now),
+                // Add repo if it does not exist.
+                Stmt::new("INSERT INTO repos (name) VALUES (:repo) ON CONFLICT DO NOTHING")
+                    .arg("repo", &repo),
+                // Add the star relation
+                Stmt::new(
+                    "INSERT INTO stars (user_name, repo_name) VALUES (:login, :repo) \
+                    ON CONFLICT DO NOTHING",
+                )
+                .arg("login", login)
+                .arg("repo", repo),
+            ])?;
         }
         Ok(description)
     }
 
     fn remove_star(login: String, repo: String) -> Result<(), String> {
-        const PARAM_LOGIN: &str = "login";
-        const PARAM_REPO: &str = "repo";
-
-        let request_body = PipelineRequest {
-            requests: vec![
-                PipelineAction::Execute {
-                    stmt: Stmt {
-                        sql: format!(
-                            "DELETE FROM stars WHERE \
-                            repo_name = :{PARAM_REPO} AND user_name = :{PARAM_LOGIN};"
-                        ),
-                        named_args: vec![
-                            NamedArg {
-                                name: PARAM_REPO,
-                                value: TursoValue::Text {
-                                    value: repo.clone(),
-                                },
-                            },
-                            NamedArg {
-                                name: PARAM_LOGIN,
-                                value: TursoValue::Text {
-                                    value: login.clone(),
-                                },
-                            },
-                        ],
-                    },
-                },
-                PipelineAction::Execute {
-                    stmt: Stmt {
-                        sql: format!(
-                            "DELETE FROM users WHERE \
-                            name = :{PARAM_LOGIN} AND NOT EXISTS \
-                            (SELECT 1 FROM stars WHERE user_name = :{PARAM_LOGIN});"
-                        ),
-                        named_args: vec![NamedArg {
-                            name: PARAM_LOGIN,
-                            value: TursoValue::Text { value: login },
-                        }],
-                    },
-                },
-                PipelineAction::Close,
-            ],
-        };
-
-        block_on(async move { TursoClient::new()?.post_json(&request_body).await })
-            .map_err(|err| err.to_string())?;
-
+        transaction(vec![
+            Stmt::new("DELETE FROM stars WHERE repo_name = :repo AND user_name = :login")
+                .arg("repo", repo)
+                .arg("login", &login),
+            Stmt::new(
+                "DELETE FROM users WHERE name = :login AND NOT EXISTS \
+                (SELECT 1 FROM stars WHERE user_name = :login)",
+            )
+            .arg("login", login),
+        ])?;
         Ok(())
     }
 
     fn update_user_description(username: String, description: String) -> Result<(), String> {
-        const PARAM_LOGIN: &str = "login";
-        const PARAM_DESCRIPTION: &str = "description";
-        const PARAM_NOW: &str = "now";
-        let now = SystemTime::now();
-        let now = format_rfc3339_millis(now);
-
-        let request_body = PipelineRequest {
-            requests: vec![
-                PipelineAction::Execute {
-                    stmt: Stmt {
-                        sql: format!(
-                            "INSERT INTO users (name, description, updated_at) VALUES \
-                            (:{PARAM_LOGIN}, :{PARAM_DESCRIPTION}, {NEXT_UPDATED_AT}) \
-                            ON CONFLICT(name) DO UPDATE \
-                            SET description = excluded.description, updated_at = excluded.updated_at;"
-                        ),
-                        named_args: vec![
-                            NamedArg {
-                                name: PARAM_LOGIN,
-                                value: TursoValue::Text { value: username },
-                            },
-                            NamedArg {
-                                name: PARAM_DESCRIPTION,
-                                value: TursoValue::Text { value: description },
-                            },
-                            NamedArg {
-                                name: PARAM_NOW,
-                                value: TursoValue::Text {
-                                    value: now.to_string(),
-                                },
-                            },
-                        ],
-                    },
-                },
-                PipelineAction::Close,
-            ],
-        };
-
-        block_on(async move { TursoClient::new()?.post_json(&request_body).await })
-            .map_err(|err| err.to_string())?;
-
+        let now = format_rfc3339_millis(SystemTime::now()).to_string();
+        transaction(vec![
+            Stmt::new(format!(
+                "INSERT INTO users (name, description, updated_at) VALUES \
+                (:login, :description, {NEXT_UPDATED_AT}) \
+                ON CONFLICT(name) DO UPDATE \
+                SET description = excluded.description, updated_at = excluded.updated_at"
+            ))
+            .arg("login", username)
+            .arg("description", description)
+            .arg("now", now),
+        ])?;
         Ok(())
     }
 
@@ -322,68 +153,35 @@ impl UserGuest for Component {
         repo: Option<String>,
         ordering: Ordering,
     ) -> Result<Vec<Stargazer>, String> {
-        const PARAM_REPO: &str = "repo";
         let ordering = if ordering == Ordering::Descending {
             "DESC"
         } else {
             ""
         };
-
-        let request_body = PipelineRequest {
-            requests: vec![
-                PipelineAction::Execute {
-                    stmt: Stmt {
-                        sql: format!(
-                            "SELECT u.name as login, u.description, s.repo_name as repo \
-                            FROM users u \
-                            INNER JOIN stars s ON u.name = s.user_name \
-                            {where}
-                            ORDER BY u.updated_at {ordering}, s.rowid {ordering} LIMIT {last}",
-                            where = if repo.is_some() {
-                                format!("WHERE s.repo_name=:{PARAM_REPO}")
-                            } else {
-                                String::new()
-                            }
-                        ),
-                        named_args: if let Some(repo) = repo {
-                            vec![NamedArg {
-                                name: PARAM_REPO,
-                                value: TursoValue::Text { value: repo },
-                            }]
-                        } else {
-                            vec![]
-                        },
-                    },
-                },
-                PipelineAction::Close,
-            ],
+        let stmt = Stmt::new(format!(
+            "SELECT u.name as login, u.description, s.repo_name as repo \
+            FROM users u \
+            INNER JOIN stars s ON u.name = s.user_name \
+            {where}
+            ORDER BY u.updated_at {ordering}, s.rowid {ordering} LIMIT {last}",
+            where = if repo.is_some() {
+                "WHERE s.repo_name = :repo"
+            } else {
+                ""
+            }
+        ));
+        let stmt = match repo {
+            Some(repo) => stmt.arg("repo", repo),
+            None => stmt,
         };
-        let resp = block_on(async move { TursoClient::new()?.post_json(&request_body).await })
-            .map_err(|err| err.to_string())?;
-        process_resp_list_stargazers(resp)
+        process_resp_list_stargazers(transaction(vec![stmt])?)
     }
 }
 
-fn process_resp_list_stargazers(
-    resp: Vec<turso::response::Response>,
-) -> Result<Vec<Stargazer>, String> {
-    // must contain two responses: execute and close
-    let resp: Vec<QueryResult> = resp
-        .into_iter()
-        .filter_map(|r| match r {
-            Response::Execute {
-                result: Some(result),
-            } => Some(result),
-            _ => None,
-        })
-        .collect();
-    if resp.len() != 1 {
-        return Err(format!(
-            "unexpected responses count, expected 1, got {}",
-            resp.len()
-        ));
-    }
-    let resp = resp.into_iter().next().expect("length already checked");
+fn process_resp_list_stargazers(resp: Vec<QueryResult>) -> Result<Vec<Stargazer>, String> {
+    let Ok([resp]) = <[QueryResult; 1]>::try_from(resp) else {
+        return Err("unexpected responses count, expected 1".to_string());
+    };
     let cols: Vec<_> = resp.cols.into_iter().map(|col| col.name).collect();
     if cols != ["login", "description", "repo"] {
         return Err(format!("wrong cols returned: {cols:?}"));
@@ -422,51 +220,42 @@ mod tests {
         process_resp_list_stargazers,
         turso::{
             TursoValue,
-            response::{PipelineResponse, extract_first_value_from_nth_response},
+            response::{QueryResult, first_value},
         },
     };
 
     #[test]
     fn test_parse_settings_from_response() {
-        let resp: PipelineResponse = serde_json::from_str(
-            r#"
-            {
-                "baton": null,
-                "base_url": null,
-                "results": [
-                    {
-                        "type": "ok",
-                        "response": {
-                            "type": "execute",
-                            "result": {
-                                "cols": [{"name": "settings", "decltype": "TEXT"}],
-                                "rows": [
-                                    [{"type": "text", "value": "{\"a\":1}"}]
-                                ],
-                                "affected_row_count": 0,
-                                "last_insert_rowid": null,
-                                "replication_index": "14",
-                                "rows_read": 1,
-                                "rows_written": 0,
-                                "query_duration_ms": 0.054
-                            }
-                        }
-                    },
-                    {
-                        "type": "ok",
-                        "response": {
-                            "type": "close"
-                        }
-                    }
-                ]
-            }
-            "#,
+        let resp: Vec<QueryResult> = serde_json::from_str(
+            r#"[
+  {
+    "cols": [
+      {
+        "name": "settings",
+        "decltype": "TEXT"
+      }
+    ],
+    "rows": [
+      [
+        {
+          "type": "text",
+          "value": "{\"a\":1}"
+        }
+      ]
+    ],
+    "affected_row_count": 0,
+    "last_insert_rowid": null,
+    "replication_index": "14",
+    "rows_read": 1,
+    "rows_written": 0,
+    "query_duration_ms": 0.054
+  }
+]"#,
         )
         .unwrap();
-        let resp = resp.ok_responses().unwrap();
         let TursoValue::Text {
             value: settings_json,
-        } = extract_first_value_from_nth_response(resp, 0).unwrap()
+        } = first_value(resp.into_iter().next().unwrap()).unwrap()
         else {
             panic!("No text value in the expected coordinates");
         };
@@ -475,95 +264,76 @@ mod tests {
 
     #[test]
     fn process_resp_list_stargazers_should_parse_ok_response() {
-        let resp: PipelineResponse = serde_json::from_str(
-            r#"
-            {
-                "baton": null,
-                "base_url": null,
-                "results": [
-                    {
-                        "type": "ok",
-                        "response": {
-                            "type": "execute",
-                            "result": {
-                                "cols": [
-                                    {
-                                        "name": "login",
-                                        "decltype": "TEXT"
-                                    },
-                                    {
-                                        "name": "description",
-                                        "decltype": "TEXT"
-                                    },
-                                    {
-                                        "name": "repo",
-                                        "decltype": "TEXT"
-                                    }
-                                ],
-                                "rows": [
-                                    [
-                                        {
-                                            "type": "text",
-                                            "value": "u1"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "value": "d1"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "value": "repo"
-                                        }
-                                    ],
-                                    [
-                                        {
-                                            "type": "text",
-                                            "value": "u2"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "value": "d2"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "value": "repo"
-                                        }
-                                    ],
-                                    [
-                                        {
-                                            "type": "text",
-                                            "value": "none"
-                                        },
-                                        {
-                                            "type": "null"
-                                        },
-                                        {
-                                            "type": "text",
-                                            "value": "repo"
-                                        }
-                                    ]
-                                ],
-                                "affected_row_count": 0,
-                                "last_insert_rowid": null,
-                                "replication_index": "727",
-                                "rows_read": 20,
-                                "rows_written": 0,
-                                "query_duration_ms": 0.132
-                            }
-                        }
-                    },
-                    {
-                        "type": "ok",
-                        "response": {
-                            "type": "close"
-                        }
-                    }
-                ]
-            }
-            "#,
+        let resp: Vec<QueryResult> = serde_json::from_str(
+            r#"[
+  {
+    "cols": [
+      {
+        "name": "login",
+        "decltype": "TEXT"
+      },
+      {
+        "name": "description",
+        "decltype": "TEXT"
+      },
+      {
+        "name": "repo",
+        "decltype": "TEXT"
+      }
+    ],
+    "rows": [
+      [
+        {
+          "type": "text",
+          "value": "u1"
+        },
+        {
+          "type": "text",
+          "value": "d1"
+        },
+        {
+          "type": "text",
+          "value": "repo"
+        }
+      ],
+      [
+        {
+          "type": "text",
+          "value": "u2"
+        },
+        {
+          "type": "text",
+          "value": "d2"
+        },
+        {
+          "type": "text",
+          "value": "repo"
+        }
+      ],
+      [
+        {
+          "type": "text",
+          "value": "none"
+        },
+        {
+          "type": "null"
+        },
+        {
+          "type": "text",
+          "value": "repo"
+        }
+      ]
+    ],
+    "affected_row_count": 0,
+    "last_insert_rowid": null,
+    "replication_index": "727",
+    "rows_read": 20,
+    "rows_written": 0,
+    "query_duration_ms": 0.132
+  }
+]"#,
         )
         .unwrap();
-        let resp = resp.ok_responses().unwrap();
         let resp = process_resp_list_stargazers(resp).unwrap();
         let expected = vec![
             Stargazer {
@@ -585,105 +355,106 @@ mod tests {
         assert_eq!(expected, resp);
     }
 
-    const USER_WITHOUT_DESCRIPTION_AND_WITH_STAR_STATUS_JSON: &str = r#"
-    {
-      "base_url": null,
-      "baton": null,
-      "results": [
+    const USER_WITHOUT_DESCRIPTION_AND_WITH_STAR_STATUS_JSON: &str = r#"[
+  {
+    "affected_row_count": 0,
+    "cols": [
+      {
+        "decltype": null,
+        "name": "1"
+      }
+    ],
+    "last_insert_rowid": null,
+    "query_duration_ms": 0.163,
+    "replication_index": null,
+    "rows": [
+      [
         {
-          "response": {
-            "result": {
-              "affected_row_count": 0,
-              "cols": [{ "decltype": null, "name": "1" }],
-              "last_insert_rowid": null,
-              "query_duration_ms": 0.163,
-              "replication_index": null,
-              "rows": [[{ "type": "integer", "value": "1" }]],
-              "rows_read": 1,
-              "rows_written": 0
-            },
-            "type": "execute"
-          },
-          "type": "ok"
-        },
-        {
-          "response": {
-            "result": {
-              "affected_row_count": 0,
-              "cols": [{ "decltype": "TEXT", "name": "description" }],
-              "last_insert_rowid": null,
-              "query_duration_ms": 0.085,
-              "replication_index": null,
-              "rows": [[{ "type": "null" }]],
-              "rows_read": 1,
-              "rows_written": 0
-            },
-            "type": "execute"
-          },
-          "type": "ok"
-        },
-        { "response": { "type": "close" }, "type": "ok" }
+          "type": "integer",
+          "value": "1"
+        }
       ]
-    }
-    "#;
+    ],
+    "rows_read": 1,
+    "rows_written": 0
+  },
+  {
+    "affected_row_count": 0,
+    "cols": [
+      {
+        "decltype": "TEXT",
+        "name": "description"
+      }
+    ],
+    "last_insert_rowid": null,
+    "query_duration_ms": 0.085,
+    "replication_index": null,
+    "rows": [
+      [
+        {
+          "type": "null"
+        }
+      ]
+    ],
+    "rows_read": 1,
+    "rows_written": 0
+  }
+]"#;
 
     #[test]
     fn user_without_description_and_with_star_status_should_work() {
-        let resp: PipelineResponse =
+        let resp: Vec<QueryResult> =
             serde_json::from_str(USER_WITHOUT_DESCRIPTION_AND_WITH_STAR_STATUS_JSON).unwrap();
-        let resp = resp.ok_responses().unwrap();
         let (description, already_starred) =
             super::parse_user_description_and_star_status(resp).unwrap();
         assert_eq!(None, description);
         assert!(already_starred);
     }
 
-    const USER_WITH_DESCRIPTION_AND_WITHOUT_STAR_STATUS_JSON: &str = r#"{
-      "base_url": null,
-      "baton": null,
-      "results": [
+    const USER_WITH_DESCRIPTION_AND_WITHOUT_STAR_STATUS_JSON: &str = r#"[
+  {
+    "affected_row_count": 0,
+    "cols": [
+      {
+        "decltype": null,
+        "name": "1"
+      }
+    ],
+    "last_insert_rowid": null,
+    "query_duration_ms": 0.167,
+    "replication_index": null,
+    "rows": [],
+    "rows_read": 0,
+    "rows_written": 0
+  },
+  {
+    "affected_row_count": 0,
+    "cols": [
+      {
+        "decltype": "TEXT",
+        "name": "description"
+      }
+    ],
+    "last_insert_rowid": null,
+    "query_duration_ms": 0.088,
+    "replication_index": null,
+    "rows": [
+      [
         {
-          "response": {
-            "result": {
-              "affected_row_count": 0,
-              "cols": [{ "decltype": null, "name": "1" }],
-              "last_insert_rowid": null,
-              "query_duration_ms": 0.167,
-              "replication_index": null,
-              "rows": [],
-              "rows_read": 0,
-              "rows_written": 0
-            },
-            "type": "execute"
-          },
-          "type": "ok"
-        },
-        {
-          "response": {
-            "result": {
-              "affected_row_count": 0,
-              "cols": [{ "decltype": "TEXT", "name": "description" }],
-              "last_insert_rowid": null,
-              "query_duration_ms": 0.088,
-              "replication_index": null,
-              "rows": [[{ "type": "text", "value": "suqbjkasrl" }]],
-              "rows_read": 1,
-              "rows_written": 0
-            },
-            "type": "execute"
-          },
-          "type": "ok"
-        },
-        { "response": { "type": "close" }, "type": "ok" }
+          "type": "text",
+          "value": "suqbjkasrl"
+        }
       ]
-    }
-    "#;
+    ],
+    "rows_read": 1,
+    "rows_written": 0
+  }
+]"#;
 
     #[test]
     fn user_with_description_and_without_star_status_should_work() {
-        let resp: PipelineResponse =
+        let resp: Vec<QueryResult> =
             serde_json::from_str(USER_WITH_DESCRIPTION_AND_WITHOUT_STAR_STATUS_JSON).unwrap();
-        let resp = resp.ok_responses().unwrap();
         let (description, already_starred) =
             super::parse_user_description_and_star_status(resp).unwrap();
         assert_eq!(Some("suqbjkasrl".to_string()), description);
@@ -699,8 +470,8 @@ mod tests {
             generated::exports::stargazers::db::user::{Guest as _, Ordering, Stargazer},
             turso::{
                 TursoClient, TursoValue,
-                request::{NamedArg, PipelineAction, PipelineRequest, Stmt},
-                response::{QueryResult, Response},
+                request::Stmt,
+                response::QueryResult,
             },
         };
 
@@ -722,18 +493,7 @@ mod tests {
             println!("DELETE FROM {table}");
             TursoClient::new()
                 .unwrap()
-                .post_json(&PipelineRequest {
-                    requests: vec![
-                        // Add user
-                        PipelineAction::Execute {
-                            stmt: Stmt {
-                                sql: format!("DELETE FROM {table};"),
-                                ..Stmt::default()
-                            },
-                        },
-                        PipelineAction::Close,
-                    ],
-                })
+                .transaction(vec![Stmt::new(format!("DELETE FROM {table}"))])
                 .await
                 .unwrap();
         }
@@ -759,26 +519,11 @@ mod tests {
             println!("{sql}");
             let resp = TursoClient::new()
                 .unwrap()
-                .post_json(&PipelineRequest {
-                    requests: vec![
-                        PipelineAction::Execute {
-                            stmt: Stmt {
-                                sql,
-                                ..Stmt::default()
-                            },
-                        },
-                        PipelineAction::Close,
-                    ],
-                })
+                .transaction(vec![Stmt::new(sql)])
                 .await
                 .unwrap();
-            assert_eq!(2, resp.len());
-            let first_result = resp.into_iter().next().unwrap();
-            let Response::Execute {
-                result: Some(QueryResult { rows, .. }),
-            } = first_result
-            else {
-                panic!("Wrong response {first_result:?}");
+            let Ok([QueryResult { rows, .. }]) = <[QueryResult; 1]>::try_from(resp) else {
+                panic!("expected one result");
             };
             rows.into_iter()
                 .map(|row| {
@@ -806,27 +551,15 @@ mod tests {
             // Create the row
             block_on(async move {
                 TursoClient::new()
-                .unwrap()
-                .post_json(&PipelineRequest {
-                    requests: vec![
-                        PipelineAction::Execute {
-                            stmt: Stmt {
-                                sql: format!(
-                                    "INSERT INTO llm (id, settings) VALUES (1, :{PARAM_SETTINGS});"
-                                ),
-                                named_args: vec![NamedArg {
-                                    name: PARAM_SETTINGS,
-                                    value: TursoValue::Text {
-                                        value: EXPECTED.to_string(),
-                                    },
-                                }],
-                            },
-                        },
-                        PipelineAction::Close,
-                    ],
-                })
-                .await
-                .unwrap();
+                    .unwrap()
+                    .transaction(vec![
+                        Stmt::new(format!(
+                            "INSERT INTO llm (id, settings) VALUES (1, :{PARAM_SETTINGS})"
+                        ))
+                        .arg(PARAM_SETTINGS, EXPECTED),
+                    ])
+                    .await
+                    .unwrap();
             });
             let settings_json = Component::get_settings_json().unwrap();
             assert_eq!(EXPECTED, settings_json);
