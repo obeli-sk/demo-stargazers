@@ -12,6 +12,7 @@ cargo nextest --version | sed -n '1p' >> dev-deps.txt
 just --version >> dev-deps.txt
 obelisk --version >> dev-deps.txt
 rustc --version >> dev-deps.txt
+sqld --version | cut -d" " -f2-3 >> dev-deps.txt
 wasmtime --version >> dev-deps.txt
 # libc
 ldd --version | sed -n '1p' >> dev-deps.txt
