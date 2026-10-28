@@ -1,10 +1,10 @@
 // JavaScript implementation of stargazers:db/user.list-stargazers
-import { pipeline, optionalText } from './turso.js';
+import { transaction, optionalText } from './turso.js';
 
 export default async function list_stargazers(last, repo, ordering) {
     const order = ordering === 'descending' ? 'DESC' : '';
     const where = repo === null ? '' : 'WHERE s.repo_name = :repo';
-    const [result] = await pipeline([
+    const [result] = await transaction([
         'SELECT u.name AS login, u.description, s.repo_name AS repo FROM users u ' +
         `INNER JOIN stars s ON u.name = s.user_name ${where} ` +
         `ORDER BY u.updated_at ${order}, s.rowid ${order} LIMIT ${last}`,
