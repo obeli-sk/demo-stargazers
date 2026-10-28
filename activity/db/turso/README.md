@@ -1,5 +1,5 @@
 # Turso Activity
-Implements the [`stargazers:db/user` and `stargazers:db/llm` WIT interface](../wit-interface/stargazers_db/db.wit) using [Turso](https://turso.tech/).
+Implements the [`stargazers:db/user`, `stargazers:db/llm` and `stargazers:db/migration` WIT interface](../wit-interface/stargazers_db/db.wit) using [Turso](https://turso.tech/).
 
 ## Prerequisites
 Database domain and token with read and write permission is required.
@@ -12,41 +12,20 @@ export TURSO_TOKEN="..."
 export TURSO_LOCATION="https://[databaseName]-[organizationSlug].turso.io"
 ```
 
-The activity needs an active database with the following [schema](ddl/schema.sql).
-The following shell script can be used to set up the schema for you:
+### Schema migrations
+The schema is created and updated by the [migrations](../migrations/), applied by the
+`stargazers:db/migration.migrate` function using [refinery](https://github.com/rust-db/refinery).
+Each migration runs in a single transaction together with its `refinery_schema_history` row.
+Both deployments run it once on activation with a `@once` [cron](../../../deployment-rs.toml) entry.
+
+To add a migration, create the next `V{version}__{name}.sql` file, regenerate the JavaScript copy
+with `node ../turso-js/generate-migrations.mjs` and bump the cron `params` to the new version
+in both deployments. Applied migrations must never be edited, as their checksums are verified.
+
+The migration can also be run manually:
 ```sh
-generate_json() {
-  local file=$1
-  local DDL=$(cat "$file")
-  local json='{"requests": ['
-
-  local FIRST=true
-  local STMT=""
-  while IFS= read -r line; do
-    if [[ -n "$line" && "$line" != "--"* ]]; then
-      if [[ "$line" == *';' ]]; then
-        STMT+="$line"
-        [[ "$FIRST" == true ]] && FIRST=false || json+=','
-        json+="  {\"type\": \"execute\", \"stmt\": {\"sql\": \"$STMT\"}}"
-        STMT=""
-      else
-        STMT+="$line "
-      fi
-    fi
-  done <<< "$DDL"
-
-  json+='  ,{"type": "close"}'
-  json+=']}'
-  echo "$json"
-}
-
-DDL="ddl/schema.sql"
-generate_json $DDL | curl -X POST "${TURSO_LOCATION}/v2/pipeline" \
--H "Authorization: Bearer ${TURSO_TOKEN}" \
--H "Content-Type: application/json" \
---data @-
+obelisk execution submit --follow stargazers:db/migration.migrate '[2]'
 ```
-
 
 ### Inserting initial data
 
@@ -118,7 +97,7 @@ export TEST_TURSO_TOKEN="..."
 export TEST_TURSO_LOCATION="https://[databaseName]-[organizationSlug].turso.io"
 ```
 
-To run the integration tests:
+To run the integration tests, which apply the migrations first:
 ```sh
 cargo nextest run --test-threads=1 -- --ignored
 ```

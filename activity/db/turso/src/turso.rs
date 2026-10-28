@@ -1,6 +1,6 @@
-use anyhow::{Context, bail};
-use request::{PipelineAction, PipelineRequest};
-use response::PipelineResponse;
+use anyhow::{Context, anyhow, bail};
+use request::{Batch, BatchStep, Condition, PipelineAction, PipelineRequest, Stmt};
+use response::{PipelineResponse, QueryResult, Response, ResponseResult};
 use serde::{Deserialize, Serialize};
 use wstd::http::{Body, Client, Method, Request, StatusCode};
 
@@ -18,14 +18,53 @@ pub mod request {
     #[derive(Debug, Serialize, PartialEq)]
     #[serde(tag = "type", rename_all = "lowercase")]
     pub enum PipelineAction {
-        Execute { stmt: Stmt },
+        Batch { batch: Batch },
         Close,
+    }
+
+    #[derive(Debug, Serialize, PartialEq)]
+    pub struct Batch {
+        pub steps: Vec<BatchStep>,
+    }
+
+    #[derive(Debug, Serialize, PartialEq)]
+    pub struct BatchStep {
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub condition: Option<Condition>,
+        pub stmt: Stmt,
+    }
+
+    #[derive(Debug, Serialize, PartialEq)]
+    #[serde(tag = "type", rename_all = "lowercase")]
+    pub enum Condition {
+        Ok { step: usize },
+        Not { cond: Box<Condition> },
     }
 
     #[derive(Debug, Serialize, Default, PartialEq)]
     pub struct Stmt {
         pub sql: String,
         pub named_args: Vec<NamedArg>,
+    }
+
+    impl Stmt {
+        pub fn new(sql: impl Into<String>) -> Self {
+            Self {
+                sql: sql.into(),
+                named_args: Vec::new(),
+            }
+        }
+
+        /// Binds a text value to the named parameter `:name`.
+        pub fn arg(mut self, name: &'static str, value: impl Into<String>) -> Self {
+            self.named_args.push(NamedArg {
+                name,
+                value: TursoValue::Text {
+                    value: value.into(),
+                },
+            });
+            self
+        }
     }
 
     #[derive(Debug, Serialize, PartialEq)]
@@ -45,7 +84,6 @@ pub enum TursoValue {
 }
 
 pub mod response {
-    use anyhow::anyhow;
     use serde::Deserialize;
 
     use super::TursoValue;
@@ -53,20 +91,6 @@ pub mod response {
     #[derive(Debug, Deserialize)]
     pub struct PipelineResponse {
         pub results: Vec<ResponseResult>,
-    }
-
-    impl PipelineResponse {
-        pub fn ok_responses(self) -> Result<Vec<Response>, anyhow::Error> {
-            self.results
-                .into_iter()
-                .map(|res| match res {
-                    ResponseResult::Ok { response } => Ok(response),
-                    ResponseResult::Error { error } => {
-                        Err(anyhow!("Got response result error {error:?}"))
-                    }
-                })
-                .collect::<Result<_, _>>()
-        }
     }
 
     #[derive(Debug, Deserialize)]
@@ -80,14 +104,20 @@ pub mod response {
     #[allow(dead_code)] // The content will be printed using Debug formatting.
     pub struct ResponseResultError {
         pub message: String,
-        pub code: String,
+        pub code: Option<String>,
     }
 
     #[derive(Debug, Deserialize)]
     #[serde(tag = "type", rename_all = "lowercase")]
     pub enum Response {
-        Execute { result: Option<QueryResult> },
+        Batch { result: BatchResult },
         Close,
+    }
+
+    #[derive(Debug, Deserialize)]
+    pub struct BatchResult {
+        pub step_results: Vec<Option<QueryResult>>,
+        pub step_errors: Vec<Option<ResponseResultError>>,
     }
 
     #[derive(Debug, Deserialize)]
@@ -108,17 +138,8 @@ pub mod response {
     #[derive(Debug, Deserialize)]
     pub struct QueryRow(pub Vec<TursoValue>);
 
-    /// Extracts the first [`TursoValue`] from the first row of the n-th response.
-    pub fn extract_first_value_from_nth_response(
-        responses: Vec<Response>,
-        n: usize,
-    ) -> Result<TursoValue, String> {
-        let query_result = match responses.into_iter().nth(n) {
-            Some(Response::Execute {
-                result: Some(query_result),
-            }) => query_result,
-            _ => return Err("First response result is unexpected".to_string()),
-        };
+    /// Extracts the first [`TursoValue`] from the first row.
+    pub fn first_value(query_result: QueryResult) -> Result<TursoValue, String> {
         let first_row = match query_result.rows.into_iter().next() {
             Some(row) => row,
             None => return Ok(TursoValue::Null), // rows: [] is a valid response when the select returns null.
@@ -129,6 +150,79 @@ pub mod response {
         };
         Ok(first_cell)
     }
+}
+
+/// Builds the batch steps running `statements` atomically: several statements run in an
+/// immediate transaction, each one only if the previous step succeeded.
+fn transaction_steps(statements: Vec<Stmt>) -> Vec<BatchStep> {
+    let explicit = statements.len() > 1;
+    let ok = |step: usize| Condition::Ok { step };
+    let mut steps = Vec::new();
+    if explicit {
+        steps.push(BatchStep {
+            condition: None,
+            stmt: Stmt::new("BEGIN IMMEDIATE"),
+        });
+    }
+    for stmt in statements {
+        let condition = steps.len().checked_sub(1).map(ok);
+        steps.push(BatchStep { condition, stmt });
+    }
+    if explicit {
+        let condition = Some(ok(steps.len() - 1));
+        steps.push(BatchStep {
+            condition,
+            stmt: Stmt::new("COMMIT"),
+        });
+        let condition = Some(Condition::Not {
+            cond: Box::new(ok(steps.len() - 1)),
+        });
+        steps.push(BatchStep {
+            condition,
+            stmt: Stmt::new("ROLLBACK"),
+        });
+    }
+    steps
+}
+
+/// Returns the results of the `statement_count` statements from a [`transaction_steps`] batch.
+fn transaction_results(
+    response: PipelineResponse,
+    statement_count: usize,
+) -> Result<Vec<QueryResult>, anyhow::Error> {
+    let explicit = statement_count > 1;
+    let mut results = response.results.into_iter();
+    let (Some(batch), Some(close), None) = (results.next(), results.next(), results.next()) else {
+        bail!("expected a batch and a close result");
+    };
+    let result = match batch {
+        ResponseResult::Ok {
+            response: Response::Batch { result },
+        } => result,
+        ResponseResult::Ok { response } => bail!("unexpected response {response:?}"),
+        ResponseResult::Error { error } => bail!("Got batch error {error:?}"),
+    };
+    match close {
+        ResponseResult::Ok {
+            response: Response::Close,
+        } => {}
+        other => bail!("Got close error {other:?}"),
+    }
+    if let Some(error) = result.step_errors.into_iter().flatten().next() {
+        bail!("Got statement error {error:?}");
+    }
+    let first = usize::from(explicit);
+    let mut step_results = result.step_results.into_iter().skip(first);
+    let statement_results = step_results
+        .by_ref()
+        .take(statement_count)
+        .map(|result| result.ok_or_else(|| anyhow!("missing statement result")))
+        .collect::<Result<Vec<_>, _>>()?;
+    // Without errors, a missing COMMIT result means the transaction did not commit.
+    if explicit && step_results.next().flatten().is_none() {
+        bail!("Transaction was not committed");
+    }
+    Ok(statement_results)
 }
 
 pub struct TursoClient {
@@ -159,17 +253,24 @@ impl TursoClient {
             .uri(&self.url)
     }
 
-    pub async fn post_json(
+    /// Runs the statements atomically in one stateless request and returns each statement's result.
+    pub async fn transaction(
         &self,
-        request: &PipelineRequest,
-    ) -> Result<Vec<response::Response>, anyhow::Error> {
+        statements: Vec<Stmt>,
+    ) -> Result<Vec<QueryResult>, anyhow::Error> {
         let result = async {
-            assert_eq!(
-                Some(&PipelineAction::Close),
-                request.requests.last(),
-                "last action must be close"
-            );
-            let body = serde_json::to_vec(request)?;
+            let statement_count = statements.len();
+            let request = PipelineRequest {
+                requests: vec![
+                    PipelineAction::Batch {
+                        batch: Batch {
+                            steps: transaction_steps(statements),
+                        },
+                    },
+                    PipelineAction::Close,
+                ],
+            };
+            let body = serde_json::to_vec(&request)?;
             let req = self
                 .post()
                 .header("Content-Length", body.len())
@@ -185,9 +286,7 @@ impl TursoClient {
             }
             let resp: PipelineResponse = serde_json::from_slice(body)
                 .context("cannot deserialize the Turso pipeline response")?;
-
-            // Make sure there are no errors
-            resp.ok_responses()
+            transaction_results(resp, statement_count)
         }
         .await;
         if let Err(err) = &result {
@@ -200,69 +299,91 @@ impl TursoClient {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use response::PipelineResponse;
-
-    const PIPELINE_RESPONSE_JSON: &str = r#"{
-      "base_url": null,
-      "baton": null,
-      "results": [
-        {
-          "response": {
-            "result": {
-              "affected_row_count": 0,
-              "cols": [{ "decltype": null, "name": "1" }],
-              "last_insert_rowid": null,
-              "query_duration_ms": 0.167,
-              "replication_index": null,
-              "rows": [],
-              "rows_read": 0,
-              "rows_written": 0
-            },
-            "type": "execute"
-          },
-          "type": "ok"
-        },
-        {
-          "response": {
-            "result": {
-              "affected_row_count": 0,
-              "cols": [{ "decltype": "TEXT", "name": "description" }],
-              "last_insert_rowid": null,
-              "query_duration_ms": 0.088,
-              "replication_index": null,
-              "rows": [[{ "type": "text", "value": "suqbjkasrl" }]],
-              "rows_read": 1,
-              "rows_written": 0
-            },
-            "type": "execute"
-          },
-          "type": "ok"
-        },
-        { "response": { "type": "close" }, "type": "ok" }
-      ]
-    }
-    "#;
 
     #[test]
-    fn extract_first_value_from_nth_response_string_should_work() {
-        let response: PipelineResponse = serde_json::from_str(PIPELINE_RESPONSE_JSON).unwrap();
-        let response = response.ok_responses().unwrap();
-        assert_eq!(3, response.len());
-        let value = response::extract_first_value_from_nth_response(response, 1).unwrap();
+    fn transaction_steps_should_chain_the_statements() {
+        let steps = transaction_steps(vec![Stmt::new("A"), Stmt::new("B")]);
+        let steps = serde_json::to_value(&steps).unwrap();
         assert_eq!(
-            TursoValue::Text {
-                value: "suqbjkasrl".to_string()
-            },
-            value
+            serde_json::json!([
+                {"stmt": {"sql": "BEGIN IMMEDIATE", "named_args": []}},
+                {"condition": {"type": "ok", "step": 0}, "stmt": {"sql": "A", "named_args": []}},
+                {"condition": {"type": "ok", "step": 1}, "stmt": {"sql": "B", "named_args": []}},
+                {"condition": {"type": "ok", "step": 2}, "stmt": {"sql": "COMMIT", "named_args": []}},
+                {"condition": {"type": "not", "cond": {"type": "ok", "step": 3}},
+                    "stmt": {"sql": "ROLLBACK", "named_args": []}},
+            ]),
+            steps
         );
     }
 
     #[test]
-    fn extract_first_value_from_nth_response_empty_rows_should_mean_null() {
-        let response: PipelineResponse = serde_json::from_str(PIPELINE_RESPONSE_JSON).unwrap();
-        let response = response.ok_responses().unwrap();
-        assert_eq!(3, response.len());
-        let value = response::extract_first_value_from_nth_response(response, 0).unwrap();
-        assert_eq!(TursoValue::Null, value);
+    fn transaction_steps_should_not_wrap_a_single_statement() {
+        let steps = transaction_steps(vec![Stmt::new("A").arg("x", "1")]);
+        let steps = serde_json::to_value(&steps).unwrap();
+        assert_eq!(
+            serde_json::json!([
+                {"stmt": {"sql": "A", "named_args": [{"name": "x", "value": {"type": "text", "value": "1"}}]}},
+            ]),
+            steps
+        );
+    }
+
+    fn batch_response(step_results: &str, step_errors: &str) -> PipelineResponse {
+        serde_json::from_str(&format!(
+            r#"{{"baton": null, "base_url": null, "results": [
+                {{"type": "ok", "response": {{"type": "batch", "result":
+                    {{"step_results": {step_results}, "step_errors": {step_errors}}}}}}},
+                {{"type": "ok", "response": {{"type": "close"}}}}
+            ]}}"#
+        ))
+        .unwrap()
+    }
+
+    const EMPTY_RESULT: &str = r#"{"cols": [], "rows": [], "affected_row_count": 0}"#;
+
+    #[test]
+    fn transaction_results_should_return_the_statement_results() {
+        let results = transaction_results(
+            batch_response(
+                &format!("[{EMPTY_RESULT}, {EMPTY_RESULT}, {EMPTY_RESULT}, {EMPTY_RESULT}, null]"),
+                "[null, null, null, null, null]",
+            ),
+            2,
+        )
+        .unwrap();
+        assert_eq!(2, results.len());
+    }
+
+    #[test]
+    fn transaction_results_should_fail_on_a_statement_error() {
+        let err = transaction_results(
+            batch_response(
+                &format!("[{EMPTY_RESULT}, null, null, null, {EMPTY_RESULT}]"),
+                r#"[null, {"message": "UNIQUE constraint failed", "code": "SQLITE_CONSTRAINT"}, null, null, null]"#,
+            ),
+            2,
+        )
+        .unwrap_err();
+        assert!(err.to_string().contains("UNIQUE"), "{err}");
+    }
+
+    #[test]
+    fn transaction_results_should_fail_without_commit() {
+        let err = transaction_results(
+            batch_response(
+                &format!("[{EMPTY_RESULT}, {EMPTY_RESULT}, {EMPTY_RESULT}, null, null]"),
+                "[null, null, null, null, null]",
+            ),
+            2,
+        )
+        .unwrap_err();
+        assert_eq!("Transaction was not committed", err.to_string());
+    }
+
+    #[test]
+    fn first_value_of_empty_rows_should_mean_null() {
+        let result: QueryResult = serde_json::from_str(EMPTY_RESULT).unwrap();
+        assert_eq!(TursoValue::Null, response::first_value(result).unwrap());
     }
 }

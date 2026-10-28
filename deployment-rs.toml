@@ -46,3 +46,10 @@ routes = [{ methods = ["POST", "GET"], route = "" }]
 exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
 # env_vars = ["GITHUB_WEBHOOK_INSECURE=true"] # to disable signature verification
 backtrace.sources = { ".../src/lib.rs" = "webhook/webhook-rs/src/lib.rs" }
+
+# Bump `params` with every new migration: it must match the latest one, and a changed entry runs again.
+[[cron]]
+name = "migrate_db"
+ffqn = "stargazers:db/migration.migrate"
+params = '[2]'
+schedule = "@once"

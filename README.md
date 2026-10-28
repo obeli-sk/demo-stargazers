@@ -48,11 +48,16 @@ a path; the outbound HTTP rules allow only `<base>/v1/chat/completions` and `<ba
 This activity is responsible for persistence of users and their generated descriptions.
 
 Follow the prerequisites section of the [activity-db-turso README](./activity/db/turso/README.md).
+The schema is migrated automatically when a deployment is activated.
+
+Reimplementation in [JavaScript](./activity/db/turso-js/) is available for comparison.
 
 #### GitHub activity
 This activity is used to find more information about the GitHub user who starred a configured repository.
 
 Follow the prerequisites section of the [activity-github README](./activity/github/impl/README.md).
+
+Reimplementation in [JavaScript](./activity/github/github-js/) is available for comparison.
 
 #### OpenAI activity
 Generates description based on user's repositories and organizations.
@@ -108,17 +113,15 @@ in a GitHub repo. See the [webhook documentation](webhook/webhook-rs/README.md) 
 on how to set up GitHub and a https tunnel to the local instance.
 
 ### Building the WASM components locally
-Both deployments load the Rust components from the local `target` directory.
+The Rust deployment loads the components from the local `target` directory.
 To build all the Rust components run
 ```sh
 just rust
 obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
 ```
 
-JavaScript components are loaded directly by Obelisk and do not need a build step.
-The JS deployment still uses the Rust GitHub and Turso activities:
+The JS deployment is pure JavaScript, loaded directly by Obelisk without a build step:
 ```sh
-just rust
 obelisk server run --app-config ./app.toml --deployment ./deployment-js.toml
 ```
 

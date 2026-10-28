@@ -32,6 +32,7 @@
             gh
             just
             jq
+            nodejs
             rustToolchain
             wasmtime.out
             yq-go
@@ -39,6 +40,7 @@
             openssl
             curlMinimal
             python3
+            sqld
           ];
           withObelisk = commonDeps ++ [ obelisk.packages.${system}.default ];
         in

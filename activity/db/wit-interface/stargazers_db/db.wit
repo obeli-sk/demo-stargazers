@@ -29,7 +29,15 @@ interface llm {
     get-settings-json: func() -> result<string, string>;
 }
 
+interface migration {
+    /// Apply pending schema migrations.
+    /// Fails unless `latest-version` is the latest known migration, so bumping it re-runs a cron.
+    /// Returns versions of the newly applied migrations.
+    migrate: func(latest-version: u32) -> result<list<u32>, string>;
+}
+
 world exports {
     export user;
     export llm;
+    export migration;
 }
