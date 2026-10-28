@@ -1,9 +1,10 @@
-#[cfg_attr(not(test), expect(dead_code, reason = "used by the upcoming migrations"))]
+mod migrate;
 mod split;
 mod turso;
 
 use generated::export;
 use generated::exports::stargazers::db::llm::Guest as LlmGuest;
+use generated::exports::stargazers::db::migration::Guest as MigrationGuest;
 use generated::exports::stargazers::db::user::Guest as UserGuest;
 use generated::exports::stargazers::db::user::{Ordering, Stargazer};
 use humantime::format_rfc3339_millis;
@@ -31,6 +32,12 @@ export!(Component with_types_in generated);
 fn transaction(statements: Vec<Stmt>) -> Result<Vec<QueryResult>, String> {
     block_on(async move { TursoClient::new()?.transaction(statements).await })
         .map_err(|err| err.to_string())
+}
+
+impl MigrationGuest for Component {
+    fn migrate(latest_version: u32) -> Result<Vec<u32>, String> {
+        block_on(migrate::migrate(latest_version)).map_err(|err| format!("{err:#}"))
+    }
 }
 
 impl LlmGuest for Component {
@@ -469,12 +476,10 @@ mod tests {
         use crate::{
             Component, ENV_TURSO_LOCATION, ENV_TURSO_TOKEN,
             generated::exports::stargazers::db::llm::Guest as _,
+            generated::exports::stargazers::db::migration::Guest as _,
             generated::exports::stargazers::db::user::{Guest as _, Ordering, Stargazer},
-            turso::{
-                TursoClient, TursoValue,
-                request::Stmt,
-                response::QueryResult,
-            },
+            migrate::latest_version,
+            turso::{TursoClient, TursoValue, request::Stmt, response::QueryResult},
         };
 
         fn set_up() {
@@ -489,6 +494,22 @@ mod tests {
                     panic!("TEST_{ENV_TURSO_LOCATION} must be set as an environment variable")
                 });
             unsafe { std::env::set_var(ENV_TURSO_LOCATION, test_location) };
+            Component::migrate(latest_version().unwrap()).unwrap();
+        }
+
+        #[test]
+        #[ignore]
+        fn migrate_should_skip_applied_migrations() {
+            set_up();
+            assert_eq!(Ok(vec![]), Component::migrate(latest_version().unwrap()));
+        }
+
+        #[test]
+        #[ignore]
+        fn migrate_should_reject_an_unknown_latest_version() {
+            set_up();
+            let err = Component::migrate(latest_version().unwrap() + 1).unwrap_err();
+            assert!(err.contains("latest migration"), "{err}");
         }
 
         async fn delete_from(table: &str) {

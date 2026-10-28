@@ -27,6 +27,10 @@ SQLD_DIR="$(mktemp -d)"
 PID=""
 APP_TOML="$(mktemp)"
 cp ./app.toml "$APP_TOML"
+# A fresh execution history, so the `@once` migration cron runs against the fresh database.
+OBELISK_DIR="$(mktemp -d)"
+SERVER_TOML="$OBELISK_DIR/server.toml"
+echo "database.sqlite.directory = \"$OBELISK_DIR/sqlite\"" > "$SERVER_TOML"
 
 export OBELISK_API_TOKEN=$(obelisk generate token --json | python3 -c 'import json, sys; print(json.load(sys.stdin)["token"])')
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
@@ -71,7 +75,7 @@ cleanup() {
     fi
 
     rm -f "$APP_TOML"
-    rm -rf "$SQLD_DIR"
+    rm -rf "$SQLD_DIR" "$OBELISK_DIR"
 }
 
 trap cleanup EXIT
@@ -89,11 +93,10 @@ until curl -sf -X POST "$OPENAI_API_BASE_URL/v1/chat/completions" -d '{}' >/dev/
 done
 
 start_sqld "$SQLD_PORT" "$SQLD_DIR"
-create_schema "$TURSO_LOCATION" '{"model":"mock-model","messages":[],"max_tokens":50}'
 
 # Approve this build's exposure digests in the temporary app policy.
 obelisk server verify --skip-db --fix --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML"
-obelisk server run --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML" &
+obelisk server run --server-config "$SERVER_TOML" --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML" &
 PID=$!
 
 # Wait for obelisk to start responding
@@ -112,6 +115,14 @@ dump_executions() {
         obelisk execution logs --level trace "$execution_id" || true
     done < <(obelisk execution list --show-derived 2>&1)
 }
+
+# The deployment's `@once` cron applies the migrations.
+if ! wait_for_migrations "$TURSO_LOCATION"; then
+    dump_executions
+    exit 1
+fi
+sqld_query "$TURSO_LOCATION" 'INSERT INTO llm (id, settings) VALUES (1, ?1)' \
+    '{"model":"mock-model","messages":[],"max_tokens":50}'
 
 # Make sure this repo has no stars
 if ! JSON=$(curl --fail "http://127.0.0.1:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1"); then

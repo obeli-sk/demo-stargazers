@@ -127,14 +127,13 @@ mod tests {
         for case in cases {
             let actual = split_statements(&case.sql);
             if case.error {
-                assert!(actual.is_err(), "{}: expected an error, got {actual:?}", case.name);
-            } else {
-                assert_eq!(
-                    case.statements.unwrap(),
-                    actual.unwrap(),
-                    "{}",
+                assert!(
+                    actual.is_err(),
+                    "{}: expected an error, got {actual:?}",
                     case.name
                 );
+            } else {
+                assert_eq!(case.statements.unwrap(), actual.unwrap(), "{}", case.name);
             }
         }
     }

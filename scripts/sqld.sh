@@ -15,15 +15,32 @@ start_sqld() {
     done
 }
 
-# Usage: create_schema URL [LLM_SETTINGS_JSON]. Optionally inserts the LLM settings row.
-create_schema() {
+# Usage: wait_for_migrations URL. Waits until every migration file is in the history table.
+wait_for_migrations() {
+    local expected
+    expected=$(find activity/db/migrations -name 'V*.sql' | wc -l)
+    SECONDS=0
+    until [[ "$(sqld_query "$1" 'SELECT count(*) FROM refinery_schema_history' 2>/dev/null)" == "$expected" ]]; do
+        if [[ $SECONDS -ge 30 ]]; then
+            echo "migrations did not finish"
+            return 1
+        fi
+        sleep 0.5
+    done
+}
+
+# Usage: sqld_query URL SQL [TEXT_ARG...]. Prints the first cell, args bind to ?1, ?2...
+sqld_query() {
     python3 -c '
 import json, sys
-requests = [{"type": "sequence", "sql": open(sys.argv[1]).read()}]
-if len(sys.argv) > 2:
-    requests.append({"type": "execute", "stmt": {"sql": "INSERT INTO llm (id, settings) VALUES (1, :settings)",
-        "named_args": [{"name": "settings", "value": {"type": "text", "value": sys.argv[2]}}]}})
-print(json.dumps({"requests": requests + [{"type": "close"}]}))' activity/db/turso/ddl/schema.sql "${@:2}" \
+args = [{"type": "text", "value": arg} for arg in sys.argv[2:]]
+print(json.dumps({"requests": [{"type": "execute", "stmt": {"sql": sys.argv[1], "args": args}}, {"type": "close"}]}))' "${@:2}" \
         | curl --fail -sS -X POST "$1/v2/pipeline" -H "Content-Type: application/json" --data @- \
-        | python3 -c 'import json, sys; errors = [r["error"] for r in json.load(sys.stdin)["results"] if r["type"] != "ok"]; sys.exit(f"cannot set up the database: {errors}" if errors else 0)'
+        | python3 -c '
+import json, sys
+result = json.load(sys.stdin)["results"][0]
+if result["type"] != "ok":
+    sys.exit("query failed: " + json.dumps(result["error"]))
+rows = result["response"]["result"]["rows"]
+print(rows[0][0].get("value", "") if rows else "")'
 }

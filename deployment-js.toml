@@ -114,6 +114,20 @@ url_regex_suffix = "/v2/pipeline$"
 secrets = ["TURSO_TOKEN"]
 replace_in = ["headers"]
 
+[[activity_js]]
+name = "db_migrate"
+location = "activity/db/turso-js/migrate.js"
+ffqn = "stargazers:db/migration.migrate"
+wit = "activity/db/wit-interface/stargazers_db"
+env_vars = ["TURSO_LOCATION"]
+exec.lock_expiry.seconds = 5
+[[activity_js.allowed_host]]
+url_prefix = "${TURSO_LOCATION}"
+methods = ["POST"]
+url_regex_suffix = "/v2/pipeline$"
+secrets = ["TURSO_TOKEN"]
+replace_in = ["headers"]
+
 [[workflow_js]]
 name = "workflow_js_star_added"
 location = "workflow/stargazers/workflow-js/star-added.js"
@@ -170,3 +184,10 @@ location = "webhook/webhook-js/webhook.js"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
 # env_vars = ["GITHUB_WEBHOOK_INSECURE=true"] # skip verification (development only)
+
+# Bump `params` with every new migration: it must match the latest one, and a changed entry runs again.
+[[cron]]
+name = "migrate_db"
+ffqn = "stargazers:db/migration.migrate"
+params = '[2]'
+schedule = "@once"

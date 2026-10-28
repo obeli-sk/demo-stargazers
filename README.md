@@ -48,6 +48,7 @@ a path; the outbound HTTP rules allow only `<base>/v1/chat/completions` and `<ba
 This activity is responsible for persistence of users and their generated descriptions.
 
 Follow the prerequisites section of the [activity-db-turso README](./activity/db/turso/README.md).
+The schema is migrated automatically when a deployment is activated.
 
 Reimplementation in [JavaScript](./activity/db/turso-js/) is available for comparison.
 

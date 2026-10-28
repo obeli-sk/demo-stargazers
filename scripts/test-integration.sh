@@ -48,7 +48,14 @@ until curl -sf -X POST "$TEST_OPENAI_API_BASE_URL/v1/chat/completions" -d '{}' >
     sleep 0.5
 done
 start_sqld "$SQLD_PORT" "$SQLD_DIR"
-create_schema "$TEST_TURSO_LOCATION"
+# Migrate with the JS port first, so the Rust tests check its history is compatible with refinery.
+TURSO_TOKEN="$TEST_TURSO_TOKEN" TURSO_LOCATION="$TEST_TURSO_LOCATION" node --input-type=module -e '
+import assert from "node:assert/strict";
+import migrate from "./activity/db/turso-js/migrate.js";
+import { MIGRATIONS } from "./activity/db/turso-js/migrations.js";
+const versions = MIGRATIONS.map((m) => m.version);
+assert.deepEqual(await migrate(Math.max(...versions)), versions);
+'
 
 (
 cd activity/github/impl
