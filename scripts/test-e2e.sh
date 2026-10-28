@@ -14,6 +14,7 @@
 
 set -exo pipefail
 cd "$(dirname "$0")/.."
+source ./scripts/sqld.sh
 
 DEPLOYMENT_TOML="$1"
 STAR_ACCOUNT="someghaccount"
@@ -87,32 +88,8 @@ until curl -sf -X POST "$OPENAI_API_BASE_URL/v1/chat/completions" -d '{}' >/dev/
     sleep 0.5
 done
 
-sqld --db-path "$SQLD_DIR/data.sqld" --http-listen-addr "127.0.0.1:$SQLD_PORT" > "$SQLD_DIR/sqld.log" 2>&1 &
-SQLD_PID=$!
-
-SECONDS=0
-until curl -sf "$TURSO_LOCATION/health" >/dev/null; do
-    if [[ $SECONDS -ge 30 ]]; then
-        echo "sqld failed to start"
-        cat "$SQLD_DIR/sqld.log"
-        exit 1
-    fi
-    sleep 0.5
-done
-
-# Create the schema and the LLM settings row.
-python3 -c '
-import json, sys
-schema = open(sys.argv[1]).read()
-settings = json.dumps({"model": "mock-model", "messages": [], "max_tokens": 50})
-print(json.dumps({"requests": [
-    {"type": "sequence", "sql": schema},
-    {"type": "execute", "stmt": {"sql": "INSERT INTO llm (id, settings) VALUES (1, :settings)",
-        "named_args": [{"name": "settings", "value": {"type": "text", "value": settings}}]}},
-    {"type": "close"},
-]}))' activity/db/turso/ddl/schema.sql \
-    | curl --fail -sS -X POST "$TURSO_LOCATION/v2/pipeline" -H "Content-Type: application/json" --data @- \
-    | python3 -c 'import json, sys; errors = [r["error"] for r in json.load(sys.stdin)["results"] if r["type"] != "ok"]; sys.exit(f"cannot set up the database: {errors}" if errors else 0)'
+start_sqld "$SQLD_PORT" "$SQLD_DIR"
+create_schema "$TURSO_LOCATION" '{"model":"mock-model","messages":[],"max_tokens":50}'
 
 # Approve this build's exposure digests in the temporary app policy.
 obelisk server verify --skip-db --fix --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML"
