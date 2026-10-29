@@ -2,7 +2,7 @@ cargo-edit-upgrade 0.13.13
 cargo-nextest 0.9.146
 just 1.58.0
 node v24.21.0
-obelisk 0.43.0-rc.10
+obelisk 0.43.0-rc.14
 rustc 1.98.1 (48a229cea 2026-09-01)
 sqld 0.24.33
 wasmtime 49.0.2
