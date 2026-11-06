@@ -181,6 +181,7 @@ return_type = "result<_, string>"
 [[webhook_endpoint_js]]
 name = "webhook_js"
 location = "webhook/webhook-js/webhook.js"
+http_server = "external"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
 # env_vars = ["GITHUB_WEBHOOK_INSECURE=true"] # skip verification (development only)

@@ -111,7 +111,7 @@ done
 
 dump_executions() {
     while read -r execution_id _; do
-        obelisk execution get "$execution_id" || true
+        obelisk execution result "$execution_id" || true
         obelisk execution logs --level trace "$execution_id" || true
     done < <(obelisk execution list --show-derived 2>&1)
 }
@@ -156,7 +156,7 @@ EXECUTION_ID=$(curl --fail -X POST http://127.0.0.1:9090 \
 -d "$PAYLOAD" -i | grep -i "execution-id" | cut -d ' ' -f2- | tr -d '\r')
 
 # Wait until the scheduled execution of the workflow finishes.
-obelisk execution get --follow $EXECUTION_ID
+obelisk execution status --follow $EXECUTION_ID
 
 # Get the first and only user back from the database.
 if ! JSON=$(curl --fail "http://127.0.0.1:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1"); then

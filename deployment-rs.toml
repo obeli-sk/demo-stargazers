@@ -41,6 +41,7 @@ backtrace.sources = { ".../src/lib.rs" = "workflow/stargazers/workflow-rs/src/li
 
 [[webhook_endpoint_wasm]]
 name = "webhook"
+http_server = "external"
 location = "target/wasm32-wasip2/release/webhook.wasm"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
