@@ -1,4 +1,5 @@
 app_name = "demo-stargazers"
+public_http_servers = ["external"]
 
 [secrets]
 OPENAI_API_KEY = {}

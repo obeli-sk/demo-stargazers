@@ -14,10 +14,10 @@ js:
 	@echo "JavaScript components do not need a build step"
 
 serve:
-	obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
+	obelisk server run --dev --app-config ./app.toml --deployment ./deployment-rs.toml
 
 serve-js:
-	obelisk server run --app-config ./app.toml --deployment ./deployment-js.toml
+	obelisk server run --dev --app-config ./app.toml --deployment ./deployment-js.toml
 
 test-unit:
 	./scripts/test-unit.sh
