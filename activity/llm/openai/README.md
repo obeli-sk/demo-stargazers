@@ -25,7 +25,7 @@ but were omitted for simplicity.
 Build the activity and run Obelisk with `deployment-rs.toml` configuration in the root of the repository.
 ```sh
 cargo build --release
-obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
+obelisk server run --dev --app-config ./app.toml --deployment ./deployment-rs.toml
 ```
 In another terminal run the activity.
 
@@ -34,6 +34,7 @@ Use the following parameters:
 * parameter `settings-json`: `"{\"model\": \"gpt-3.5-turbo\",\"max_tokens\": 50}"`
 
 ```sh
+export OBELISK_API_TOKEN="..." # API startup token printed by `server run --dev`
 obelisk execution submit --follow stargazers:llm/llm.respond '["Tell me about Rust programming", "{\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 50}"]'
 ```
 

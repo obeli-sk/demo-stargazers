@@ -11,12 +11,13 @@ The migrations are embedded in the generated `migrations.js`; run `node generate
 
 ```sh
 # in repo root
-obelisk server run --app-config app.toml --deployment deployment-js.toml
+obelisk server run --dev --app-config app.toml --deployment deployment-js.toml
 ```
 
 ## Testing
 
 ```sh
+export OBELISK_API_TOKEN="..." # API startup token printed by `server run --dev`
 obelisk execution submit --follow stargazers:db/llm.get-settings-json '[]'
 obelisk execution submit --follow stargazers:db/user.list-stargazers '[5, null, "descending"]'
 ```

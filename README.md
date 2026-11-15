@@ -95,7 +95,7 @@ The exact versions of dependencies used for development and testing are in [dev-
 
 ```sh
 just rust
-obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
+obelisk server run --dev --app-config ./app.toml --deployment ./deployment-rs.toml
 ```
 
 Wait for the following lines in the process output:
@@ -103,10 +103,13 @@ Wait for the following lines in the process output:
 ```log
 HTTP server `webui` is listening on http://127.0.0.1:8080
 HTTP server `external` is listening on http://127.0.0.1:9090
+HTTP server `internal` is listening on http://127.0.0.1:9091
+API startup token: ...
 Serving API requests at 127.0.0.1:5005
-Obelisk 0.43.0-rc.8 is ready
+Obelisk 0.43.0-rc.18 (654b621) is ready
 ```
 
+`--dev` prints the API startup token; clients such as the CLI send it via `OBELISK_API_TOKEN`.
 The workflow can be started using the Web UI.
 The webhook endpoint can be triggered using `curl` or by seting up the webhook
 in a GitHub repo. See the [webhook documentation](webhook/webhook-rs/README.md) for details
@@ -117,12 +120,12 @@ The Rust deployment loads the components from the local `target` directory.
 To build all the Rust components run
 ```sh
 just rust
-obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
+obelisk server run --dev --app-config ./app.toml --deployment ./deployment-rs.toml
 ```
 
 The JS deployment is pure JavaScript, loaded directly by Obelisk without a build step:
 ```sh
-obelisk server run --app-config ./app.toml --deployment ./deployment-js.toml
+obelisk server run --dev --app-config ./app.toml --deployment ./deployment-js.toml
 ```
 
 Make sure to use tools and versions as specified in [dev-deps.txt](./dev-deps.txt).

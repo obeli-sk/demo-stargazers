@@ -6,12 +6,13 @@ JavaScript reimplementation of the [openai](../openai/) activity.
 
 ```sh
 # in repo root
-obelisk server run --app-config app.toml --deployment deployment-js.toml
+obelisk server run --dev --app-config app.toml --deployment deployment-js.toml
 ```
 
 ## Testing
 
 ```sh
+export OBELISK_API_TOKEN="..." # API startup token printed by `server run --dev`
 obelisk execution submit --follow stargazers:llm/llm.respond \
     '["Tell me about Rust programming", "{\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 50}"]'
 ```
