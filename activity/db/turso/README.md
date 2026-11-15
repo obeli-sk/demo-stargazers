@@ -24,6 +24,7 @@ in both deployments. Applied migrations must never be edited, as their checksums
 
 The migration can also be run manually:
 ```sh
+export OBELISK_API_TOKEN="..." # API startup token printed by `server run --dev`
 obelisk execution submit --follow stargazers:db/migration.migrate '[2]'
 ```
 
@@ -73,7 +74,7 @@ echo '{
 Build the activity and run Obelisk with `deployment-rs.toml` configuration in the root of the repository.
 ```sh
 cargo build --release
-obelisk server run --app-config ./app.toml --deployment ./deployment-rs.toml
+obelisk server run --dev --app-config ./app.toml --deployment ./deployment-rs.toml
 ```
 In another terminal run the activity.
 ```sh
