@@ -32,14 +32,16 @@ struct GraphQLRequest {
 }
 
 async fn send_query<T: Serialize, R: serde::de::DeserializeOwned>(query: T) -> Result<R, String> {
-    let github_token = std::env::var(ENV_GITHUB_TOKEN)
-        .map_err(|_| format!("{ENV_GITHUB_TOKEN} must be passed as environment variable"))?;
     let github_api_base_url = std::env::var(ENV_GITHUB_API_BASE_URL)
         .unwrap_or_else(|_| "https://api.github.com".to_string());
-    let req = Request::builder()
-        .header("Authorization", &format!("Bearer {github_token}"))
+    let mut req = Request::builder()
         .header("Content-Type", "application/json")
-        .header("User-Agent", "test")
+        .header("User-Agent", "test");
+    // In the cloud the GitHub integration proxy authenticates requests itself.
+    if let Ok(github_token) = std::env::var(ENV_GITHUB_TOKEN) {
+        req = req.header("Authorization", &format!("Bearer {github_token}"));
+    }
+    let req = req
         .method(Method::POST)
         .uri(format!("{github_api_base_url}/graphql"))
         .body(

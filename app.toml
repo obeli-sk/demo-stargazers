@@ -1,9 +1,14 @@
 app_name = "demo-stargazers"
 public_http_servers = ["external"]
 
+# In the cloud, GitHub requests go through the account's GitHub integration proxy, which
+# authenticates them; locally they go to api.github.com with GITHUB_TOKEN_STARGAZERS.
+[cloud.integrations]
+github = { type = "github", env = "GITHUB_API_BASE_URL" }
+
 [secrets]
 OPENAI_API_KEY = {}
-GITHUB_TOKEN_STARGAZERS = {}
+GITHUB_TOKEN_STARGAZERS = { optional = true }
 TURSO_TOKEN = {}
 
 [secrets.GITHUB_WEBHOOK_SECRET]
@@ -29,7 +34,7 @@ replace_in = ["headers"]
 url_prefix = "${GITHUB_API_BASE_URL:-https://api.github.com}"
 methods = ["POST"]
 url_regex_suffix = "/graphql$"
-secrets = ["GITHUB_TOKEN_STARGAZERS"]
+secrets = [{ name = "GITHUB_TOKEN_STARGAZERS", optional = true }]
 replace_in = ["headers"]
 
 [[outbound_http.allowed_host]]

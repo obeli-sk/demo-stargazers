@@ -19,7 +19,7 @@ env_vars = [{key="GITHUB_API_BASE_URL", value="${GITHUB_API_BASE_URL:-https://ap
 url_prefix = "${GITHUB_API_BASE_URL:-https://api.github.com}"
 methods = ["POST"]
 url_regex_suffix = "/graphql$"
-secrets = ["GITHUB_TOKEN_STARGAZERS"]
+secrets = [{ name = "GITHUB_TOKEN_STARGAZERS", optional = true }]
 replace_in = ["headers"]
 
 [[activity_wasm]]

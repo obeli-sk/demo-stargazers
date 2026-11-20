@@ -28,12 +28,33 @@ Here is the complete [workflow source](./workflow/stargazers/workflow-rs/src/lib
 
 [![Watch the Demo Video](assets/images/screencast.gif)](https://obeli.sk/screencast.webm)
 
+## Deploying to Obelisk Cloud
+
+Create a [Turso](https://turso.tech) database and an OpenAI API key (see
+[Setting up the external services](#setting-up-the-external-services)), then:
+
+```sh
+git clone https://github.com/obeli-sk/demo-stargazers.git
+cd demo-stargazers
+obelisk cloud auth login
+obelisk generate app-name   # picks a unique name and writes it to app.toml
+obelisk cloud app push -a app.toml -d deployment-js.toml --fill
+```
+
+`--fill` prompts for `OPENAI_API_KEY`, `TURSO_TOKEN`, `TURSO_LOCATION` and `GITHUB_WEBHOOK_SECRET`.
+GitHub requests go through the cloud's GitHub integration (`[cloud.integrations]` in `app.toml`),
+so `GITHUB_TOKEN_STARGAZERS` is not needed.
+
+The webhook is served at `https://<app>.obelisk.works/`; `obelisk cloud app status` prints the
+endpoints. Point a GitHub repository webhook at it (only "Stars" events, the same
+secret as `GITHUB_WEBHOOK_SECRET`), as described in the [webhook README](./webhook/webhook-rs/README.md).
+
 ## Setting up
 
 ### Setting up the external services
 The activities require folowing values to be present as environment variables:
 ```sh
-export GITHUB_TOKEN_STARGAZERS="..."
+export GITHUB_TOKEN_STARGAZERS="..." # only for local runs; the cloud uses its GitHub integration
 export OPENAI_API_KEY="..."
 export TURSO_TOKEN="..."
 export GITHUB_WEBHOOK_SECRET="some-secret"
