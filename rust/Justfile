@@ -1,0 +1,26 @@
+# Each crate is built from its own directory, so its .cargo/config.toml selects the WASM target.
+build:
+	(cd activity/github && env -u CARGO_TARGET_DIR cargo build --release)
+	(cd activity/db && env -u CARGO_TARGET_DIR cargo build --release)
+	(cd activity/llm && env -u CARGO_TARGET_DIR cargo build --release)
+	(cd webhook && env -u CARGO_TARGET_DIR cargo build --release)
+	(cd workflow && env -u CARGO_TARGET_DIR cargo build --release)
+
+# Local builds are not reproducible, so the webhook's secret exposure is approved on a copy of app.toml.
+serve: build
+	cp ../app.toml target/app.toml
+	obelisk server verify --skip-db --fix-app-secret-exposure --app-config target/app.toml --deployment deployment.toml
+	obelisk server run --dev --app-config target/app.toml --deployment deployment.toml
+
+clippy:
+	cargo fmt
+	cargo clippy --workspace --all-targets --fix --allow-dirty --allow-staged -- -D warnings
+
+test-unit *args:
+	cargo nextest run --workspace {{args}}
+
+test-integration:
+	./scripts/test-integration.sh
+
+test-e2e: build
+	../scripts/test-e2e.sh rust/deployment.toml

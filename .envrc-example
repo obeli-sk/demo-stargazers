@@ -1,5 +1,5 @@
 use flake .
-watch_file ./rust-toolchain.toml ./flake.nix
+watch_file ./rust/rust-toolchain.toml ./flake.nix
 
 export GITHUB_TOKEN_STARGAZERS="..."
 export GITHUB_WEBHOOK_SECRET="..."

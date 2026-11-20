@@ -1,0 +1,23 @@
+# Turso activities
+
+JavaScript reimplementation of the [Turso](../../rust/activity/db/) activity, one file per exported function.
+The signatures come from the [WIT interface](./wit-interface/stargazers_db/db.wit).
+Follow the prerequisites section of the [Turso activity README](../../rust/activity/db/README.md) to set up the database.
+
+`migrate.js` ports refinery's runner and shares its history table, so either implementation can migrate the same database.
+The migrations are embedded in the generated `migrations.js`; run `node generate-migrations.mjs` after changing them.
+
+## Running with Obelisk
+
+```sh
+# in repo root
+obelisk server run --dev --app-config app.toml --deployment deployment.toml
+```
+
+## Testing
+
+```sh
+export OBELISK_API_TOKEN="..." # API startup token printed by `server run --dev`
+obelisk execution submit --follow stargazers:db/llm.get-settings-json '[]'
+obelisk execution submit --follow stargazers:db/user.list-stargazers '[5, null, "descending"]'
+```

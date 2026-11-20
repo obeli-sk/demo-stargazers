@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Usage: test-e2e.sh path-to-deployment.toml
+# Usage: test-e2e.sh [path-to-deployment.toml], relative to the repository root
 # This script starts Obelisk,
 # sends a "star-added" HTTP request to the webhook endpoint,
 # waits for the scheduled execution to complete,
@@ -16,7 +16,7 @@ set -exo pipefail
 cd "$(dirname "$0")/.."
 source ./scripts/sqld.sh
 
-DEPLOYMENT_TOML="$1"
+DEPLOYMENT_TOML="${1:-deployment.toml}"
 STAR_ACCOUNT="someghaccount"
 STAR_REPO="someghrepo"
 MOCK_OPENAI_PORT=18080

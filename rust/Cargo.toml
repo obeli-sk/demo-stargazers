@@ -1,0 +1,41 @@
+[workspace]
+resolver = "2"
+members = [
+    "activity/github",
+    "activity/db",
+    "activity/llm",
+    "webhook",
+    "workflow",
+]
+
+[workspace.package]
+version = "0.1.0"
+license = "MIT"
+repository = "https://github.com/obeli-sk/stargazers"
+authors = ["Project Developers"]
+edition = "2024"
+rust-version = "1.90.0"
+
+[workspace.dependencies]
+anyhow = "1.0"
+cynic = "3.13.2"
+cynic-codegen = "3.13.2"
+derive_more = { version = "2.1", features = ["display"] }
+hex = "0.4.3"
+hmac = "0.13.0"
+humantime = "2.4.0"
+refinery = { version = "=0.10.0", default-features = false }
+refinery-core = { version = "=0.10.0", default-features = false }
+url = "2.5.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.11.0"
+time = { version = "0.3", features = ["parsing"] }
+wit-bindgen = "0.61.0"
+wit-bindgen-rust = "0.61.0"
+wit-parser = "0.253.0"
+wstd = "0.6.5"
+
+[profile.release]
+opt-level = "s"
+debug = "line-tables-only"
