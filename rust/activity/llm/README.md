@@ -1,66 +1,21 @@
-# OpenAI Activity
+# LLM Activity (Rust)
 
-Activity that sends a JSON request to `https://api.openai.com/v1/chat/completions`
-and responds with the first generated response.
-It implements the [`stargazers:llm/llm` WIT interface](../../../activity/llm/wit-interface/stargazers_llm/llm.wit).
-
-## Prerequisites
-OpenAI token is required. Navigate to [API Tokens](https://platform.openai.com/api-keys) and
-crate a new restricted token. Make sure the resource `/v1/chat/completions` under Model capabilities
-has the write permission.
-The token must be accesible as `LLM_API_KEY` environment variable.
-```sh
-export LLM_API_KEY="..."
-```
-
-## Configuration
-The second argument of `respond` WIT function is `settings`, which is JSON encoded string.
-The corresponding `Settings` struct in [lib.rs](src/lib.rs) provides the details on the structure,
-and the `request_should_succeed` integration test shows how to set up a model,
-send a system message and restrict the number of tokens returned by the service.
-Those settings could be encoded directly in [llm.wit](../../../activity/llm/wit-interface/stargazers_llm/llm.wit),
-but were omitted for simplicity.
+Rust implementation of the [LLM activity](../../../activity/llm/README.md), which describes the
+prerequisites. The `Settings` struct in [lib.rs](src/lib.rs) defines the `settings-json` structure.
 
 ## Running the activity
 Build the Rust components and run Obelisk with `rust/deployment.toml`, from the `rust` directory:
 ```sh
 just serve
 ```
-In another terminal run the activity.
-
-Use the following parameters:
-* parameter `user-prompt`: `"Tell me about Rust programming."`
-* parameter `settings-json`: `"{\"model\": \"gpt-3.5-turbo\",\"max_tokens\": 50}"`
-
+In another terminal:
 ```sh
 export OBELISK_API_TOKEN="..." # API startup token printed by `server run --dev`
-obelisk execution submit --follow stargazers:llm/llm.respond '["Tell me about Rust programming", "{\"model\": \"gpt-3.5-turbo\", \"max_tokens\": 50}"]'
+obelisk execution submit --follow stargazers:llm/llm.respond '["Tell me about Rust programming", "{\"model\": \"gpt-4o-mini\", \"max_tokens\": 50}"]'
 ```
 
 ## Integration testing
-
 ```sh
 export TEST_LLM_API_KEY=...
 cargo nextest run -- --ignored
-```
-
-To execute an ad-hoc query directly to api.openai.com using curl:
-```sh
-curl -X POST https://api.openai.com/v1/chat/completions \
--H "Authorization: Bearer ${LLM_API_KEY}" \
--H "Content-Type: application/json" \
--d '{
-    "messages": [
-        {
-            "role": "system",
-            "content": "You are a helpful assistant"
-        },
-        {
-            "role": "user",
-            "content": "Tell me about Rust programming."
-        }
-    ],
-    "model": "gpt-3.5-turbo",
-    "max_tokens": 200
-}'
 ```

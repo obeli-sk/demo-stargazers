@@ -1,21 +1,20 @@
-# Stargazers workflow
+# Stargazers workflows
 
-JavaScript reimplementation of the [Stargazers workflow](../rust/workflow/).
+Implement the [`stargazers:workflow/workflow` WIT interface](./wit-interface/stargazers_workflow/workflow.wit),
+one file per exported function:
 
-## Running with Obelisk
+* `star-added`, `star-removed`: started by the [webhook](../webhook/) on a Star event.
+* `star-added-parallel`: like `star-added`, fetching the account info and the LLM settings concurrently.
+* `backfill`, `backfill-parallel`: walk all stargazers of a repository and run `star-added` for each.
 
+## Running the workflows
 ```sh
 # in repo root
-obelisk server run --dev --app-config app.toml --deployment deployment.toml
+just serve
 ```
-
-## Executing `star-added-parallel` workflow
-
+In another terminal:
 ```sh
 export OBELISK_API_TOKEN="..." # API startup token printed by `server run --dev`
 obelisk execution submit --follow stargazers:workflow/workflow.star-added-parallel '["tomasol","obeli-sk/obelisk"]'
+obelisk execution submit --follow stargazers:workflow/workflow.backfill-parallel '["obeli-sk/obelisk"]'
 ```
-
-## Testing
-
-See [workflow readme](../rust/workflow/README.md).
