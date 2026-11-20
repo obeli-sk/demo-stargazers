@@ -8,9 +8,9 @@ It implements the [`stargazers:llm/llm` WIT interface](../../../activity/llm/wit
 OpenAI token is required. Navigate to [API Tokens](https://platform.openai.com/api-keys) and
 crate a new restricted token. Make sure the resource `/v1/chat/completions` under Model capabilities
 has the write permission.
-The token must be accesible as `OPENAI_API_KEY` environment variable.
+The token must be accesible as `LLM_API_KEY` environment variable.
 ```sh
-export OPENAI_API_KEY="..."
+export LLM_API_KEY="..."
 ```
 
 ## Configuration
@@ -40,14 +40,14 @@ obelisk execution submit --follow stargazers:llm/llm.respond '["Tell me about Ru
 ## Integration testing
 
 ```sh
-export TEST_OPENAI_API_KEY=...
+export TEST_LLM_API_KEY=...
 cargo nextest run -- --ignored
 ```
 
 To execute an ad-hoc query directly to api.openai.com using curl:
 ```sh
 curl -X POST https://api.openai.com/v1/chat/completions \
--H "Authorization: Bearer ${OPENAI_API_KEY}" \
+-H "Authorization: Bearer ${LLM_API_KEY}" \
 -H "Content-Type: application/json" \
 -d '{
     "messages": [

@@ -81,7 +81,7 @@ def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_PORT
     server = HTTPServer(('127.0.0.1', port), MockOpenAIHandler)
     print(f"Mock OpenAI server running on http://127.0.0.1:{port}")
-    print(f"Use OPENAI_API_BASE_URL=http://127.0.0.1:{port} for testing")
+    print(f"Use LLM_BASE_URL=http://127.0.0.1:{port} for testing")
     sys.stdout.flush()
     server.serve_forever()
 

@@ -23,8 +23,8 @@ cleanup() {
 }
 trap cleanup EXIT
 
-export TEST_OPENAI_API_KEY="mock-api-key-for-testing"
-export TEST_OPENAI_API_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
+export TEST_LLM_API_KEY="mock-api-key-for-testing"
+export TEST_LLM_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
 # sqld runs without auth, any token is accepted.
 export TEST_TURSO_TOKEN="local"
 export TEST_TURSO_LOCATION="http://127.0.0.1:$SQLD_PORT"
@@ -39,7 +39,7 @@ python3 "$ROOT/scripts/mock-github-server.py" "$MOCK_GITHUB_PORT" &
 MOCK_GITHUB_PID=$!
 
 SECONDS=0
-until curl -sf -X POST "$TEST_OPENAI_API_BASE_URL/v1/chat/completions" -d '{}' >/dev/null \
+until curl -sf -X POST "$TEST_LLM_BASE_URL/v1/chat/completions" -d '{}' >/dev/null \
     && curl -sf -X POST "$TEST_GITHUB_API_BASE_URL/graphql" \
         -H 'Content-Type: application/json' -d '{}' >/dev/null; do
     if [[ $SECONDS -ge 5 ]]; then

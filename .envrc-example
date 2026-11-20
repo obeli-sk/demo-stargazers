@@ -3,12 +3,12 @@ watch_file ./rust/rust-toolchain.toml ./flake.nix
 
 export GITHUB_TOKEN_STARGAZERS="..."
 export GITHUB_WEBHOOK_SECRET="..."
-export OPENAI_API_KEY="..."
-export OPENAI_API_BASE_URL="https://api.openai.com"
+export LLM_API_KEY="..."
+export LLM_BASE_URL="https://api.openai.com"
 export TURSO_TOKEN="..."
 export TURSO_LOCATION="https://[yourdb].turso.io"
 
-export TEST_OPENAI_API_KEY="..."
+export TEST_LLM_API_KEY="..."
 export TEST_TURSO_TOKEN="..."
 export TEST_TURSO_LOCATION="..."
 export TEST_GITHUB_TOKEN_STARGAZERS="..."

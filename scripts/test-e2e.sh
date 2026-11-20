@@ -43,8 +43,8 @@ for var in GITHUB_TOKEN_STARGAZERS TEST_GITHUB_LOGIN; do
 done
 
 # OpenAI is the only paid service, so always point it at the local mock.
-export OPENAI_API_KEY="mock-api-key-for-testing"
-export OPENAI_API_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
+export LLM_API_KEY="mock-api-key-for-testing"
+export LLM_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
 # sqld runs without auth, any token is accepted.
 export TURSO_TOKEN="local"
 export TURSO_LOCATION="http://127.0.0.1:$SQLD_PORT"
@@ -84,7 +84,7 @@ python3 ./scripts/mock-openai-server.py "$MOCK_OPENAI_PORT" &
 MOCK_OPENAI_PID=$!
 
 SECONDS=0
-until curl -sf -X POST "$OPENAI_API_BASE_URL/v1/chat/completions" -d '{}' >/dev/null; do
+until curl -sf -X POST "$LLM_BASE_URL/v1/chat/completions" -d '{}' >/dev/null; do
     if [[ $SECONDS -ge 5 ]]; then
         echo "Mock OpenAI server failed to start"
         exit 1

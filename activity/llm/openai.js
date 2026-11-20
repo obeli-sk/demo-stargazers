@@ -1,11 +1,7 @@
 // JavaScript implementation of stargazers:llm/llm.respond
+// Calls an OpenAI-compatible chat completions endpoint.
 export default async function respond(userPrompt, settingsString) {
-    const apiKey = getEnv('OPENAI_API_KEY');
-    const baseUrl = getEnv('OPENAI_API_BASE_URL');
-
-    if (!apiKey) {
-        throw 'OPENAI_API_KEY must be set as an environment variable';
-    }
+    const baseUrl = getEnv('LLM_BASE_URL').replace(/\/+$/, '');
 
     let settings;
     try {
@@ -19,14 +15,18 @@ export default async function respond(userPrompt, settingsString) {
         { role: 'user', content: userPrompt },
     ];
 
+    const headers = { 'Content-Type': 'application/json' };
+    // The cloud LLM integration authenticates requests itself, so the key is optional.
+    const apiKey = process.env['LLM_API_KEY'];
+    if (apiKey) {
+        headers['Authorization'] = `Bearer ${apiKey}`;
+    }
+
     let response;
     try {
         response = await fetch(`${baseUrl}/v1/chat/completions`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${apiKey}`,
-                'Content-Type': 'application/json',
-            },
+            headers,
             body: JSON.stringify({
                 model: settings.model,
                 messages,
@@ -48,7 +48,7 @@ export default async function respond(userPrompt, settingsString) {
         return data.choices[0].message.content;
     }
 
-    throw 'No response content from OpenAI or choices array is malformed.';
+    throw 'No response content from the LLM or choices array is malformed.';
 }
 
 function getEnv(name) {

@@ -2,12 +2,12 @@
 name = "activity_llm_openai"
 location = "target/wasm32-wasip2/release/activity_llm_openai.wasm"
 exec.lock_expiry.seconds = 10
-env_vars = [{key="OPENAI_API_BASE_URL", value="${OPENAI_API_BASE_URL:-https://api.openai.com}"}]
+env_vars = [{key="LLM_BASE_URL", value="${LLM_BASE_URL:-https://api.openai.com}"}]
 [[activity_wasm.allowed_host]]
-url_prefix = "${OPENAI_API_BASE_URL:-https://api.openai.com}"
+url_prefix = "${LLM_BASE_URL:-https://api.openai.com}"
 methods = ["POST"]
 url_regex_suffix = "/v1/chat/completions$"
-secrets = ["OPENAI_API_KEY"]
+secrets = [{ name = "LLM_API_KEY", optional = true }]
 replace_in = ["headers"]
 
 [[activity_wasm]]

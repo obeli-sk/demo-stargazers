@@ -1,13 +1,14 @@
 app_name = "demo-stargazers"
 public_http_servers = ["external"]
 
-# In the cloud, GitHub requests go through the account's GitHub integration proxy, which
-# authenticates them; locally they go to api.github.com with GITHUB_TOKEN_STARGAZERS.
+# In the cloud, LLM and GitHub requests go through the account's integration proxies, which
+# authenticate them; locally they go to api.openai.com and api.github.com with the optional secrets.
 [cloud.integrations]
+llm = { type = "llm", env = "LLM_BASE_URL" }
 github = { type = "github", env = "GITHUB_API_BASE_URL" }
 
 [secrets]
-OPENAI_API_KEY = {}
+LLM_API_KEY = { optional = true }
 GITHUB_TOKEN_STARGAZERS = { optional = true }
 TURSO_TOKEN = {}
 
@@ -19,14 +20,14 @@ webhook = "sha256:da55ca27fe664621fc7f229c72494b932d43deab0faba66969631da281b067
 [public_env]
 GITHUB_API_BASE_URL = { optional = true }
 GITHUB_WEBHOOK_INSECURE = { optional = true }
-OPENAI_API_BASE_URL = { optional = true }
+LLM_BASE_URL = { optional = true }
 TURSO_LOCATION = {}
 
 [[outbound_http.allowed_host]]
-url_prefix = "${OPENAI_API_BASE_URL:-https://api.openai.com}"
+url_prefix = "${LLM_BASE_URL:-https://api.openai.com}"
 methods = ["POST"]
 url_regex_suffix = "/v1/chat/completions$"
-secrets = ["OPENAI_API_KEY"]
+secrets = [{ name = "LLM_API_KEY", optional = true }]
 replace_in = ["headers"]
 
 [[outbound_http.allowed_host]]

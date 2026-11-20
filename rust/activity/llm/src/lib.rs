@@ -7,9 +7,9 @@ use wstd::{
     runtime::block_on,
 };
 
-const ENV_OPENAI_API_KEY: &str = "OPENAI_API_KEY";
-const ENV_OPENAI_API_BASE_URL: &str = "OPENAI_API_BASE_URL";
-const DEFAULT_OPENAI_BASE_URL: &str = "https://api.openai.com";
+const ENV_LLM_API_KEY: &str = "LLM_API_KEY";
+const ENV_LLM_BASE_URL: &str = "LLM_BASE_URL";
+const DEFAULT_LLM_BASE_URL: &str = "https://api.openai.com";
 
 mod generated {
     #![allow(clippy::empty_line_after_outer_attr)]
@@ -64,11 +64,10 @@ struct Settings {
 }
 
 async fn respond(user_prompt: String, settings: String) -> Result<String, String> {
-    let api_key = env::var(ENV_OPENAI_API_KEY)
-        .map_err(|_| format!("{ENV_OPENAI_API_KEY} must be set as an environment variable"))?;
+    // The cloud LLM integration authenticates requests itself, so the key is optional.
+    let api_key = env::var(ENV_LLM_API_KEY).ok();
 
-    let base_url =
-        env::var(ENV_OPENAI_API_BASE_URL).unwrap_or_else(|_| DEFAULT_OPENAI_BASE_URL.to_string());
+    let base_url = env::var(ENV_LLM_BASE_URL).unwrap_or_else(|_| DEFAULT_LLM_BASE_URL.to_string());
 
     let settings: Settings =
         serde_json::from_str(&settings).expect("`settings_json` must be parseable");
@@ -85,8 +84,11 @@ async fn respond(user_prompt: String, settings: String) -> Result<String, String
         max_tokens: settings.max_tokens,
     };
 
-    let req = Request::builder()
-        .header("Authorization", format!("Bearer {api_key}"))
+    let mut req = Request::builder();
+    if let Some(api_key) = api_key {
+        req = req.header("Authorization", format!("Bearer {api_key}"));
+    }
+    let req = req
         .header("Content-Type", "application/json")
         .method(Method::POST)
         .uri(format!("{base_url}/v1/chat/completions"))
@@ -126,16 +128,16 @@ impl Guest for Component {
 mod tests {
     use crate::Component;
     use crate::generated::exports::stargazers::llm::llm::Guest;
-    use crate::{ENV_OPENAI_API_BASE_URL, ENV_OPENAI_API_KEY};
+    use crate::{ENV_LLM_API_KEY, ENV_LLM_BASE_URL};
     use crate::{Message, Role, Settings};
 
     fn set_up() {
-        let test_token = std::env::var(format!("TEST_{ENV_OPENAI_API_KEY}")).unwrap_or_else(|_| {
-            panic!("TEST_{ENV_OPENAI_API_KEY} must be set as an environment variable")
+        let test_token = std::env::var(format!("TEST_{ENV_LLM_API_KEY}")).unwrap_or_else(|_| {
+            panic!("TEST_{ENV_LLM_API_KEY} must be set as an environment variable")
         });
-        unsafe { std::env::set_var(ENV_OPENAI_API_KEY, test_token) };
-        if let Ok(base_url) = std::env::var(format!("TEST_{ENV_OPENAI_API_BASE_URL}")) {
-            unsafe { std::env::set_var(ENV_OPENAI_API_BASE_URL, base_url) };
+        unsafe { std::env::set_var(ENV_LLM_API_KEY, test_token) };
+        if let Ok(base_url) = std::env::var(format!("TEST_{ENV_LLM_BASE_URL}")) {
+            unsafe { std::env::set_var(ENV_LLM_BASE_URL, base_url) };
         }
     }
 
