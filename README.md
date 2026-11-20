@@ -106,7 +106,7 @@ HTTP server `external` is listening on http://127.0.0.1:9090
 HTTP server `internal` is listening on http://127.0.0.1:9091
 API startup token: ...
 Serving API requests at 127.0.0.1:5005
-Obelisk 0.43.0-rc.18 (654b621) is ready
+Obelisk <version> is ready
 ```
 
 `--dev` prints the API startup token; clients such as the CLI send it via `OBELISK_API_TOKEN`.
