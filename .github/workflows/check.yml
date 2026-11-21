@@ -40,13 +40,12 @@ jobs:
       - name: Populate the nix store
         run: nix develop --command echo
 
+      # The checked-in app name is a placeholder that every user replaces.
       - name: Verify deployment.toml
         run: |
           nix develop --command obelisk deployment verify --deployment deployment.toml
+          nix develop --command obelisk generate app-name
           nix develop --command just verify
-
-      - name: Check generated migrations.js
-        run: nix develop --command node activity/db/generate-migrations.mjs --check
 
       - name: Unit tests
         run: nix develop --command just test-unit
@@ -113,5 +112,6 @@ jobs:
         run: |
           nix develop .. --command just build
           cp ../app.toml target/app.toml
+          nix develop .. --command obelisk generate app-name -a target/app.toml
           nix develop .. --command obelisk server verify --skip-db --fix-app-secret-exposure \
             --allow-unavailable-runtime-config --app-config target/app.toml --deployment deployment.toml

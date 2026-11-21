@@ -31,6 +31,13 @@ secrets = [{ name = "LLM_API_KEY", optional = true }]
 replace_in = ["headers"]
 
 [[outbound_http.allowed_host]]
+url_prefix = "${LLM_BASE_URL:-https://api.openai.com}"
+methods = ["GET"]
+url_regex_suffix = "/v1/models$"
+secrets = [{ name = "LLM_API_KEY", optional = true }]
+replace_in = ["headers"]
+
+[[outbound_http.allowed_host]]
 url_prefix = "${GITHUB_API_BASE_URL:-https://api.github.com}"
 methods = ["POST"]
 url_regex_suffix = "/graphql$"

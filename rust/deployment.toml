@@ -9,6 +9,12 @@ methods = ["POST"]
 url_regex_suffix = "/v1/chat/completions$"
 secrets = [{ name = "LLM_API_KEY", optional = true }]
 replace_in = ["headers"]
+[[activity_wasm.allowed_host]]
+url_prefix = "${LLM_BASE_URL:-https://api.openai.com}"
+methods = ["GET"]
+url_regex_suffix = "/v1/models$"
+secrets = [{ name = "LLM_API_KEY", optional = true }]
+replace_in = ["headers"]
 
 [[activity_wasm]]
 name = "activity_github_impl"
@@ -52,5 +58,5 @@ backtrace.sources = { ".../src/lib.rs" = "webhook/src/lib.rs" }
 [[cron]]
 name = "migrate_db"
 ffqn = "stargazers:db/migration.migrate"
-params = '[2]'
+params = '[3]'
 schedule = "@once"

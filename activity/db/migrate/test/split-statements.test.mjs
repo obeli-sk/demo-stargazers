@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { splitStatements } from './split-statements.js';
+import { splitStatements } from '../split-statements.js';
 
 const cases = JSON.parse(readFileSync(new URL('./split-statements.json', import.meta.url), 'utf8'));
 

@@ -1,7 +1,7 @@
 // JavaScript implementation of stargazers:llm/llm.respond
 // Calls an OpenAI-compatible chat completions endpoint.
 export default async function respond(userPrompt, settingsString) {
-    const baseUrl = getEnv('LLM_BASE_URL').replace(/\/+$/, '');
+    const baseUrl = baseUrlFromEnv();
 
     let settings;
     try {
@@ -15,12 +15,7 @@ export default async function respond(userPrompt, settingsString) {
         { role: 'user', content: userPrompt },
     ];
 
-    const headers = { 'Content-Type': 'application/json' };
-    // The cloud LLM integration authenticates requests itself, so the key is optional.
-    const apiKey = process.env['LLM_API_KEY'];
-    if (apiKey) {
-        headers['Authorization'] = `Bearer ${apiKey}`;
-    }
+    const headers = { ...authHeaders(), 'Content-Type': 'application/json' };
 
     let response;
     try {
@@ -51,8 +46,14 @@ export default async function respond(userPrompt, settingsString) {
     throw 'No response content from the LLM or choices array is malformed.';
 }
 
-function getEnv(name) {
-    const value = process.env[name];
-    if (!value) throw `${name} is not defined`;
-    return value;
+export function baseUrlFromEnv() {
+    const value = process.env['LLM_BASE_URL'];
+    if (!value) throw 'LLM_BASE_URL is not defined';
+    return value.replace(/\/+$/, '');
+}
+
+// The cloud LLM integration authenticates requests itself, so the key is optional.
+export function authHeaders() {
+    const apiKey = process.env['LLM_API_KEY'];
+    return apiKey ? { 'Authorization': `Bearer ${apiKey}` } : {};
 }

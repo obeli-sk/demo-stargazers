@@ -1,6 +1,6 @@
 [[activity_js]]
 name = "llm_respond"
-location = "activity/llm/openai.js"
+location = "activity/llm/respond.js"
 ffqn = "stargazers:llm/llm.respond"
 params = [
   { name = "user-prompt", type = "string" },
@@ -17,10 +17,28 @@ secrets = [{ name = "LLM_API_KEY", optional = true }]
 replace_in = ["headers"]
 
 [[activity_js]]
+name = "llm_list_models"
+location = "activity/llm/list-models.js"
+ffqn = "stargazers:llm/llm.list-models"
+params = []
+return_type = "result<list<string>, string>"
+exec.lock_expiry.seconds = 5
+env_vars = [{key="LLM_BASE_URL", value="${LLM_BASE_URL:-https://api.openai.com}"}]
+[[activity_js.allowed_host]]
+url_prefix = "${LLM_BASE_URL:-https://api.openai.com}"
+methods = ["GET"]
+url_regex_suffix = "/v1/models$"
+secrets = [{ name = "LLM_API_KEY", optional = true }]
+replace_in = ["headers"]
+
+[[activity_js]]
 name = "github_account_info"
 location = "activity/github/account-info.js"
 ffqn = "stargazers:github/account.account-info"
-wit = "activity/github/wit-interface/stargazers_github"
+params = [
+  { name = "login", type = "string" },
+]
+return_type = "result<string, string>"
 exec.lock_expiry.seconds = 5
 env_vars = [{key="GITHUB_API_BASE_URL", value="${GITHUB_API_BASE_URL:-https://api.github.com}"}]
 [[activity_js.allowed_host]]
@@ -34,7 +52,12 @@ replace_in = ["headers"]
 name = "github_list_stargazers"
 location = "activity/github/list-stargazers.js"
 ffqn = "stargazers:github/account.list-stargazers"
-wit = "activity/github/wit-interface/stargazers_github"
+params = [
+  { name = "repo", type = "string" },
+  { name = "page-size", type = "u8" },
+  { name = "cursor", type = "option<string>" },
+]
+return_type = "result<option<record { logins: list<string>, cursor: string }>, string>"
 exec.lock_expiry.seconds = 5
 env_vars = [{key="GITHUB_API_BASE_URL", value="${GITHUB_API_BASE_URL:-https://api.github.com}"}]
 [[activity_js.allowed_host]]
@@ -48,7 +71,11 @@ replace_in = ["headers"]
 name = "db_add_star_get_description"
 location = "activity/db/add-star-get-description.js"
 ffqn = "stargazers:db/user.add-star-get-description"
-wit = "activity/db/wit-interface/stargazers_db"
+params = [
+  { name = "login", type = "string" },
+  { name = "repo", type = "string" },
+]
+return_type = "result<option<string>, string>"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 [[activity_js.allowed_host]]
@@ -62,7 +89,11 @@ replace_in = ["headers"]
 name = "db_remove_star"
 location = "activity/db/remove-star.js"
 ffqn = "stargazers:db/user.remove-star"
-wit = "activity/db/wit-interface/stargazers_db"
+params = [
+  { name = "login", type = "string" },
+  { name = "repo", type = "string" },
+]
+return_type = "result<_, string>"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 [[activity_js.allowed_host]]
@@ -76,7 +107,11 @@ replace_in = ["headers"]
 name = "db_update_user_description"
 location = "activity/db/update-user-description.js"
 ffqn = "stargazers:db/user.update-user-description"
-wit = "activity/db/wit-interface/stargazers_db"
+params = [
+  { name = "username", type = "string" },
+  { name = "description", type = "string" },
+]
+return_type = "result<_, string>"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 [[activity_js.allowed_host]]
@@ -90,7 +125,12 @@ replace_in = ["headers"]
 name = "db_list_stargazers"
 location = "activity/db/list-stargazers.js"
 ffqn = "stargazers:db/user.list-stargazers"
-wit = "activity/db/wit-interface/stargazers_db"
+params = [
+  { name = "last", type = "u8" },
+  { name = "repo", type = "option<string>" },
+  { name = "ordering", type = "enum { ascending, descending }" },
+]
+return_type = "result<list<record { login: string, repo: string, description: option<string> }>, string>"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 [[activity_js.allowed_host]]
@@ -104,21 +144,8 @@ replace_in = ["headers"]
 name = "db_get_settings_json"
 location = "activity/db/get-settings-json.js"
 ffqn = "stargazers:db/llm.get-settings-json"
-wit = "activity/db/wit-interface/stargazers_db"
-env_vars = ["TURSO_LOCATION"]
-exec.lock_expiry.seconds = 5
-[[activity_js.allowed_host]]
-url_prefix = "${TURSO_LOCATION}"
-methods = ["POST"]
-url_regex_suffix = "/v2/pipeline$"
-secrets = ["TURSO_TOKEN"]
-replace_in = ["headers"]
-
-[[activity_js]]
-name = "db_migrate"
-location = "activity/db/migrate.js"
-ffqn = "stargazers:db/migration.migrate"
-wit = "activity/db/wit-interface/stargazers_db"
+params = []
+return_type = "result<string, string>"
 env_vars = ["TURSO_LOCATION"]
 exec.lock_expiry.seconds = 5
 [[activity_js.allowed_host]]
@@ -185,10 +212,3 @@ http_server = "external"
 routes = [{ methods = ["POST", "GET"], route = "" }]
 exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
 # env_vars = ["GITHUB_WEBHOOK_INSECURE=true"] # skip verification (development only)
-
-# Bump `params` with every new migration: it must match the latest one, and a changed entry runs again.
-[[cron]]
-name = "migrate_db"
-ffqn = "stargazers:db/migration.migrate"
-params = '[2]'
-schedule = "@once"

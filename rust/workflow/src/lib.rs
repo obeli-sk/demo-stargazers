@@ -26,7 +26,7 @@ impl Guest for Component {
             // 2. Fetch the account info from GitHub.
             let info = github::account::account_info(&login)?;
             // 3. Fetch the prompt from the database.
-            let settings_json = db::llm::get_settings_json()?;
+            let settings_json = with_model(db::llm::get_settings_json()?)?;
             // 4. Generate the user's description.
             let description = llm::respond(&info, &settings_json)?;
             // 5. Persist the generated description.
@@ -50,8 +50,9 @@ impl Guest for Component {
             get_settings_json_submit(&join_set_settings).map_err(|err| format!("{err:?}"))?;
             // Await the results.
             let info = account_info_await_next(&join_set_info).map_err(err_to_string)??;
-            let settings_json =
-                get_settings_json_await_next(&join_set_settings).map_err(err_to_string)??;
+            let settings_json = with_model(
+                get_settings_json_await_next(&join_set_settings).map_err(err_to_string)??,
+            )?;
             // Generate the user's description.
             let description = llm::respond(&info, &settings_json)?;
             // Persist the generated description.
@@ -111,6 +112,22 @@ impl Guest for Component {
         }
         Ok(())
     }
+}
+
+/// Fills in the first model offered by the LLM endpoint when the settings do not name one.
+fn with_model(settings_json: String) -> Result<String, String> {
+    let mut settings: serde_json::Map<String, serde_json::Value> =
+        serde_json::from_str(&settings_json)
+            .map_err(|err| format!("LLM settings must be a JSON object - {err}"))?;
+    if settings.get("model").is_some_and(|model| !model.is_null()) {
+        return Ok(settings_json);
+    }
+    let model = llm::list_models()?
+        .into_iter()
+        .next()
+        .ok_or("the LLM endpoint offers no models")?;
+    settings.insert("model".to_string(), model.into());
+    Ok(serde_json::Value::Object(settings).to_string())
 }
 
 fn err_to_string(err: AwaitNextExtensionError) -> String {

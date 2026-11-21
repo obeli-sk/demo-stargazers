@@ -10,7 +10,8 @@
 # in the environment:
 #   GITHUB_TOKEN_STARGAZERS, TEST_GITHUB_LOGIN
 # The database is a fresh local libSQL server (sqld), the server behind Turso.
-# OpenAI is the only paid dependency, so it is always mocked.
+# The LLM is the only paid dependency, so it is always mocked. The migrated default
+# settings name no model, so the workflow picks the mock's first one.
 
 set -exo pipefail
 cd "$(dirname "$0")/.."
@@ -27,7 +28,6 @@ SQLD_DIR="$(mktemp -d)"
 PID=""
 APP_TOML="$(mktemp)"
 cp ./app.toml "$APP_TOML"
-# A fresh execution history, so the `@once` migration cron runs against the fresh database.
 OBELISK_DIR="$(mktemp -d)"
 SERVER_TOML="$OBELISK_DIR/server.toml"
 echo "database.sqlite.directory = \"$OBELISK_DIR/sqlite\"" > "$SERVER_TOML"
@@ -42,7 +42,7 @@ for var in GITHUB_TOKEN_STARGAZERS TEST_GITHUB_LOGIN; do
     fi
 done
 
-# OpenAI is the only paid service, so always point it at the local mock.
+# The LLM is the only paid service, so always point it at the local mock.
 export LLM_API_KEY="mock-api-key-for-testing"
 export LLM_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
 # sqld runs without auth, any token is accepted.
@@ -93,7 +93,10 @@ until curl -sf -X POST "$LLM_BASE_URL/v1/chat/completions" -d '{}' >/dev/null; d
 done
 
 start_sqld "$SQLD_PORT" "$SQLD_DIR"
+node activity/db/migrate/migrate.mjs
 
+# The checked-in name is a placeholder that every user replaces.
+obelisk generate app-name -a "$APP_TOML" >/dev/null
 # Approve this build's exposure digests in the temporary app policy.
 obelisk server verify --skip-db --fix --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML"
 obelisk server run --server-config "$SERVER_TOML" --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML" &
@@ -115,14 +118,6 @@ dump_executions() {
         obelisk execution logs --level trace "$execution_id" || true
     done < <(obelisk execution list --show-derived 2>&1)
 }
-
-# The deployment's `@once` cron applies the migrations.
-if ! wait_for_migrations "$TURSO_LOCATION"; then
-    dump_executions
-    exit 1
-fi
-sqld_query "$TURSO_LOCATION" 'INSERT INTO llm (id, settings) VALUES (1, ?1)' \
-    '{"model":"mock-model","messages":[],"max_tokens":50}'
 
 # Make sure this repo has no stars
 if ! JSON=$(curl --fail "http://127.0.0.1:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1"); then

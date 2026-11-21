@@ -63,11 +63,51 @@ struct Settings {
     max_tokens: usize,
 }
 
-async fn respond(user_prompt: String, settings: String) -> Result<String, String> {
-    // The cloud LLM integration authenticates requests itself, so the key is optional.
-    let api_key = env::var(ENV_LLM_API_KEY).ok();
+#[derive(Deserialize)]
+struct ModelList {
+    data: Vec<Model>,
+}
 
-    let base_url = env::var(ENV_LLM_BASE_URL).unwrap_or_else(|_| DEFAULT_LLM_BASE_URL.to_string());
+#[derive(Deserialize)]
+struct Model {
+    id: String,
+}
+
+fn base_url() -> String {
+    env::var(ENV_LLM_BASE_URL).unwrap_or_else(|_| DEFAULT_LLM_BASE_URL.to_string())
+}
+
+fn request_builder() -> wstd::http::request::Builder {
+    // The cloud LLM integration authenticates requests itself, so the key is optional.
+    match env::var(ENV_LLM_API_KEY) {
+        Ok(api_key) => Request::builder().header("Authorization", format!("Bearer {api_key}")),
+        Err(_) => Request::builder(),
+    }
+}
+
+async fn list_models() -> Result<Vec<String>, String> {
+    let req = request_builder()
+        .method(Method::GET)
+        .uri(format!("{}/v1/models", base_url()))
+        .body(Body::empty())
+        .map_err(|err| format!("cannot create the request - {err:?}"))?;
+    let resp = Client::new()
+        .send(req)
+        .await
+        .map_err(|err| format!("cannot send the request - {err:?}"))?;
+    if resp.status() != StatusCode::OK {
+        return Err(format!("Unexpected status code: {}", resp.status()));
+    }
+    let models: ModelList = resp
+        .into_body()
+        .json()
+        .await
+        .map_err(|err| format!("{err:?}"))?;
+    Ok(models.data.into_iter().map(|model| model.id).collect())
+}
+
+async fn respond(user_prompt: String, settings: String) -> Result<String, String> {
+    let base_url = base_url();
 
     let settings: Settings =
         serde_json::from_str(&settings).expect("`settings_json` must be parseable");
@@ -84,11 +124,7 @@ async fn respond(user_prompt: String, settings: String) -> Result<String, String
         max_tokens: settings.max_tokens,
     };
 
-    let mut req = Request::builder();
-    if let Some(api_key) = api_key {
-        req = req.header("Authorization", format!("Bearer {api_key}"));
-    }
-    let req = req
+    let req = request_builder()
         .header("Content-Type", "application/json")
         .method(Method::POST)
         .uri(format!("{base_url}/v1/chat/completions"))
@@ -121,6 +157,10 @@ async fn respond(user_prompt: String, settings: String) -> Result<String, String
 impl Guest for Component {
     fn respond(user_prompt: String, settings: String) -> Result<String, String> {
         block_on(respond(user_prompt, settings))
+    }
+
+    fn list_models() -> Result<Vec<String>, String> {
+        block_on(list_models())
     }
 }
 
@@ -162,5 +202,13 @@ mod tests {
         let res = Component::respond(user_prompt, settings_json);
         let res = res.unwrap();
         println!("{res}");
+    }
+
+    #[test]
+    #[ignore]
+    fn list_models_should_succeed() {
+        set_up();
+        let models = Component::list_models().unwrap();
+        assert!(!models.is_empty());
     }
 }

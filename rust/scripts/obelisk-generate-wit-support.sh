@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Generate obelisk_* folders inside wit/deps of the Rust components and the workflow interface.
+# Generate obelisk_* folders inside wit/deps of the Rust components and the shared workflow interface.
 
 set -exuo pipefail
 cd "$(dirname "$0")/../.."
@@ -18,4 +18,4 @@ generate() {
 # The activities are blocked by the process api dependency on wasi:io.
 generate rust/workflow/wit "workflow"
 generate rust/webhook/wit "webhook_endpoint"
-generate workflow/wit-interface "workflow"
+generate rust/wit/workflow "workflow"

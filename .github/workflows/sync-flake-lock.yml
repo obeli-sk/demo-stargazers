@@ -43,7 +43,7 @@ jobs:
       - name: Generate wit support and extensions 
         run: |
           nix develop . --command ./rust/scripts/obelisk-generate-wit-support.sh
-          nix develop . --command ./scripts/obelisk-generate-wit-extensions.sh
+          nix develop . --command ./rust/scripts/obelisk-generate-wit-extensions.sh
 
       - name: Generate Unique Branch Name
         id: branch-name

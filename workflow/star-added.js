@@ -4,6 +4,7 @@ import { accountInfo } from 'stargazers:github/account';
 import { getSettingsJson } from 'stargazers:db/llm';
 import { addStarGetDescription, updateUserDescription } from 'stargazers:db/user';
 import { respond as llmRespond } from 'stargazers:llm/llm';
+import { withModel } from './llm-settings.js';
 
 export default function star_added(login, repo) {
     // 1. Persist the star and check whether a description already exists.
@@ -20,8 +21,8 @@ export default function star_added(login, repo) {
     // 2. Fetch the account info from GitHub.
     const info = accountInfo(login);
 
-    // 3. Fetch the LLM prompt settings from the database.
-    const settingsJson = getSettingsJson();
+    // 3. Fetch the LLM prompt settings from the database, picking a model if none is set.
+    const settingsJson = withModel(getSettingsJson());
 
     // 4. Generate the user's description using the LLM.
     const description = llmRespond(info, settingsJson);
