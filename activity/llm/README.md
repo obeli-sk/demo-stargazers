@@ -1,12 +1,13 @@
 # LLM activity
 
-Implements the [`stargazers:llm/llm` WIT interface](./wit-interface/stargazers_llm/llm.wit):
-sends a request to `<LLM_BASE_URL>/v1/chat/completions` of an OpenAI-compatible endpoint
-and responds with the first generated message.
+Activities calling an OpenAI-compatible endpoint, with signatures declared in [deployment.toml](../../deployment.toml):
+* `respond` sends a request to `<LLM_BASE_URL>/v1/chat/completions` and responds with the first generated message.
+* `list-models` returns the model IDs from `<LLM_BASE_URL>/v1/models`. The workflow uses the first one
+  when the settings name no model.
 
 ## Prerequisites
 In the cloud `LLM_BASE_URL` points to the LLM integration, which authenticates the requests,
-no key is needed. The model must be one offered by the integration, listed at `<LLM_BASE_URL>/v1/models`.
+no key is needed.
 
 Locally the endpoint defaults to `https://api.openai.com`. Create an [OpenAI API key](https://platform.openai.com/api-keys)
 with the write permission for `/v1/chat/completions`:
@@ -18,7 +19,7 @@ export LLM_API_KEY="..."
 ## Configuration
 The second argument of `respond` is `settings-json`, a JSON-encoded object with
 `model`, optional `messages` prepended to the user prompt (e.g. a system message) and `max_tokens`.
-The workflows read it from the database, see [Inserting the LLM settings](../db/README.md#inserting-the-llm-settings).
+The workflows read it from the database, see [LLM settings](../db/README.md#llm-settings).
 
 ## Running the activity
 ```sh
@@ -28,6 +29,7 @@ just serve
 In another terminal:
 ```sh
 export OBELISK_API_TOKEN="..." # API startup token printed by `server run --dev`
+obelisk execution submit --follow stargazers:llm/llm.list-models '[]'
 obelisk execution submit --follow stargazers:llm/llm.respond \
     '["Tell me about Rust programming", "{\"model\": \"gpt-4o-mini\", \"max_tokens\": 50}"]'
 ```

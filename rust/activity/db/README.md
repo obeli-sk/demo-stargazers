@@ -1,8 +1,9 @@
 # Turso Activity (Rust)
 
 Rust implementation of the [Turso activities](../../../activity/db/README.md), which describe the
-prerequisites, migrations and LLM settings. Migrations are embedded and applied by
-[refinery](https://github.com/rust-db/refinery).
+prerequisites, migrations and LLM settings. The migrations are embedded and applied by
+[refinery](https://github.com/rust-db/refinery) through `stargazers:db/migration.migrate`,
+which `rust/deployment.toml` runs once per deployment with an `@once` cron.
 
 ## Running the activity
 Build the Rust components and run Obelisk with `rust/deployment.toml`, from the `rust` directory:

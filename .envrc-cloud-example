@@ -1,0 +1,6 @@
+use flake .
+
+# Used by `just migrate` and `obelisk cloud app push`.
+export TURSO_TOKEN="..."
+export TURSO_LOCATION="https://[yourdb].turso.io"
+export GITHUB_WEBHOOK_SECRET="..."

@@ -1,8 +1,8 @@
 # Turso activities
 
-Implement the [`stargazers:db/user`, `stargazers:db/llm` and `stargazers:db/migration` WIT interface](./wit-interface/stargazers_db/db.wit)
-using [Turso](https://turso.tech/) over the [libSQL Remote Protocol](https://docs.turso.tech/sdk/http/reference),
-one file per exported function.
+Persist stargazers and the LLM settings in [Turso](https://turso.tech/) over the
+[libSQL Remote Protocol](https://docs.turso.tech/sdk/http/reference), one file per exported function;
+the signatures are declared in [deployment.toml](../../deployment.toml).
 
 ## Prerequisites
 A database URL and a token with read and write permission are required:
@@ -12,66 +12,26 @@ export TURSO_LOCATION="https://[databaseName]-[organizationSlug].turso.io"
 ```
 
 ## Schema migrations
-The schema is created and updated by the [migrations](./migrations/), applied by
-`stargazers:db/migration.migrate`. Each deployment runs it once on activation with a `@once`
-[cron](../../deployment.toml) entry.
-
-`migrate.js` ports the runner of [refinery](https://github.com/rust-db/refinery), used by the
-[Rust implementation](../../rust/activity/db/), and shares its history table, so either implementation
-can migrate the same database. Each migration runs in a single transaction together with its
-`refinery_schema_history` row.
-
-To add a migration, create the next `V{version}__{name}.sql` file, regenerate the embedded copy
-with `node generate-migrations.mjs` and bump the cron `params` to the new version in both
-deployments. Applied migrations must never be edited, as their checksums are verified.
-
-The migration can also be run manually:
+The [migrations](./migrations/) use the format of [refinery](https://github.com/rust-db/refinery),
+which the [Rust implementation](../../rust/activity/db/) embeds. Apply them before deploying:
 ```sh
-export OBELISK_API_TOKEN="..." # API startup token printed by `server run --dev`
-obelisk execution submit --follow stargazers:db/migration.migrate '[2]'
+just migrate
 ```
+[migrate.mjs](./migrate/migrate.mjs) is a Node.js port of refinery's runner and shares its
+`refinery_schema_history` table, so either implementation can migrate the same database.
+Each migration runs in a single transaction together with its history row.
 
-## Inserting the LLM settings
-The `get-settings-json` function reads the system prompt, model and token limit passed to the
-[LLM activity](../llm/). In the cloud the model must be one offered by the LLM integration,
-e.g. `openai/gpt-4o-mini`; locally it is a model of the configured endpoint, e.g. `gpt-4o-mini`.
+To add a migration, create the next `V{version}__{name}.sql` file and bump the `params` of the
+Rust deployment's migration cron. Applied migrations must never be edited, as their checksums are verified.
+
+## LLM settings
+`get-settings-json` reads the settings passed to the [LLM activity](../llm/): messages prepended to
+the user prompt, `max_tokens` and an optional `model`. The `V3__default_llm_settings` migration stores
+a basic prompt without a model, so the workflow picks the first model the LLM endpoint offers.
+To change the prompt or pin a model offered by the endpoint (`<LLM_BASE_URL>/v1/models`,
+e.g. `openai/gpt-4o-mini` in the cloud or `gpt-4o-mini` with OpenAI):
 ```sh
-SETTINGS_JSON='{
-    "messages": [
-        {
-            "role": "system",
-            "content": "Generate concise information about GitHub users based on the JSON provided."
-        }
-    ],
-    "model": "gpt-4o-mini",
-    "max_tokens": 200
-}'
-
-echo '{
-  "requests": [
-    {
-      "type": "execute",
-      "stmt": {
-        "sql": "INSERT INTO llm (id, settings) VALUES (1, :settings) ON CONFLICT (id) DO UPDATE SET settings = :settings",
-        "named_args": [
-          {
-            "name": "settings",
-            "value": {
-              "type": "text",
-              "value": "'$(echo $SETTINGS_JSON | sed 's/\"/\\"/g')'"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "type": "close"
-    }
-  ]
-}' | curl -X POST "${TURSO_LOCATION}/v2/pipeline" \
--H "Authorization: Bearer ${TURSO_TOKEN}" \
--H "Content-Type: application/json" \
---data @-
+turso db shell stargazers "UPDATE llm SET settings = json_set(settings, '$.model', 'openai/gpt-4o-mini') WHERE id = 1"
 ```
 
 ## Running the activities
@@ -100,6 +60,7 @@ curl -X POST "${TURSO_LOCATION}/v2/pipeline" \
 ```
 
 ## Testing
+The runner's tests are in [migrate/test](./migrate/test/):
 ```sh
 just test-unit
 ```
