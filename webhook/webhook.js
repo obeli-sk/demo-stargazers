@@ -5,15 +5,11 @@
 // or set GITHUB_WEBHOOK_INSECURE=true to skip verification (development only).
 
 import { starAddedSchedule, starRemovedSchedule } from 'stargazers:workflow-obelisk-schedule/workflow';
-import { listStargazers } from 'stargazers:db/user';
 
 const HTTP_HEADER_SIGNATURE = 'X-Hub-Signature-256';
+const HTTP_HEADER_EVENT = 'X-GitHub-Event';
 const ENV_GITHUB_WEBHOOK_INSECURE = 'GITHUB_WEBHOOK_INSECURE';
 const ENV_GITHUB_WEBHOOK_SECRET = 'GITHUB_WEBHOOK_SECRET';
-
-// WIT enum ordering values (serialised as plain strings)
-const ORDERING_ASCENDING = 'ascending';
-const ORDERING_DESCENDING = 'descending';
 
 // Convert hex string to Uint8Array.
 function hexToUint8Array(hex) {
@@ -64,9 +60,6 @@ async function verifySignature(secret, bodyText, signatureHeader) {
 }
 
 export default async function handle(request) {
-    if (request.method === 'GET') {
-        return handleGet(request);
-    }
     if (request.method === 'POST') {
         return await handlePost(request);
     }
@@ -101,6 +94,16 @@ async function handlePost(request) {
             console.error(`Signature verification failed: ${e.message}`);
             return new Response('Signature verification failed', { status: 403 });
         }
+    }
+
+    // GitHub sends `ping` when the webhook is created, and other events if subscribed.
+    const eventType = request.headers.get(HTTP_HEADER_EVENT);
+    if (eventType === 'ping') {
+        return new Response('pong');
+    }
+    if (eventType && eventType !== 'star') {
+        console.info(`Ignoring the ${eventType} event`);
+        return new Response(`Ignoring the ${eventType} event`);
     }
 
     let event;
@@ -140,44 +143,4 @@ async function handlePost(request) {
         status: 200,
         headers: { 'execution-id': execId },
     });
-}
-
-// Parse query parameters from a URL's search string into a plain object.
-function parseQueryParams(search) {
-    const params = {};
-    const query = search.startsWith('?') ? search.substring(1) : search;
-    for (const part of query.split('&')) {
-        if (!part) continue;
-        const eqIdx = part.indexOf('=');
-        if (eqIdx === -1) {
-            params[decodeURIComponent(part)] = '';
-        } else {
-            params[decodeURIComponent(part.substring(0, eqIdx))] =
-                decodeURIComponent(part.substring(eqIdx + 1));
-        }
-    }
-    return params;
-}
-
-// GET /  – list recent stargazers from the database.
-function handleGet(request) {
-    console.info('GET request received');
-
-    const url = new URL(request.url);
-    const params = parseQueryParams(url.search);
-    const MAX_LIMIT = 5;
-    let limit = parseInt(params['limit'], 10);
-    if (isNaN(limit) || limit <= 0) limit = MAX_LIMIT;
-    limit = Math.min(limit, MAX_LIMIT);
-
-    const repo = params['repo'] || null;
-    const orderingParam = params['ordering'];
-    const ordering = orderingParam === 'asc' ? ORDERING_ASCENDING : ORDERING_DESCENDING;
-
-    console.info(`Listing stargazers: limit=${limit}, repo=${repo}, ordering=${ordering}`);
-
-    // list-stargazers: func(last: u8, repo: option<string>, ordering: ordering)
-    //                  -> result<list<stargazer>, string>
-    const list = listStargazers(limit, repo, ordering);
-    return Response.json(list);
 }

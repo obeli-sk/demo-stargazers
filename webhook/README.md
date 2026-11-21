@@ -1,8 +1,9 @@
 # Webhook Endpoint for GitHub
 
 This webhook endpoint receives Star events of a configured repository and starts the
-`star-added` or `star-removed` [workflows](../workflow/). A `GET` request with `?repo=owner/name`
-lists the last updated stargazers.
+`star-added` or `star-removed` [workflows](../workflow/). It answers GitHub's `ping`, sent when the
+webhook is created, and ignores other event types. The stargazers are listed by the [page](../ui/stargazers.js)
+on the `internal` server.
 
 ## Prerequisites
 
@@ -56,7 +57,7 @@ Execute a request locally:
 ```sh
 export TEST_GITHUB_LOGIN="..."
 
-curl -v -X POST http://127.0.0.1:9090 -d '{
+curl -v -X POST http://127.0.0.1:9090 -H "X-GitHub-Event: star" -d '{
     "action": "created",
     "sender": {
         "login": "'$TEST_GITHUB_LOGIN'"
@@ -73,9 +74,10 @@ curl -v -X POST http://127.0.0.1:9090 -d '{
 Observe the execution log. After the workflow succeeds, the database should contain
 the user, repo, their relation, and the user should have a generated description.
 
-To obtain a list of 5 last updated stargazers, run
+To see the latest stargazers, open [http://127.0.0.1:9091/obeli-sk/obelisk](http://127.0.0.1:9091/obeli-sk/obelisk),
+served by `server run --dev`, or fetch them as JSON:
 ```sh
-curl -v http://127.0.0.1:9090?repo=obeli-sk/obelisk
+curl -H "Accept: application/json" http://127.0.0.1:9091/obeli-sk/obelisk
 ```
 
 ## Automated end-to-end testing

@@ -209,6 +209,14 @@ return_type = "result<_, string>"
 name = "webhook"
 location = "webhook/webhook.js"
 http_server = "external"
-routes = [{ methods = ["POST", "GET"], route = "" }]
+routes = [{ methods = ["POST"], route = "" }]
 exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
 # env_vars = ["GITHUB_WEBHOOK_INSECURE=true"] # skip verification (development only)
+
+# Browsable list of the latest stargazers. The `internal` server requires a cloud sign-in,
+# locally it runs with `server run --dev`.
+[[webhook_endpoint_js]]
+name = "stargazers_ui"
+location = "ui/stargazers.js"
+http_server = "internal"
+routes = [{ methods = ["GET"], route = "/" }, { methods = ["GET"], route = "/:owner/:repo" }]

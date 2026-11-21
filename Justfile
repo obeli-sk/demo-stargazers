@@ -7,7 +7,7 @@ migrate:
 	node activity/db/migrate/migrate.mjs
 
 verify:
-	obelisk server verify --skip-db --allow-unavailable-runtime-config --app-config ./app.toml --deployment ./deployment.toml
+	obelisk server verify --dev --skip-db --allow-unavailable-runtime-config --app-config ./app.toml --deployment ./deployment.toml
 
 test-unit:
 	node --test activity/db/migrate/test/*.test.mjs

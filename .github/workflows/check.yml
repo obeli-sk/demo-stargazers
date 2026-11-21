@@ -113,5 +113,5 @@ jobs:
           nix develop .. --command just build
           cp ../app.toml target/app.toml
           nix develop .. --command obelisk generate app-name -a target/app.toml
-          nix develop .. --command obelisk server verify --skip-db --fix-app-secret-exposure \
+          OBELISK__HTTP_SERVER__INTERNAL__API_AUTH=true nix develop .. --command obelisk server verify --skip-db --fix-app-secret-exposure \
             --allow-unavailable-runtime-config --app-config target/app.toml --deployment deployment.toml

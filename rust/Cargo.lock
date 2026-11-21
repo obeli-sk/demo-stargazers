@@ -1239,7 +1239,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "url",
  "wit-bindgen 0.61.0",
  "wit-bindgen-rust",
  "wit-parser 0.253.0",

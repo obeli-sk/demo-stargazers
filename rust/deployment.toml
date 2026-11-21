@@ -49,10 +49,17 @@ backtrace.sources = { ".../src/lib.rs" = "workflow/src/lib.rs" }
 name = "webhook"
 http_server = "external"
 location = "target/wasm32-wasip2/release/webhook.wasm"
-routes = [{ methods = ["POST", "GET"], route = "" }]
+routes = [{ methods = ["POST"], route = "" }]
 exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
 # env_vars = ["GITHUB_WEBHOOK_INSECURE=true"] # to disable signature verification
 backtrace.sources = { ".../src/lib.rs" = "webhook/src/lib.rs" }
+
+# The page listing stargazers is shared with the JavaScript app.
+[[webhook_endpoint_js]]
+name = "stargazers_ui"
+location = "ui/stargazers.js"
+http_server = "internal"
+routes = [{ methods = ["GET"], route = "/" }, { methods = ["GET"], route = "/:owner/:repo" }]
 
 # Bump `params` with every new migration: it must match the latest one, and a changed entry runs again.
 [[cron]]

@@ -1,9 +1,6 @@
-use std::collections::HashMap;
-
 use crate::generated::obelisk::types::time::ScheduleAt::Now;
-use generated::stargazers::{
-    db::{self, user::Ordering},
-    workflow_obelisk_schedule::workflow::{star_added_schedule, star_removed_schedule},
+use generated::stargazers::workflow_obelisk_schedule::workflow::{
+    star_added_schedule, star_removed_schedule,
 };
 use hmac::KeyInit as _;
 use wstd::http::{Error, Request, Response, StatusCode};
@@ -15,6 +12,7 @@ mod generated {
 }
 
 const HTTP_HEADER_SIGNATURE: &str = "X-Hub-Signature-256";
+const HTTP_HEADER_EVENT: &str = "X-GitHub-Event";
 const ENV_GITHUB_WEBHOOK_INSECURE: &str = "GITHUB_WEBHOOK_INSECURE";
 const ENV_GITHUB_WEBHOOK_SECRET: &str = "GITHUB_WEBHOOK_SECRET";
 
@@ -49,8 +47,6 @@ struct Repository {
 async fn main(req: Request<Body>) -> Result<Response<Body>, Error> {
     if req.method() == Method::POST {
         handle_webhook(req).await
-    } else if req.method() == Method::GET {
-        handle_get(req)
     } else {
         Ok(Response::builder()
             .status(StatusCode::METHOD_NOT_ALLOWED)
@@ -61,6 +57,11 @@ async fn main(req: Request<Body>) -> Result<Response<Body>, Error> {
 
 async fn handle_webhook(req: Request<Body>) -> Result<Response<Body>, Error> {
     let sha256_signature = req.headers().get(HTTP_HEADER_SIGNATURE).cloned();
+    let event_type = req
+        .headers()
+        .get(HTTP_HEADER_EVENT)
+        .and_then(|value| value.to_str().ok())
+        .map(str::to_string);
     let mut body = req.into_body();
     let body = match body.contents().await {
         Ok(ok) => ok,
@@ -89,6 +90,17 @@ async fn handle_webhook(req: Request<Body>) -> Result<Response<Body>, Error> {
             panic!("HTTP header {HTTP_HEADER_SIGNATURE} must be ASCII-encoded")
         });
         verify_signature(&secret, body, sha256_signature);
+    }
+    // GitHub sends `ping` when the webhook is created, and other events if subscribed.
+    match event_type.as_deref() {
+        None | Some("star") => {}
+        Some("ping") => return Ok(Response::new(Body::from("pong"))),
+        Some(other) => {
+            println!("Ignoring the {other} event");
+            return Ok(Response::new(Body::from(format!(
+                "Ignoring the {other} event"
+            ))));
+        }
     }
     let event: StarEvent = match serde_json::from_slice(body) {
         Ok(ok) => ok,
@@ -137,44 +149,6 @@ fn verify_signature(secret: &str, payload: &[u8], sha256_signature: &str) {
     mac.update(payload);
     mac.verify_slice(&sha256_signature)
         .expect("verification must succeed");
-}
-
-/// Render a JSON array with last few stargazers.
-fn handle_get(req: Request<Body>) -> Result<Response<Body>, Error> {
-    const MAX_LIMIT: u8 = 5;
-    let query: HashMap<_, _> = req
-        .uri()
-        .query()
-        .map(|query_str| {
-            url::form_urlencoded::parse(query_str.as_ref())
-                .into_owned()
-                .collect()
-        })
-        .unwrap_or_default();
-
-    let limit = query
-        .get("limit")
-        .and_then(|limit| limit.parse::<u8>().ok())
-        .map(|limit| limit.min(MAX_LIMIT))
-        .unwrap_or(MAX_LIMIT);
-    let repo = query.get("repo").map(|x| x.as_str());
-    let ordering = if query.get("ordering").map(|s| s.as_str()) == Some("asc") {
-        Ordering::Ascending
-    } else {
-        Ordering::Descending
-    };
-    match db::user::list_stargazers(limit, repo, ordering) {
-        Ok(list) => {
-            Ok(Response::builder().body(Body::from_json(&list).expect("must be serializable"))?)
-        }
-        Err(err) => {
-            eprintln!("{err}");
-            Ok(Response::builder()
-                .status(StatusCode::INTERNAL_SERVER_ERROR)
-                .body(Body::empty())
-                .unwrap())
-        }
-    }
 }
 
 #[cfg(test)]

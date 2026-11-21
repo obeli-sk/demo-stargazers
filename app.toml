@@ -1,4 +1,4 @@
-app_name = "demo_stargazers"
+app_name = "demo-stargazers"
 public_http_servers = ["external"]
 
 # In the cloud, LLM and GitHub requests go through the account's integration proxies, which
@@ -15,7 +15,7 @@ TURSO_TOKEN = {}
 [secrets.GITHUB_WEBHOOK_SECRET]
 
 [secrets.GITHUB_WEBHOOK_SECRET.exposed_to]
-webhook = "sha256:da55ca27fe664621fc7f229c72494b932d43deab0faba66969631da281b06744"
+webhook = "sha256:9ea0b56bdc52aeddfdb2f2d161ec9c87d55770692accb3e8a98506bd003a52c8"
 
 [public_env]
 GITHUB_API_BASE_URL = { optional = true }
