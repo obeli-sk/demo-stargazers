@@ -1,4 +1,4 @@
-app_name = "demo-stargazers"
+app_name = "demo_stargazers"
 public_http_servers = ["external"]
 
 # In the cloud, LLM and GitHub requests go through the account's integration proxies, which
