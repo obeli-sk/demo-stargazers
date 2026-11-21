@@ -1,29 +1,16 @@
-# Build all components
-build: rust js
-
-# Build Rust components
-rust:
-	(cd activity/github/impl && env -u CARGO_TARGET_DIR cargo build --release)
-	(cd activity/db/turso && env -u CARGO_TARGET_DIR cargo build --release)
-	(cd activity/llm/openai && env -u CARGO_TARGET_DIR cargo build --release)
-	(cd webhook/webhook-rs && env -u CARGO_TARGET_DIR cargo build --release)
-	(cd workflow/stargazers/workflow-rs && env -u CARGO_TARGET_DIR cargo build --release)
-
-# Direct JavaScript components are loaded by Obelisk and do not need a build.
-js:
-	@echo "JavaScript components do not need a build step"
-
+# JavaScript components are loaded by Obelisk directly, without a build step.
 serve:
-	obelisk server run --dev --app-config ./app.toml --deployment ./deployment-rs.toml
+	obelisk server run --dev --app-config ./app.toml --deployment ./deployment.toml
 
-serve-js:
-	obelisk server run --dev --app-config ./app.toml --deployment ./deployment-js.toml
+# Applies pending migrations to the database at TURSO_LOCATION.
+migrate:
+	node activity/db/migrate/migrate.mjs
+
+verify:
+	obelisk server verify --dev --skip-db --allow-unavailable-runtime-config --app-config ./app.toml --deployment ./deployment.toml
 
 test-unit:
-	./scripts/test-unit.sh
-test-integration:
-	./scripts/test-integration.sh
-test-e2e: rust
-	./scripts/test-e2e.sh ./deployment-rs.toml
-test-e2e-js: js
-	./scripts/test-e2e.sh ./deployment-js.toml
+	node --test activity/db/migrate/test/*.test.mjs
+
+test-e2e:
+	./scripts/test-e2e.sh ./deployment.toml

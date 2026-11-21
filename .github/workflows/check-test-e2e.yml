@@ -42,20 +42,15 @@ jobs:
         run: |
           nix develop --command echo
 
-      - name: Build Rust WASM components
-        run: nix develop --command just rust
-
-      - name: Verify deployment-rs.toml
+      - name: End-to-end test of deployment.toml
         env:
           GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
-        run: |
-          nix develop --command ./scripts/test-e2e.sh ./deployment-rs.toml truncate
+        run: nix develop --command just test-e2e
 
-      - name: Verify deployment-js.toml
+      - name: End-to-end test of rust/deployment.toml
+        working-directory: rust
         env:
           GITHUB_TOKEN_STARGAZERS: ${{ secrets.E2E_GITHUB_TOKEN }}
           TEST_GITHUB_LOGIN: ${{ secrets.TEST_GITHUB_LOGIN }}
-        run: |
-          nix develop --command ./scripts/test-e2e.sh ./deployment-js.toml truncate
-
+        run: nix develop .. --command just test-e2e

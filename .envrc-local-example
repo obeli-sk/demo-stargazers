@@ -1,0 +1,19 @@
+use flake .
+watch_file ./rust/rust-toolchain.toml ./flake.nix
+
+export TURSO_TOKEN="..."
+export TURSO_LOCATION="https://[yourdb].turso.io"
+export GITHUB_WEBHOOK_SECRET="..."
+# In the cloud, the integrations authenticate GitHub and LLM requests instead.
+export GITHUB_TOKEN_STARGAZERS="..."
+export LLM_API_KEY="..."
+# export LLM_BASE_URL="https://api.openai.com" # any endpoint with the Chat Completions API
+
+# `just test-e2e` uses the real GitHub, local sqld and a mocked LLM.
+export TEST_GITHUB_LOGIN="..."
+# Rust integration tests against real services, see the READMEs in rust/.
+export TEST_GITHUB_TOKEN_STARGAZERS="..."
+export TEST_GITHUB_REPO="..."
+export TEST_LLM_API_KEY="..."
+export TEST_TURSO_TOKEN="..."
+export TEST_TURSO_LOCATION="..."

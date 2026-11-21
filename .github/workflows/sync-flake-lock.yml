@@ -19,12 +19,12 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Sync flake.lock and rust-toolchain.toml from upstream
+      - name: Sync flake.lock and rust/rust-toolchain.toml from upstream
         run: |
           curl https://raw.githubusercontent.com/obeli-sk/obelisk/refs/heads/latest-rc/flake.lock -o flake.lock
           UPSTREAM=https://raw.githubusercontent.com/obeli-sk/obelisk/refs/heads/latest-rc/rust-toolchain.toml
           CHANNEL=$(curl -fsSL "$UPSTREAM" | grep '^channel =')
-          sed -i "s/^channel =.*/$CHANNEL/" rust-toolchain.toml
+          sed -i "s/^channel =.*/$CHANNEL/" rust/rust-toolchain.toml
 
       - uses: nixbuild/nix-quick-install-action@v35
         with:
@@ -42,8 +42,8 @@ jobs:
 
       - name: Generate wit support and extensions 
         run: |
-          nix develop . --command ./scripts/obelisk-generate-wit-support.sh
-          nix develop . --command ./scripts/obelisk-generate-wit-extensions.sh
+          nix develop . --command ./rust/scripts/obelisk-generate-wit-support.sh
+          nix develop . --command ./rust/scripts/obelisk-generate-wit-extensions.sh
 
       - name: Generate Unique Branch Name
         id: branch-name

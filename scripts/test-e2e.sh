@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Usage: test-e2e.sh path-to-deployment.toml
+# Usage: test-e2e.sh [path-to-deployment.toml], relative to the repository root
 # This script starts Obelisk,
 # sends a "star-added" HTTP request to the webhook endpoint,
 # waits for the scheduled execution to complete,
@@ -10,13 +10,14 @@
 # in the environment:
 #   GITHUB_TOKEN_STARGAZERS, TEST_GITHUB_LOGIN
 # The database is a fresh local libSQL server (sqld), the server behind Turso.
-# OpenAI is the only paid dependency, so it is always mocked.
+# The LLM is the only paid dependency, so it is always mocked. The migrated default
+# settings name no model, so the workflow picks the mock's first one.
 
 set -exo pipefail
 cd "$(dirname "$0")/.."
 source ./scripts/sqld.sh
 
-DEPLOYMENT_TOML="$1"
+DEPLOYMENT_TOML="${1:-deployment.toml}"
 STAR_ACCOUNT="someghaccount"
 STAR_REPO="someghrepo"
 MOCK_OPENAI_PORT=18080
@@ -27,10 +28,11 @@ SQLD_DIR="$(mktemp -d)"
 PID=""
 APP_TOML="$(mktemp)"
 cp ./app.toml "$APP_TOML"
-# A fresh execution history, so the `@once` migration cron runs against the fresh database.
 OBELISK_DIR="$(mktemp -d)"
 SERVER_TOML="$OBELISK_DIR/server.toml"
 echo "database.sqlite.directory = \"$OBELISK_DIR/sqlite\"" > "$SERVER_TOML"
+# The stargazers page on the internal server accepts the API token.
+echo "http_server.internal.api_auth = true" >> "$SERVER_TOML"
 
 export OBELISK_API_TOKEN=$(obelisk generate token --json | python3 -c 'import json, sys; print(json.load(sys.stdin)["token"])')
 export GITHUB_WEBHOOK_SECRET="It's a Secret to Everybody"
@@ -42,9 +44,9 @@ for var in GITHUB_TOKEN_STARGAZERS TEST_GITHUB_LOGIN; do
     fi
 done
 
-# OpenAI is the only paid service, so always point it at the local mock.
-export OPENAI_API_KEY="mock-api-key-for-testing"
-export OPENAI_API_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
+# The LLM is the only paid service, so always point it at the local mock.
+export LLM_API_KEY="mock-api-key-for-testing"
+export LLM_BASE_URL="http://127.0.0.1:$MOCK_OPENAI_PORT"
 # sqld runs without auth, any token is accepted.
 export TURSO_TOKEN="local"
 export TURSO_LOCATION="http://127.0.0.1:$SQLD_PORT"
@@ -84,7 +86,7 @@ python3 ./scripts/mock-openai-server.py "$MOCK_OPENAI_PORT" &
 MOCK_OPENAI_PID=$!
 
 SECONDS=0
-until curl -sf -X POST "$OPENAI_API_BASE_URL/v1/chat/completions" -d '{}' >/dev/null; do
+until curl -sf -X POST "$LLM_BASE_URL/v1/chat/completions" -d '{}' >/dev/null; do
     if [[ $SECONDS -ge 5 ]]; then
         echo "Mock OpenAI server failed to start"
         exit 1
@@ -93,9 +95,12 @@ until curl -sf -X POST "$OPENAI_API_BASE_URL/v1/chat/completions" -d '{}' >/dev/
 done
 
 start_sqld "$SQLD_PORT" "$SQLD_DIR"
+node activity/db/migrate/migrate.mjs
 
+# The checked-in name is a placeholder that every user replaces.
+obelisk generate app-name -a "$APP_TOML" >/dev/null
 # Approve this build's exposure digests in the temporary app policy.
-obelisk server verify --skip-db --fix --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML"
+obelisk server verify --skip-db --fix --server-config "$SERVER_TOML" --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML"
 obelisk server run --server-config "$SERVER_TOML" --app-config "$APP_TOML" --deployment "$DEPLOYMENT_TOML" &
 PID=$!
 
@@ -109,6 +114,11 @@ while ! obelisk component list 2>/dev/null; do
     sleep 1
 done
 
+list_stargazers() {
+    curl --fail -H "Accept: application/json" -H "Authorization: Bearer $OBELISK_API_TOKEN" \
+        "http://127.0.0.1:9091/${STAR_ACCOUNT}/${STAR_REPO}"
+}
+
 dump_executions() {
     while read -r execution_id _; do
         obelisk execution result "$execution_id" || true
@@ -116,16 +126,14 @@ dump_executions() {
     done < <(obelisk execution list --show-derived 2>&1)
 }
 
-# The deployment's `@once` cron applies the migrations.
-if ! wait_for_migrations "$TURSO_LOCATION"; then
-    dump_executions
-    exit 1
-fi
-sqld_query "$TURSO_LOCATION" 'INSERT INTO llm (id, settings) VALUES (1, ?1)' \
-    '{"model":"mock-model","messages":[],"max_tokens":50}'
+# GitHub pings a newly created webhook.
+PING='{"zen":"Keep it logically awesome.","hook_id":1}'
+PING_SIGNATURE="sha256=$(echo -n "$PING" | openssl dgst -sha256 -hmac "$GITHUB_WEBHOOK_SECRET" | cut -d ' ' -f2)"
+curl --fail -X POST http://127.0.0.1:9090 -H "X-GitHub-Event: ping" \
+    -H "X-Hub-Signature-256: $PING_SIGNATURE" -d "$PING"
 
 # Make sure this repo has no stars
-if ! JSON=$(curl --fail "http://127.0.0.1:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1"); then
+if ! JSON=$(list_stargazers); then
     dump_executions
     exit 1
 fi
@@ -152,18 +160,18 @@ SIGNATURE="sha256=$SIGNATURE"
 
 # Send the webhook event
 EXECUTION_ID=$(curl --fail -X POST http://127.0.0.1:9090 \
--H "X-Hub-Signature-256:$SIGNATURE" \
+-H "X-GitHub-Event: star" -H "X-Hub-Signature-256:$SIGNATURE" \
 -d "$PAYLOAD" -i | grep -i "execution-id" | cut -d ' ' -f2- | tr -d '\r')
 
 # Wait until the scheduled execution of the workflow finishes.
 obelisk execution status --follow $EXECUTION_ID
 
 # Get the first and only user back from the database.
-if ! JSON=$(curl --fail "http://127.0.0.1:9090?repo=${STAR_ACCOUNT}/${STAR_REPO}&ordering=asc&limit=1"); then
+if ! JSON=$(list_stargazers); then
     dump_executions
     exit 1
 fi
-LOGIN=$(python3 -c 'import json, sys; print(json.load(sys.stdin)[0]["login"])' <<< "$JSON")
+LOGIN=$(python3 -c 'import json, sys; [user] = json.load(sys.stdin); print(user["login"])' <<< "$JSON")
 if [[ "$LOGIN" != ${TEST_GITHUB_LOGIN} ]]; then
     echo "Error: First stargazer should be '${TEST_GITHUB_LOGIN}', got '$LOGIN'" >&2
     exit 1

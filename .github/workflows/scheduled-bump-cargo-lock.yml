@@ -15,7 +15,10 @@ jobs:
   bump-cargo-lock:
     runs-on: ubuntu-24.04
     env:
-      DEVSHELL: .#noObelisk    
+      DEVSHELL: ..#noObelisk
+    defaults:
+      run:
+        working-directory: rust
     strategy:
       fail-fast: false
       matrix:

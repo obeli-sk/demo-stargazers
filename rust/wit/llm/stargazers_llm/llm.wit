@@ -1,0 +1,13 @@
+package stargazers:llm;
+
+interface llm {
+    /// Send the user prompt to the chat completions endpoint and return the first response.
+    /// `settings-json` holds the model, prepended messages and `max_tokens`.
+    respond: func(user-prompt: string, settings-json: string) -> result<string, string>;
+    /// Return the IDs of models offered by the endpoint, in its order.
+    list-models: func() -> result<list<string>, string>;
+}
+
+world exports {
+    export llm;
+}

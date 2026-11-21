@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Mock OpenAI API server for testing.
 
-Returns a canned response for chat completions requests.
+Returns a canned response for chat completions requests and a fixed model list.
 """
 
 import json
@@ -27,7 +27,22 @@ def read_body(handler):
     return bytes(body)
 
 
+MODELS = ["mock-model", "mock-model-2"]
+
+
 class MockOpenAIHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/v1/models":
+            body = json.dumps({"object": "list", "data": [{"id": m, "object": "model"} for m in MODELS]}).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+        else:
+            self.send_response(404)
+            self.end_headers()
+
     def do_POST(self):
         if self.path == "/v1/chat/completions":
             body = read_body(self)
@@ -81,7 +96,7 @@ def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_PORT
     server = HTTPServer(('127.0.0.1', port), MockOpenAIHandler)
     print(f"Mock OpenAI server running on http://127.0.0.1:{port}")
-    print(f"Use OPENAI_API_BASE_URL=http://127.0.0.1:{port} for testing")
+    print(f"Use LLM_BASE_URL=http://127.0.0.1:{port} for testing")
     sys.stdout.flush()
     server.serve_forever()
 

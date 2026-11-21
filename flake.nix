@@ -25,7 +25,7 @@
           pkgs = import nixpkgs {
             inherit system overlays;
           };
-          rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
+          rustToolchain = pkgs.pkgsBuildHost.rust-bin.fromRustupToolchainFile ./rust/rust-toolchain.toml;
           commonDeps = with pkgs; [
             cargo-edit
             cargo-nextest
