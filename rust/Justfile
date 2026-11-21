@@ -9,7 +9,7 @@ build:
 # Local builds are not reproducible, so the webhook's secret exposure is approved on a copy of app.toml.
 serve: build
 	cp ../app.toml target/app.toml
-	# Workaround: obelisk 0.43.0-rc.19 drops --dev when fixing, so enable the internal server explicitly.
+	# backcompat: obelisk 0.43.0-rc.19 drops --dev when fixing, so enable the internal server explicitly.
 	OBELISK__HTTP_SERVER__INTERNAL__API_AUTH=true obelisk server verify --skip-db --fix-app-secret-exposure --app-config target/app.toml --deployment deployment.toml
 	obelisk server run --dev --app-config target/app.toml --deployment deployment.toml
 
