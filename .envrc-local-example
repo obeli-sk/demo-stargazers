@@ -7,7 +7,7 @@ export GITHUB_WEBHOOK_SECRET="..."
 # In the cloud, the integrations authenticate GitHub and LLM requests instead.
 export GITHUB_TOKEN_STARGAZERS="..."
 export LLM_API_KEY="..."
-# export LLM_BASE_URL="https://api.openai.com" # any OpenAI-compatible endpoint
+# export LLM_BASE_URL="https://api.openai.com" # any endpoint with the Chat Completions API
 
 # `just test-e2e` uses the real GitHub, local sqld and a mocked LLM.
 export TEST_GITHUB_LOGIN="..."

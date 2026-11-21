@@ -1,6 +1,9 @@
 # LLM activity
 
-Activities calling an OpenAI-compatible endpoint, with signatures declared in [deployment.toml](../../deployment.toml):
+Activities calling an endpoint compatible with the OpenAI Chat Completions API, with signatures declared
+in [deployment.toml](../../deployment.toml). Other APIs, such as OpenAI's Responses API or Anthropic's
+Messages API, are not supported.
+
 * `respond` sends a request to `<LLM_BASE_URL>/v1/chat/completions` and responds with the first generated message.
 * `list-models` returns the model IDs from `<LLM_BASE_URL>/v1/models`. The workflow uses the first one
   when the settings name no model.
@@ -13,7 +16,7 @@ Locally the endpoint defaults to `https://api.openai.com`. Create an [OpenAI API
 with the write permission for `/v1/chat/completions`:
 ```sh
 export LLM_API_KEY="..."
-# export LLM_BASE_URL="..." # another OpenAI-compatible endpoint
+# export LLM_BASE_URL="..." # another endpoint with the Chat Completions API
 ```
 
 ## Configuration
