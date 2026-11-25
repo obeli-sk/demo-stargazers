@@ -80,17 +80,19 @@ one offered by the LLM integration.
 
 ### 4. Set up the GitHub webhook
 `obelisk cloud app status` prints the app's URL, `https://<app>.obelisk.works/`.
-Create a webhook sending Star events to it, signed with `GITHUB_WEBHOOK_SECRET`:
+Create a webhook that sends Star events signed with `GITHUB_WEBHOOK_SECRET` and save its ID for cleanup.
+
 ```sh
 EXTERNAL_ENDPOINT=$(obelisk cloud app status --json | jq --raw-output .app.endpoints.external) # "https://<app>.obelisk.works"
 OWNER=...
 REPO=...
-gh api repos/$OWNER/$REPO/hooks \
+HOOK_ID=$(gh api "repos/$OWNER/$REPO/hooks" \
   -f name=web \
   -f 'events[]=star' \
   -f "config[url]=$EXTERNAL_ENDPOINT" \
   -f 'config[content_type]=json' \
-  -f "config[secret]=$GITHUB_WEBHOOK_SECRET"
+  -f "config[secret]=$GITHUB_WEBHOOK_SECRET" \
+  --jq '.id') && printf 'Created webhook %s\n' "$HOOK_ID"
 ```
 GitHub pings the new webhook; the delivery appears under the repository's Settings, Webhooks.
 Alternatively, in the repository go to Settings, Webhooks, Add webhook:
@@ -110,17 +112,18 @@ turso db shell stargazers "SELECT * FROM users"
 
 ### 6. Delete the test webhook
 
-List the repository's webhooks and find the ID whose URL matches the endpoint you used for testing.
+After testing, use the `HOOK_ID` from step 4. [GitHub webhook deletion documentation](https://docs.github.com/en/rest/repos/webhooks#delete-a-repository-webhook)
+
+```sh
+gh api --method DELETE "repos/$OWNER/$REPO/hooks/${HOOK_ID:?Set the test webhook ID}"
+```
+
+If you created the webhook in the GitHub UI or lost its ID, list the webhooks for the same
+`OWNER` and `REPO`. Set `HOOK_ID` to the ID whose URL matches your test endpoint, then run
+the delete command.
 
 ```sh
 gh api --paginate "repos/$OWNER/$REPO/hooks" --jq '.[] | {id, url: .config.url, events}'
-```
-
-Set `HOOK_ID` to that ID and [delete the webhook](https://docs.github.com/en/rest/repos/webhooks#delete-a-repository-webhook).
-
-```sh
-HOOK_ID=12345678
-gh api --method DELETE "repos/$OWNER/$REPO/hooks/$HOOK_ID"
 ```
 
 ## Running locally
