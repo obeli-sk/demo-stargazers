@@ -52,7 +52,7 @@ start_sqld "$SQLD_PORT" "$SQLD_DIR"
 # Migrate with the JS port first, so the Rust tests check its history is compatible with refinery.
 TURSO_TOKEN="$TEST_TURSO_TOKEN" TURSO_LOCATION="$TEST_TURSO_LOCATION" node --input-type=module -e '
 import assert from "node:assert/strict";
-import { loadMigrations, migrate } from "../activity/db/migrate/migrate.mjs";
+import { loadMigrations, migrate } from "../src/activity/db/migrate/migrate.mjs";
 const versions = loadMigrations().map((m) => m.version).sort((a, b) => a - b);
 assert.deepEqual(await migrate(), versions);
 '

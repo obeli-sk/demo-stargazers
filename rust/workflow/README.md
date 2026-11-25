@@ -1,6 +1,6 @@
 # Stargazers workflow (Rust)
 
-Rust implementation of the [Stargazers workflows](../../workflow/README.md).
+Rust implementation of the [Stargazers workflows](../../src/workflow/README.md).
 
 ## Running the workflow
 Build the Rust components and run Obelisk with `rust/deployment.toml`, from the `rust` directory:

@@ -1,6 +1,6 @@
 # LLM Activity (Rust)
 
-Rust implementation of the [LLM activity](../../../activity/llm/README.md), which describes the
+Rust implementation of the [LLM activity](../../../src/activity/llm/README.md), which describes the
 prerequisites. The `Settings` struct in [lib.rs](src/lib.rs) defines the `settings-json` structure.
 
 ## Running the activity

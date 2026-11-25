@@ -1,7 +1,7 @@
 # LLM activity
 
 Activities calling an endpoint compatible with the OpenAI Chat Completions API, with signatures declared
-in [deployment.toml](../../deployment.toml). Other APIs, such as OpenAI's Responses API or Anthropic's
+in [deployment.toml](../../../deployment.toml). Other APIs, such as OpenAI's Responses API or Anthropic's
 Messages API, are not supported.
 
 * `respond` sends a request to `<LLM_BASE_URL>/v1/chat/completions` and responds with the first generated message.

@@ -14,12 +14,12 @@ Set up the shared secret and export it as an environment variable:
 export GITHUB_WEBHOOK_SECRET="..."
 ```
 The secret is exposed only to the webhook component whose digest is listed in `exposed_to` in
-[app.toml](../app.toml). After changing `webhook.js`, update the grant:
+[app.toml](../../app.toml). After changing `webhook.js`, update the grant:
 ```sh
 obelisk server verify --skip-db --fix-app-secret-exposure --app-config app.toml --deployment deployment.toml
 ```
 
-The verification can be turned off for testing purposes in [deployment.toml](../deployment.toml):
+The verification can be turned off for testing purposes in [deployment.toml](../../deployment.toml):
 ```toml
 [[webhook_endpoint_js]]
 name = "webhook"
@@ -52,7 +52,7 @@ Your GitHub user should appear in the Turso database, together with a generated 
 
 ## Manual end-to-end testing
 Disable the request verification using `GITHUB_WEBHOOK_INSECURE` as mentioned above.
-Start the `obelisk` server according to the root [README](../README.md).
+Start the `obelisk` server according to the root [README](../../README.md).
 Execute a request locally:
 ```sh
 export TEST_GITHUB_LOGIN="..."
@@ -81,4 +81,4 @@ curl -H "Accept: application/json" http://127.0.0.1:9091/obeli-sk/obelisk
 ```
 
 ## Automated end-to-end testing
-`just test-e2e` runs [test-e2e.sh](../scripts/test-e2e.sh), which signs the request with the secret.
+`just test-e2e` runs [test-e2e.sh](../../scripts/test-e2e.sh), which signs the request with the secret.

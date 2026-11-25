@@ -1,6 +1,6 @@
 # Turso Activity (Rust)
 
-Rust implementation of the [Turso activities](../../../activity/db/README.md), which describe the
+Rust implementation of the [Turso activities](../../../src/activity/db/README.md), which describe the
 prerequisites, migrations and LLM settings. The migrations are embedded and applied by
 [refinery](https://github.com/rust-db/refinery) through `stargazers:db/migration.migrate`,
 which `rust/deployment.toml` runs once per deployment with an `@once` cron.

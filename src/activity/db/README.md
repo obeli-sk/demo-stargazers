@@ -2,7 +2,7 @@
 
 Persist stargazers and the LLM settings in [Turso](https://turso.tech/) over the
 [libSQL Remote Protocol](https://docs.turso.tech/sdk/http/reference), one file per exported function;
-the signatures are declared in [deployment.toml](../../deployment.toml).
+the signatures are declared in [deployment.toml](../../../deployment.toml).
 
 ## Prerequisites
 A database URL and a token with read and write permission are required:
@@ -13,7 +13,7 @@ export TURSO_LOCATION="https://[databaseName]-[organizationSlug].turso.io"
 
 ## Schema migrations
 The [migrations](./migrations/) use the format of [refinery](https://github.com/rust-db/refinery),
-which the [Rust implementation](../../rust/activity/db/) embeds. Apply them before deploying:
+which the [Rust implementation](../../../rust/activity/db/) embeds. Apply them before deploying:
 ```sh
 just migrate
 ```

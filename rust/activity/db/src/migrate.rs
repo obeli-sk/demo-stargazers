@@ -11,7 +11,7 @@ use time::OffsetDateTime;
 use time::format_description::well_known::Rfc3339;
 
 mod embedded {
-    refinery::embed_migrations!("../../../activity/db/migrations");
+    refinery::embed_migrations!("../../../src/activity/db/migrations");
 }
 
 struct Connection(TursoClient);

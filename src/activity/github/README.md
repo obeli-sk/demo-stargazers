@@ -1,7 +1,7 @@
 # GitHub activities
 
 Implement `stargazers:github/account` using the GitHub GraphQL API, one file per exported function;
-the signatures are declared in [deployment.toml](../../deployment.toml).
+the signatures are declared in [deployment.toml](../../../deployment.toml).
 `account-info` fetches basic info like repositories and contributions of an account,
 `list-stargazers` pages through the stargazers of a repository.
 

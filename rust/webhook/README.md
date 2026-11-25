@@ -1,6 +1,6 @@
 # Webhook Endpoint for GitHub (Rust)
 
-Rust implementation of the [webhook endpoint](../../webhook/README.md), which describes the
+Rust implementation of the [webhook endpoint](../../src/webhook/README.md), which describes the
 GitHub, secret and tunnel setup and manual testing.
 
 Locally built components are not reproducible, so the `exposed_to` grant of `GITHUB_WEBHOOK_SECRET`

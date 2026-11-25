@@ -1,1 +1,1 @@
-../../ui/stargazers.js
+../../src/ui/stargazers.js

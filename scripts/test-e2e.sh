@@ -95,7 +95,7 @@ until curl -sf -X POST "$LLM_BASE_URL/v1/chat/completions" -d '{}' >/dev/null; d
 done
 
 start_sqld "$SQLD_PORT" "$SQLD_DIR"
-node activity/db/migrate/migrate.mjs
+node src/activity/db/migrate/migrate.mjs
 
 # The checked-in name is a placeholder that every user replaces.
 obelisk generate app-name -a "$APP_TOML" >/dev/null

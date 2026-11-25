@@ -1,6 +1,6 @@
 # GitHub Activity (Rust)
 
-Rust implementation of the [GitHub activities](../../../activity/github/README.md), which describe the prerequisites.
+Rust implementation of the [GitHub activities](../../../src/activity/github/README.md), which describe the prerequisites.
 
 ## Running the activity
 Build the Rust components and run Obelisk with `rust/deployment.toml`, from the `rust` directory:

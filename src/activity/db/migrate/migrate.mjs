@@ -1,6 +1,6 @@
-// Applies activity/db/migrations to the Turso database at TURSO_LOCATION using TURSO_TOKEN.
+// Applies src/activity/db/migrations to the Turso database at TURSO_LOCATION using TURSO_TOKEN.
 // A port of refinery's runner sharing its history table, so the Rust activity can migrate the same database.
-// Usage: node activity/db/migrate/migrate.mjs
+// Usage: node src/activity/db/migrate/migrate.mjs
 import { readdirSync, readFileSync } from 'node:fs';
 import { checksum } from './checksum.js';
 import { splitStatements } from './split-statements.js';

@@ -1,7 +1,7 @@
 # Stargazers workflows
 
 Implement `stargazers:workflow/workflow`, one file per exported function;
-the signatures are declared in [deployment.toml](../deployment.toml):
+the signatures are declared in [deployment.toml](../../deployment.toml):
 
 * `star-added`, `star-removed`: started by the [webhook](../webhook/) on a Star event.
 * `star-added-parallel`: like `star-added`, fetching the account info and the LLM settings concurrently.

@@ -1,6 +1,6 @@
 [[activity_js]]
 name = "llm_respond"
-location = "activity/llm/respond.js"
+location = "src/activity/llm/respond.js"
 ffqn = "stargazers:llm/llm.respond"
 params = [
   { name = "user-prompt", type = "string" },
@@ -18,7 +18,7 @@ replace_in = ["headers"]
 
 [[activity_js]]
 name = "llm_list_models"
-location = "activity/llm/list-models.js"
+location = "src/activity/llm/list-models.js"
 ffqn = "stargazers:llm/llm.list-models"
 params = []
 return_type = "result<list<string>, string>"
@@ -33,7 +33,7 @@ replace_in = ["headers"]
 
 [[activity_js]]
 name = "github_account_info"
-location = "activity/github/account-info.js"
+location = "src/activity/github/account-info.js"
 ffqn = "stargazers:github/account.account-info"
 params = [
   { name = "login", type = "string" },
@@ -50,7 +50,7 @@ replace_in = ["headers"]
 
 [[activity_js]]
 name = "github_list_stargazers"
-location = "activity/github/list-stargazers.js"
+location = "src/activity/github/list-stargazers.js"
 ffqn = "stargazers:github/account.list-stargazers"
 params = [
   { name = "repo", type = "string" },
@@ -69,7 +69,7 @@ replace_in = ["headers"]
 
 [[activity_js]]
 name = "db_add_star_get_description"
-location = "activity/db/add-star-get-description.js"
+location = "src/activity/db/add-star-get-description.js"
 ffqn = "stargazers:db/user.add-star-get-description"
 params = [
   { name = "login", type = "string" },
@@ -87,7 +87,7 @@ replace_in = ["headers"]
 
 [[activity_js]]
 name = "db_remove_star"
-location = "activity/db/remove-star.js"
+location = "src/activity/db/remove-star.js"
 ffqn = "stargazers:db/user.remove-star"
 params = [
   { name = "login", type = "string" },
@@ -105,7 +105,7 @@ replace_in = ["headers"]
 
 [[activity_js]]
 name = "db_update_user_description"
-location = "activity/db/update-user-description.js"
+location = "src/activity/db/update-user-description.js"
 ffqn = "stargazers:db/user.update-user-description"
 params = [
   { name = "username", type = "string" },
@@ -123,7 +123,7 @@ replace_in = ["headers"]
 
 [[activity_js]]
 name = "db_list_stargazers"
-location = "activity/db/list-stargazers.js"
+location = "src/activity/db/list-stargazers.js"
 ffqn = "stargazers:db/user.list-stargazers"
 params = [
   { name = "last", type = "u8" },
@@ -142,7 +142,7 @@ replace_in = ["headers"]
 
 [[activity_js]]
 name = "db_get_settings_json"
-location = "activity/db/get-settings-json.js"
+location = "src/activity/db/get-settings-json.js"
 ffqn = "stargazers:db/llm.get-settings-json"
 params = []
 return_type = "result<string, string>"
@@ -157,7 +157,7 @@ replace_in = ["headers"]
 
 [[workflow_js]]
 name = "workflow_star_added"
-location = "workflow/star-added.js"
+location = "src/workflow/star-added.js"
 ffqn = "stargazers:workflow/workflow.star-added"
 params = [
   { name = "login", type = "string" },
@@ -167,7 +167,7 @@ return_type = "result<_, string>"
 
 [[workflow_js]]
 name = "workflow_star_added_parallel"
-location = "workflow/star-added-parallel.js"
+location = "src/workflow/star-added-parallel.js"
 ffqn = "stargazers:workflow/workflow.star-added-parallel"
 params = [
   { name = "login", type = "string" },
@@ -177,7 +177,7 @@ return_type = "result<_, string>"
 
 [[workflow_js]]
 name = "workflow_star_removed"
-location = "workflow/star-removed.js"
+location = "src/workflow/star-removed.js"
 ffqn = "stargazers:workflow/workflow.star-removed"
 params = [
   { name = "login", type = "string" },
@@ -187,7 +187,7 @@ return_type = "result<_, string>"
 
 [[workflow_js]]
 name = "workflow_backfill"
-location = "workflow/backfill.js"
+location = "src/workflow/backfill.js"
 ffqn = "stargazers:workflow/workflow.backfill"
 params = [
   { name = "repo", type = "string" },
@@ -196,7 +196,7 @@ return_type = "result<_, string>"
 
 [[workflow_js]]
 name = "workflow_backfill_parallel"
-location = "workflow/backfill-parallel.js"
+location = "src/workflow/backfill-parallel.js"
 ffqn = "stargazers:workflow/workflow.backfill-parallel"
 params = [
   { name = "repo", type = "string" },
@@ -207,7 +207,7 @@ return_type = "result<_, string>"
 # For development without a secret, set GITHUB_WEBHOOK_INSECURE=true instead.
 [[webhook_endpoint_js]]
 name = "webhook"
-location = "webhook/webhook.js"
+location = "src/webhook/webhook.js"
 http_server = "external"
 routes = [{ methods = ["POST"], route = "" }]
 exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
@@ -217,6 +217,6 @@ exposed_secrets = ["GITHUB_WEBHOOK_SECRET"]
 # locally it runs with `server run --dev`.
 [[webhook_endpoint_js]]
 name = "stargazers_ui"
-location = "ui/stargazers.js"
+location = "src/ui/stargazers.js"
 http_server = "internal"
 routes = [{ methods = ["GET"], route = "/" }, { methods = ["GET"], route = "/:owner/:repo" }]

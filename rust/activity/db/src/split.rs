@@ -123,7 +123,7 @@ mod tests {
     #[test]
     fn split_statements_should_match_the_shared_cases() {
         let cases: Vec<Case> = serde_json::from_str(include_str!(
-            "../../../../activity/db/migrate/test/split-statements.json"
+            "../../../../src/activity/db/migrate/test/split-statements.json"
         ))
         .unwrap();
         for case in cases {
