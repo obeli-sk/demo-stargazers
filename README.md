@@ -53,7 +53,6 @@ and keeps the variables below.
 ```sh
 git clone https://github.com/obeli-sk/demo-stargazers.git
 cd demo-stargazers
-obelisk cloud auth login
 obelisk generate app-name   # picks a unique name and writes it to app.toml
 ```
 
