@@ -108,6 +108,21 @@ the browser signs in through the cloud. Or query the database directly:
 turso db shell stargazers "SELECT * FROM users"
 ```
 
+### 6. Delete the test webhook
+
+List the repository's webhooks and find the ID whose URL matches the endpoint you used for testing.
+
+```sh
+gh api --paginate "repos/$OWNER/$REPO/hooks" --jq '.[] | {id, url: .config.url, events}'
+```
+
+Set `HOOK_ID` to that ID and [delete the webhook](https://docs.github.com/en/rest/repos/webhooks#delete-a-repository-webhook).
+
+```sh
+HOOK_ID=12345678
+gh api --method DELETE "repos/$OWNER/$REPO/hooks/$HOOK_ID"
+```
+
 ## Running locally
 
 ### Environment
